@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>谱号识别训练</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>这是什么谱号？</h1>
+        
+        <!-- 谱号显示区域 -->
+        <div class="stave-container">
+            <div id="stave"></div>
+        </div>
+
+        <!-- 选择题区域 -->
+        <div class="options-container">
+            <div class="options" id="options"></div>
+        </div>
+
+        <!-- 反馈区域 -->
+        <div class="feedback" id="feedback"></div>
+
+        <!-- 进度条显示 -->
+        <div class="progress-container">
+            <div class="progress-text" id="progress-text">进度: 0/0</div>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+        </div>
+    </div>
+
+  <!-- 引入VexFlow库 - 用于音乐记谱的JavaScript库 -->
+    <script src="https://unpkg.com/vexflow@4.0.1/build/cjs/vexflow-debug.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

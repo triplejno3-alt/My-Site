@@ -53,4 +53,29 @@ plugins:
 #   - vendor/gems/
 #   - vendor/ruby/
 # 允许显示未来日期
-future: true 
+future: true
+
+# 显示文章摘要
+show_excerpts: true
+
+# 简历信息
+resume:
+  name: "Your Name"
+  role: "Full Stack Developer / UI Designer"
+  bio: "专注于构建优雅、高效且以用户为中心的数字体验。拥有 5 年以上开发经验，擅长从逻辑中寻找创意，在代码中实现梦想。"
+  skills:
+    - name: "Frontend"
+      items: ["React", "Vue", "Next.js", "Tailwind CSS"]
+    - name: "Backend"
+      items: ["Node.js", "Python", "PostgreSQL", "Redis"]
+    - name: "Tools"
+      items: ["Docker", "Git", "Figma", "AWS"]
+  experience:
+    - company: "Tech Innovation Lab"
+      role: "Senior Developer"
+      period: "2022 - Present"
+      desc: "负责核心产品架构设计，提升系统性能 40%。"
+    - company: "Creative Web Studio"
+      role: "Frontend Engineer"
+      period: "2019 - 2022"
+      desc: "主导多个响应式网站开发，获得年度最佳设计奖。"

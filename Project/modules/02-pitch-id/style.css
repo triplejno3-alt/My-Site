@@ -1,0 +1,309 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #333;
+}
+
+.container {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 600px;
+    text-align: center;
+}
+
+h1 {
+    color: #2c3e50;
+    margin-bottom: 30px;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+/* 五线谱显示区域 */
+.stave-container {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 30px;
+    border: 2px solid #dee2e6;
+    min-height: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 选择题区域 */
+.options-container {
+    margin-bottom: 20px;
+}
+
+.question {
+    font-size: 18px;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 15px;
+}
+
+.options {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.option-btn {
+    flex: 1;
+    min-width: 0;
+}
+
+.option-btn {
+    background: #c7d1d9;
+    border: none;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #495057;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+}
+
+.option-btn:hover {
+    background: #dee2e6;
+    transform: translateY(-2px);
+}
+
+.option-btn:active {
+    transform: translateY(0);
+}
+
+/* 错误反馈动画关键帧 */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+@keyframes blink {
+    0%, 100% { background-color: #f8d7da; }
+    50% { background-color: #ff6b6b; }
+}
+
+@keyframes highlightCorrect {
+    0% { transform: scale(1); box-shadow: none; }
+    50% { transform: scale(1.05); box-shadow: 0 0 15px rgba(40, 167, 69, 0.4); }
+    100% { transform: scale(1); box-shadow: none; }
+}
+
+/* 错误反馈状态 */
+.option-btn.error {
+    background: #f8d7da !important;
+    color: #721c24 !important;
+    border-color: #f5c6cb !important;
+    animation: shake 0.4s ease-in-out;
+}
+
+.option-btn.error-blink {
+    animation: blink 0.6s ease-in-out 2;
+}
+
+.option-btn.correct-highlight {
+    background: linear-gradient(135deg, #d4edda 0%, #a8e6a3 100%) !important;
+    color: #155724 !important;
+    box-shadow: 0 0 15px rgba(40, 167, 69, 0.3) !important;
+    transform: scale(1.02) !important;
+    transition: all 0.3s ease !important;
+    animation: highlightCorrect 0.6s ease-in-out;
+}
+
+.option-btn.disabled {
+    background: #f8f9fa !important;
+    color: #adb5bd !important;
+    cursor: not-allowed !important;
+    opacity: 0.7;
+    border: 1px solid #dee2e6 !important;
+}
+
+/* 反馈区域 */
+.feedback {
+    min-height: 40px;
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.feedback.correct {
+    color: #28a745;
+}
+
+.feedback.wrong {
+    color: #dc3545;
+}
+
+/* 控制按钮 */
+.controls {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.btn:hover {
+    background: #0056b3;
+}
+
+.btn.secondary {
+    background: #6c757d;
+}
+
+.btn.secondary:hover {
+    background: #545b62;
+}
+
+/* 进度条显示 */
+.progress-container {
+    margin-bottom: 20px;
+}
+
+/* 隐藏进度条 */
+.progress-container.hidden {
+    display: none;
+}
+
+.progress-text {
+    font-size: 16px;
+    color: #6c757d;
+    font-weight: 600;
+    margin-bottom: 8px;
+    text-align: left;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 20px;
+    background: #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* 进度条颜色类 */
+.progress-bar.red {
+    background: linear-gradient(90deg, #dc3545, #c82333);
+}
+
+.progress-bar.orange {
+    background: linear-gradient(90deg, #fd7e14, #e8590c);
+}
+
+.progress-bar.green {
+    background: linear-gradient(90deg, #28a745, #20c997);
+}
+
+/* 等级显示样式 */
+.level-container {
+    margin-bottom: 20px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border: 1px solid #dee2e6;
+}
+
+.level-info {
+    font-size: 18px;
+    font-weight: 600;
+    color: #495057;
+}
+
+.level-info span:first-child {
+    color: #6c757d;
+}
+
+.level-info span:last-child {
+    color: #007bff;
+    font-size: 24px;
+    margin-left: 5px;
+}
+
+/* 未解锁按钮样式 */
+.option-btn.locked {
+    background: #f8f9fa !important;
+    color: #adb5bd !important;
+    cursor: not-allowed !important;
+    border: 1px solid #dee2e6 !important;
+    opacity: 0.7;
+}
+
+.option-btn.locked:hover {
+    transform: none !important;
+    background: #f8f9fa !important;
+}
+
+.progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+    .container {
+        padding: 20px;
+        width: 95%;
+    }
+    
+    h1 {
+        font-size: 24px;
+    }
+    
+    .options {
+        grid-template-columns: 1fr;
+    }
+    
+    .controls {
+        flex-direction: column;
+    }
+}

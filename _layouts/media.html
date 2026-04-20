@@ -1,0 +1,119 @@
+---
+<!-- layout: default -->
+---
+
+<div class="daily-wallpaper-wrapper">
+  <div id="daily-wallpaper-container">
+    <p id="daily-sentence">加载中...</p>
+  </div>
+</div>
+<div class="media-grid-wrapper wrapper">
+  <h1>{{ page.title }}</h1>
+  <p>这里是你嵌入的各种多媒体内容。</p>
+  <div class="media-grid">
+    {{ content }}
+  </div>
+</div>
+
+<style>
+  .media-grid-wrapper {
+    padding-top: 2rem;
+    padding-bottom: 4rem;
+  }
+
+  .media-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .media-item {
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    overflow: hidden;
+    padding: 1.5rem;
+  }
+
+  .media-item h2 {
+    margin-top: 0;
+    font-size: 1.2rem;
+    border-bottom: 2px solid #ecf0f1;
+    padding-bottom: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .media-embed-container {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    height: 0;
+    overflow: hidden;
+    max-width: 100%;
+    background: #f0f0f0;
+    border-radius: 4px;
+  }
+
+  .media-embed-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  #daily-wallpaper-container {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+    margin-bottom: 2rem;
+  }
+
+  #daily-sentence {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    padding: 0 1rem;
+    background-color: rgba(0, 0, 0, 0.4);
+    padding: 1rem 1.5rem;
+    border-radius: 6px;
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Fetch daily sentence
+    fetch("https://v1.hitokoto.cn/")
+      .then(response => response.json())
+      .then(data => {
+        const sentence = `${data.hitokoto} —— ${data.from}`;
+        document.getElementById("daily-sentence").textContent = sentence;
+      })
+      .catch(error => {
+        console.error("Error fetching daily sentence:", error);
+        document.getElementById("daily-sentence").textContent = "句子加载失败";
+      });
+
+    // Fetch daily wallpaper
+    fetch("https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=zh-CN")
+      .then(response => response.json())
+      .then(data => {
+        const imageUrl = "https://www.bing.com" + data.images[0].url;
+        document.getElementById("daily-wallpaper-container").style.backgroundImage = `url(${imageUrl})`;
+      })
+      .catch(error => {
+        console.error("Error fetching daily wallpaper:", error)
+        document.getElementById("daily-wallpaper-container").style.backgroundColor = "#333";
+        document.getElementById("daily-sentence").textContent = "壁纸加载失败";
+      });
+  });
+</script>

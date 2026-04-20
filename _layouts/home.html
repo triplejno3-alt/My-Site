@@ -1,0 +1,369 @@
+---
+<!-- layout: default -->
+---
+{% include header.html %}
+
+<div class="resume-wrapper wrapper">
+  <aside class="resume-sidebar">
+    <div class="profile-card">
+      <div class="profile-avatar">
+        <img src="{{ "/assets/img/avatar.png" | relative_url }}" alt="Avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+        <div class="avatar-placeholder" style="display: none;">
+          {{ site.resume.name | slice: 0, 1 | upcase }}
+        </div>
+      </div>
+      <h1 class="profile-name">{{ site.resume.name | default: site.title }}</h1>
+      <p class="profile-role">{{ site.resume.role }}</p>
+      <p class="profile-bio">{{ site.resume.bio }}</p>
+      
+      <div class="profile-contact">
+        <a href="mailto:{{ site.email }}" class="contact-item">
+          <span class="icon">✉️</span> {{ site.email }}
+        </a>
+        {% if site.github_username %}
+        <a href="https://github.com/{{ site.github_username }}" class="contact-item">
+          <span class="icon">🐙</span> GitHub
+        </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="skills-section">
+      <h2 class="sidebar-title">核心技能</h2>
+      {% for category in site.resume.skills %}
+      <div class="skill-group">
+        <h3 class="skill-category">{{ category.name }}</h3>
+        <div class="skill-tags">
+          {% for item in category.items %}
+          <span class="skill-tag">{{ item }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </aside>
+
+  <main class="resume-main">
+    <section class="experience-section">
+      <h2 class="section-title">项目与经历</h2>
+      <div class="timeline">
+        {% for exp in site.resume.experience %}
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-content">
+            <div class="timeline-header">
+              <h3 class="exp-role">{{ exp.role }}</h3>
+              <span class="exp-period">{{ exp.period }}</span>
+            </div>
+            <p class="exp-company">{{ exp.company }}</p>
+            <p class="exp-desc">{{ exp.desc }}</p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <a href="{{ "/Project/T1/index.html" | relative_url }}" class="view-all">浏览全部项目 →</a>
+    </section>
+
+    <section class="posts-section" id="posts">
+      <h2 class="section-title">精选文章</h2>
+      <div class="post-list-mini">
+        {%- for post in site.posts limit:5 -%}
+        <article class="post-item-mini">
+          <span class="post-date-mini">{{ post.date | date: "%Y-%m-%d" }}</span>
+          <h3 class="post-title-mini">
+            <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+          </h3>
+        </article>
+        {%- endfor -%}
+      </div>
+      <a href="{{ "/archive/" | relative_url }}" class="view-all">查看全部文章 →</a>
+    </section>
+  </main>
+</div>
+
+{% include footer.html %}
+
+<style>
+  :root {
+    --primary: #2c3e50;
+    --accent: #3498db;
+    --text-main: #34495e;
+    --text-light: #7f8c8d;
+    --bg-light: #f8f9fa;
+    --border-color: #ecf0f1;
+  }
+
+  .resume-wrapper {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 3rem;
+    padding: 4rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    align-items: start;
+  }
+
+  /* Sidebar Styles */
+  .resume-sidebar {
+    position: sticky;
+    top: 2rem;
+  }
+
+  .profile-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .profile-avatar {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 1.5rem;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--bg-light);
+    border: 4px solid white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--accent), var(--primary));
+    color: white;
+    font-size: 3rem;
+    font-weight: 800;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .profile-name {
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+    color: var(--primary);
+  }
+
+  .profile-role {
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .profile-bio {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--text-light);
+    margin-bottom: 1.5rem;
+  }
+
+  .profile-contact {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 1.5rem;
+  }
+
+  .contact-item {
+    text-decoration: none;
+    color: var(--text-main);
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: color 0.2s;
+  }
+
+  .contact-item:hover {
+    color: var(--accent);
+  }
+
+  .sidebar-title {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--accent);
+    display: inline-block;
+  }
+
+  .skill-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .skill-category {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-bottom: 0.75rem;
+    font-weight: 700;
+  }
+
+  .skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .skill-tag {
+    background: var(--bg-light);
+    color: var(--text-main);
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    border: 1px solid var(--border-color);
+  }
+
+  /* Main Content Styles */
+  .section-title {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    color: var(--primary);
+    position: relative;
+    padding-left: 1rem;
+  }
+
+  .section-title::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.2rem;
+    bottom: 0.2rem;
+    width: 4px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  .timeline {
+    position: relative;
+    padding-left: 2rem;
+    border-left: 2px solid var(--border-color);
+    margin-bottom: 4rem;
+  }
+
+  .timeline-item {
+    position: relative;
+    margin-bottom: 2.5rem;
+  }
+
+  .timeline-dot {
+    position: absolute;
+    left: -2.45rem;
+    top: 0.25rem;
+    width: 14px;
+    height: 14px;
+    background: white;
+    border: 3px solid var(--accent);
+    border-radius: 50%;
+  }
+
+  .timeline-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .exp-role {
+    font-size: 1.1rem;
+    margin: 0;
+    color: var(--primary);
+  }
+
+  .exp-period {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    background: var(--bg-light);
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+  }
+
+  .exp-company {
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+
+  .exp-desc {
+    font-size: 0.95rem;
+    color: var(--text-light);
+    line-height: 1.6;
+  }
+
+  /* Mini Posts Style */
+  .post-list-mini {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .post-item-mini {
+    display: flex;
+    align-items: baseline;
+    gap: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .post-date-mini {
+    font-family: monospace;
+    color: var(--text-light);
+    font-size: 0.9rem;
+    flex-shrink: 0;
+  }
+
+  .post-title-mini {
+    font-size: 1.05rem;
+    margin: 0;
+  }
+
+  .post-title-mini a {
+    text-decoration: none;
+    color: var(--primary);
+    transition: color 0.2s;
+  }
+
+  .post-title-mini a:hover {
+    color: var(--accent);
+  }
+
+  .view-all {
+    display: inline-block;
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 900px) {
+    .resume-wrapper {
+      grid-template-columns: 1fr;
+      padding: 2rem 1rem;
+    }
+    .resume-sidebar {
+      position: static;
+    }
+    .timeline-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+  }
+</style>

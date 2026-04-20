@@ -1,0 +1,59 @@
+---
+layout: default
+---
+
+<div class="project-page-wrapper wrapper">
+  <h1>{{ page.title }}</h1>
+  <p>这里是我的一些项目，点击查看详情。</p>
+  {{ content }}
+</div>
+
+<style>
+  .project-page-wrapper {
+    padding-top: 2rem;
+    padding-bottom: 4rem;
+    background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
+  }
+
+  .project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+    text-decoration: none;
+  }
+
+  .project-card {
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    overflow: hidden;
+    padding: 1.5rem;
+    transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+    text-decoration: none;
+    color: inherit;
+    border-top: 4px solid;
+  }
+
+  .project-card:nth-child(6n+1) { border-color: #3498db; }
+  .project-card:nth-child(6n+2) { border-color: #e74c3c; }
+  .project-card:nth-child(6n+3) { border-color: #2ecc71; }
+  .project-card:nth-child(6n+4) { border-color: #f1c40f; }
+  .project-card:nth-child(6n+5) { border-color: #9b59b6; }
+  .project-card:nth-child(6n+6) { border-color: #1abc9c; }
+
+  .project-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    background-color: #f8f9fa;
+  }
+
+  .project-card h2 {
+    margin-top: 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+    border-bottom: 2px solid #ecf0f1;
+    padding-bottom: 0.75rem;
+    margin-bottom: 1rem;
+  }
+</style>

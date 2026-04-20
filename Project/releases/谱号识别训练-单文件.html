@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>谱号识别训练</title>
+    <style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #333;
+}
+
+.container {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 600px;
+    text-align: center;
+}
+
+h1 {
+    color: #2c3e50;
+    margin-bottom: 30px;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+/* 谱号显示区域 */
+.stave-container {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 30px;
+    border: 2px dashed #dee2e6;
+    min-height: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 选择题区域 */
+.options-container {
+    margin-bottom: 20px;
+}
+
+.question {
+    font-size: 18px;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 15px;
+}
+
+.options {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.option-btn {
+    flex: 1;
+    min-width: 0;
+}
+
+.option-btn {
+    background: #e9ecef;
+    border: none;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #495057;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+}
+
+.option-btn:hover {
+    background: #dee2e6;
+    transform: translateY(-2px);
+}
+
+.option-btn:active {
+    transform: translateY(0);
+}
+
+/* 错误反馈状态 */
+.option-btn.error {
+    background: #f8d7da !important;
+    color: #721c24 !important;
+    border-color: #f5c6cb !important;
+}
+
+.option-btn.disabled {
+    background: #e9ecef !important;
+    color: #6c757d !important;
+    cursor: not-allowed !important;
+    opacity: 0.6;
+}
+
+/* 反馈区域 */
+.feedback {
+    min-height: 40px;
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.feedback.correct {
+    color: #28a745;
+}
+
+.feedback.wrong {
+    color: #dc3545;
+}
+
+/* 控制按钮 */
+.controls {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.btn:hover {
+    background: #0056b3;
+}
+
+.btn.secondary {
+    background: #6c757d;
+}
+
+.btn.secondary:hover {
+    background: #545b62;
+}
+
+/* 进度条显示 */
+.progress-container {
+    margin-bottom: 20px;
+}
+
+/* 隐藏进度条 */
+.progress-container.hidden {
+    display: none;
+}
+
+.progress-text {
+    font-size: 16px;
+    color: #6c757d;
+    font-weight: 600;
+    margin-bottom: 8px;
+    text-align: left;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 20px;
+    background: #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* 进度条颜色类 */
+.progress-bar.red {
+    background: linear-gradient(90deg, #dc3545, #c82333);
+}
+
+.progress-bar.orange {
+    background: linear-gradient(90deg, #fd7e14, #e8590c);
+}
+
+.progress-bar.green {
+    background: linear-gradient(90deg, #28a745, #20c997);
+}
+
+.progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+    .container {
+        padding: 20px;
+        width: 95%;
+    }
+    
+    h1 {
+        font-size: 24px;
+    }
+    
+    .options {
+        grid-template-columns: 1fr;
+    }
+    
+    .controls {
+        flex-direction: column;
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>这是什么谱号？</h1>
+        
+        <!-- 谱号显示区域 -->
+        <div class="stave-container">
+            <div id="stave"></div>
+        </div>
+
+        <!-- 选择题区域 -->
+        <div class="options-container">
+            <div class="options" id="options"></div>
+        </div>
+
+        <!-- 反馈区域 -->
+        <div class="feedback" id="feedback"></div>
+
+        <!-- 进度条显示 -->
+        <div class="progress-container">
+            <div class="progress-text" id="progress-text">进度: 0/0</div>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入VexFlow库 - 用于音乐记谱的JavaScript库 -->
+    <script src="https://unpkg.com/vexflow@4.0.1/build/cjs/vexflow-debug.js"></script>
+    <script>
+// 谱号数据配置
+const CLEF_TYPES = [
+    { type: 'treble', name: '高音谱号', symbol: 'G' },
+    { type: 'bass', name: '低音谱号', symbol: 'F' },
+    { type: 'alto', name: '中音谱号', symbol: 'C' },
+
+];
+
+// 游戏状态
+let gameState = {
+    currentClef: null,
+    score: 0,
+    total: 0
+};
+
+// 初始化
+document.addEventListener('DOMContentLoaded', () => {
+    loadNextQuestion();
+});
+
+// 核心功能：渲染谱号
+function renderClef(clefType) {
+    const container = document.getElementById('stave');
+    
+    // 清除之前的渲染
+    container.innerHTML = '';
+    
+    // 初始化 VexFlow 原生 API
+    const renderer = new Vex.Flow.Renderer(container, Vex.Flow.Renderer.Backends.SVG);
+    renderer.resize(200, 200);
+    
+    const context = renderer.getContext();
+    context.scale(4, 3); // 放大 2 倍
+
+    // 创建五线谱，设置行间距
+    const stave = new Vex.Flow.Stave(1, -30, 50, {
+    spacing_between_lines_px: 10, // 默认大约 10px，调整为20px以增大行间距
+});
+    
+    // 添加谱号
+    const clef = stave.addClef(clefType);
+    
+    // 渲染
+    stave.setContext(context).draw();
+}
+
+// 生成选择题选项
+function generateOptions(correctClef) {
+    const optionsContainer = document.getElementById('options');
+    optionsContainer.innerHTML = '';
+    
+    // 创建选项数组（包含正确答案和干扰项）
+    let allOptions = [correctClef];
+    
+    // 添加干扰项
+    const wrongOptions = CLEF_TYPES.filter(c => c.type !== correctClef.type);
+    const selectedWrong = wrongOptions
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3);
+    
+    allOptions = allOptions.concat(selectedWrong);
+    
+    // 按自定义顺序排序：低音谱号、中音谱号、高音谱号
+    const orderMap = {
+        '低音谱号': 1,
+        '中音谱号': 2,
+        '高音谱号': 3
+    };
+    
+    allOptions.sort((a, b) => orderMap[a.name] - orderMap[b.name]);
+    
+    // 创建按钮
+    allOptions.forEach(option => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.textContent = option.name;
+        btn.onclick = () => checkAnswer(option);
+        optionsContainer.appendChild(btn);
+    });
+}
+
+// 检查答案
+function checkAnswer(selectedOption) {
+    const options = document.querySelectorAll('.option-btn');
+    
+    // 判断对错
+    if (selectedOption.type === gameState.currentClef.type) {
+        // 正确反馈：按钮变绿色
+        const selectedBtn = Array.from(options).find(btn => btn.textContent === selectedOption.name);
+        selectedBtn.style.background = '#d4edda';
+        selectedBtn.style.color = '#155724';
+        
+        // 禁用所有选项
+        options.forEach(btn => {
+            btn.disabled = true;
+            if (btn.textContent === gameState.currentClef.name) {
+                btn.style.background = '#d4edda';
+                btn.style.color = '#155724';
+            }
+        });
+        
+        gameState.score++;
+        gameState.total++;
+        
+        // 正确后直接进入下一题
+        setTimeout(() => {
+            loadNextQuestion();
+        }, 500);
+    } else {
+        // 错误反馈：按钮变红色，0.2秒后变灰色
+        const selectedBtn = Array.from(options).find(btn => btn.textContent === selectedOption.name);
+        selectedBtn.style.background = '#f8d7da';
+        selectedBtn.style.color = '#721c24';
+        
+        // 0.2秒后变为灰色禁用状态
+        setTimeout(() => {
+            selectedBtn.style.background = '#e9ecef';
+            selectedBtn.style.color = '#6c757d';
+            selectedBtn.disabled = true; // 禁用错误选项
+        }, 200);
+        
+        gameState.total++;
+        updateScore();
+    }
+}
+
+// 加载下一题
+function loadNextQuestion() {
+    // 重置界面
+    document.getElementById('feedback').textContent = '';
+    
+    // 随机选择谱号
+    const randomIndex = Math.floor(Math.random() * CLEF_TYPES.length);
+    gameState.currentClef = CLEF_TYPES[randomIndex];
+    
+    // 渲染谱号
+    renderClef(gameState.currentClef.type);
+    
+    // 生成选项
+    generateOptions(gameState.currentClef);
+    
+    // 更新分数显示
+    updateScore();
+}
+
+// 更新分数显示
+function updateScore() {
+    const accuracy = gameState.total > 0 ? Math.round((gameState.score / gameState.total) * 100) : 0;
+    
+    // 控制进度条显示/隐藏
+    const progressContainer = document.querySelector('.progress-container');
+    if (gameState.total <= 5) {
+        progressContainer.classList.add('hidden');
+    } else {
+        progressContainer.classList.remove('hidden');
+    }
+    
+    // 更新进度条
+    const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+    
+    progressBar.style.width = `${accuracy}%`;
+    progressText.textContent = `进度: ${gameState.score}/${gameState.total}`;
+    
+    // 根据正确率设置进度条颜色
+    progressBar.className = 'progress-bar'; // 重置类名
+    
+    if (accuracy <= 70) {
+        progressBar.classList.add('red');
+    } else if (accuracy <= 90) {
+        progressBar.classList.add('orange');
+    } else {
+        progressBar.classList.add('green');
+    }
+    
+    // 只有答题超过5题后才检查是否通过
+    if (gameState.total > 5 && accuracy > 90) {
+        document.getElementById('feedback').textContent = '恭喜！正确率超过90%，已通过！';
+        document.getElementById('feedback').style.color = '#28a745';
+    }
+}
+    </script>
+</body>
+</html>

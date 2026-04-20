@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音高识别训练 - 完全单文件版</title>
+    <style>
+        * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #333;
+}
+
+.container {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 600px;
+    text-align: center;
+}
+
+h1 {
+    color: #2c3e50;
+    margin-bottom: 30px;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+/* 五线谱显示区域 */
+.stave-container {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 30px;
+    border: 2px solid #dee2e6;
+    min-height: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 选择题区域 */
+.options-container {
+    margin-bottom: 20px;
+}
+
+.question {
+    font-size: 18px;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 15px;
+}
+
+.options {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.option-btn {
+    flex: 1;
+    min-width: 0;
+}
+
+.option-btn {
+    background: #e9ecef;
+    border: none;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #495057;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+}
+
+.option-btn:hover {
+    background: #dee2e6;
+    transform: translateY(-2px);
+}
+
+.option-btn:active {
+    transform: translateY(0);
+}
+
+/* 错误反馈状态 */
+.option-btn.error {
+    background: #f8d7da !important;
+    color: #721c24 !important;
+    border-color: #f5c6cb !important;
+}
+
+.option-btn.disabled {
+    background: #e9ecef !important;
+    color: #6c757d !important;
+    cursor: not-allowed !important;
+    opacity: 0.6;
+}
+
+/* 反馈区域 */
+.feedback {
+    min-height: 40px;
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.feedback.correct {
+    color: #28a745;
+}
+
+.feedback.wrong {
+    color: #dc3545;
+}
+
+/* 控制按钮 */
+.controls {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.btn:hover {
+    background: #0056b3;
+}
+
+.btn.secondary {
+    background: #6c757d;
+}
+
+.btn.secondary:hover {
+    background: #545b62;
+}
+
+/* 进度条显示 */
+.progress-container {
+    margin-bottom: 20px;
+}
+
+/* 隐藏进度条 */
+.progress-container.hidden {
+    display: none;
+}
+
+.progress-text {
+    font-size: 16px;
+    color: #6c757d;
+    font-weight: 600;
+    margin-bottom: 8px;
+    text-align: left;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 20px;
+    background: #e9ecef;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* 进度条颜色类 */
+.progress-bar.red {
+    background: linear-gradient(90deg, #dc3545, #c82333);
+}
+
+.progress-bar.orange {
+    background: linear-gradient(90deg, #fd7e14, #e8590c);
+}
+
+.progress-bar.green {
+    background: linear-gradient(90deg, #28a745, #20c997);
+}
+
+/* 等级显示样式 */
+.level-container {
+    margin-bottom: 20px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border: 1px solid #dee2e6;
+}
+
+.level-info {
+    font-size: 18px;
+    font-weight: 600;
+    color: #495057;
+}
+
+.level-info span:first-child {
+    color: #6c757d;
+}
+
+.level-info span:last-child {
+    color: #007bff;
+    font-size: 24px;
+    margin-left: 5px;
+}
+
+/* 未解锁按钮样式 */
+.option-btn.locked {
+    background: #f8f9fa !important;
+    color: #adb5bd !important;
+    cursor: not-allowed !important;
+    border: 1px solid #dee2e6 !important;
+    opacity: 0.7;
+}
+
+.option-btn.locked:hover {
+    transform: none !important;
+    background: #f8f9fa !important;
+}
+
+.progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+    .container {
+        padding: 20px;
+        width: 95%;
+    }
+    
+    h1 {
+        font-size: 24px;
+    }
+    
+    .options {
+        grid-template-columns: 1fr;
+    }
+    
+    .controls {
+        flex-direction: column;
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>这是什么音高？</h1>
+        
+        <!-- 等级显示区域 -->
+        <div class="level-container">
+            <div class="level-info">
+                <span>当前等级: </span>
+                <span id="current-level">1</span>
+            </div>
+        </div>
+        
+        <!-- 五线谱显示区域 -->
+        <div class="stave-container">
+            <div id="stave"></div>
+        </div>
+
+        <!-- 选择题区域 -->
+        <div class="options-container">
+            <div class="options" id="options"></div>
+        </div>
+
+        <!-- 反馈区域 -->
+        <div class="feedback" id="feedback"></div>
+
+        <!-- 进度条显示 -->
+        <div class="progress-container">
+            <div class="progress-text" id="progress-text">进度: 0/0</div>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 引入VexFlow库 - 用于音乐记谱的JavaScript库 -->
+    <script src="https://unpkg.com/vexflow@4.0.1/build/cjs/vexflow-debug.js"></script>
+    
+    <script>
+        // 音频数据（base64编码）
+        const AUDIO_DATA = {
+            'C': 'data:audio/mp3;base64,',
+            'D': 'data:audio/mp3;base64,',
+            'E': 'data:audio/mp3;base64,',
+            'F': 'data:audio/mp3;base64,',
+            'G': 'data:audio/mp3;base64,',
+            'A': 'data:audio/mp3;base64,',
+            'B': 'data:audio/mp3;base64,'
+        };
+
+        // 音高数据配置（包含base64音频）
+        const PITCH_TYPES = [
+            { note: 'C', name: 'C', vexflow: 'c/4', audio: AUDIO_DATA['C'] },
+            { note: 'D', name: 'D', vexflow: 'd/4', audio: AUDIO_DATA['D'] },
+            { note: 'E', name: 'E', vexflow: 'e/4', audio: AUDIO_DATA['E'] },
+            { note: 'F', name: 'F', vexflow: 'f/4', audio: AUDIO_DATA['F'] },
+            { note: 'G', name: 'G', vexflow: 'g/4', audio: AUDIO_DATA['G'] },
+            { note: 'A', name: 'A', vexflow: 'a/4', audio: AUDIO_DATA['A'] },
+            { note: 'B', name: 'B', vexflow: 'b/4', audio: AUDIO_DATA['B'] }
+        ];
+
+        // 游戏状态
+        let gameState = {
+            currentPitch: null,
+            score: 0,
+            total: 0,
+            currentLevel: 1,  // 当前等级，从1开始
+            unlockedNotes: ['C', 'G'],  // 已解锁的音符（等级1固定为C和G）
+            allNotes: ['C', 'D', 'E', 'F', 'G', 'A', 'B'],  // 所有音符
+            noteFrequency: {  // 音符出现频率统计（不清零）
+                'C': 0,
+                'D': 0,
+                'E': 0,
+                'F': 0,
+                'G': 0,
+                'A': 0,
+                'B': 0
+            },
+            consecutiveErrors: 0,  // 连续错误次数
+            maxConsecutiveErrors: 3,  // 最大允许连续错误次数
+            lastLevelDownTime: 0  // 上次降级时间，用于冷却
+        };
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            loadNextQuestion();
+        });
+
+        // 核心功能：渲染音符
+        function renderPitch(pitchData) {
+            const container = document.getElementById('stave');
+            
+            // 清除之前的渲染
+            container.innerHTML = '';
+            
+            // 初始化 VexFlow 原生 API
+            const renderer = new Vex.Flow.Renderer(container, Vex.Flow.Renderer.Backends.SVG);
+            renderer.resize(300, 200);
+            
+            const context = renderer.getContext();
+            context.scale(2, 2); // 放大 2 倍
+
+            // 创建五线谱，设置行间距
+            const stave = new Vex.Flow.Stave(1, -30, 280, {
+                spacing_between_lines_px: 12, // 增大行间距以便显示音符
+            });
+
+            // 添加高音谱号
+            stave.addClef('treble');
+            
+            // 创建音符
+            const note = new Vex.Flow.StaveNote({
+                clef: 'treble',
+                keys: [pitchData.vexflow],
+                duration: 'q' // 四分音符
+            });
+            
+            // 创建音符组
+            const voice = new Vex.Flow.Voice({
+                num_beats: 1,
+                beat_value: 4
+            });
+            voice.addTickables([note]);
+            
+            // 创建格式化器
+            const formatter = new Vex.Flow.Formatter();
+            formatter.joinVoices([voice]).format([voice], 280);
+            
+            // 渲染
+            stave.setContext(context).draw();
+            voice.draw(context, stave);
+        }
+
+        // 生成选择题选项
+        function generateOptions(correctPitch) {
+            const optionsContainer = document.getElementById('options');
+            optionsContainer.innerHTML = '';
+            
+            // 创建所有7个音符的按钮
+            PITCH_TYPES.forEach(pitch => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = pitch.name;
+                
+                // 检查是否已解锁
+                if (gameState.unlockedNotes.includes(pitch.note)) {
+                    // 已解锁：正常交互
+                    btn.onclick = () => checkAnswer(pitch);
+                    btn.disabled = false;
+                    btn.classList.remove('locked');
+                } else {
+                    // 未解锁：灰色禁用状态
+                    btn.disabled = true;
+                    btn.classList.add('locked');
+                }
+                
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        // 播放音频
+        function playAudio(audioData) {
+            const audio = new Audio(audioData);
+            audio.play().catch(e => console.log('音频播放失败:', e));
+        }
+
+        // 智能选择算法：加权随机选择
+        function getNextPitchWeighted() {
+            const availablePitches = PITCH_TYPES.filter(p => 
+                gameState.unlockedNotes.includes(p.note)
+            );
+            
+            if (availablePitches.length === 0) return null;
+            
+            // 计算权重：出现次数越少，权重越高
+            const weights = availablePitches.map(pitch => {
+                const freq = gameState.noteFrequency[pitch.note];
+                return 1 / (freq + 1);  // +1避免除以0，新音符（freq=0）权重为1
+            });
+            
+            // 加权随机选择
+            const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+            let random = Math.random() * totalWeight;
+            
+            for (let i = 0; i < availablePitches.length; i++) {
+                random -= weights[i];
+                if (random <= 0) {
+                    return availablePitches[i];
+                }
+            }
+            
+            return availablePitches[availablePitches.length - 1];
+        }
+
+        // 降级函数
+        function levelDown() {
+            if (gameState.currentLevel > 1) {  // 不能降到等级1以下
+                gameState.currentLevel--;
+                
+                // 锁定最近解锁的音符（但保留频率统计）
+                if (gameState.unlockedNotes.length > 2) {  // 等级1有2个音符
+                    // 移除最近解锁的音符（最后一个）
+                    const lockedNote = gameState.unlockedNotes.pop();
+                    console.log(`降级：锁定音符 ${lockedNote}`);
+                }
+                
+                // 降级时清零进度
+                gameState.score = 0;
+                gameState.total = 0;
+                gameState.consecutiveErrors = 0;  // 重置连续错误计数
+                
+                // 记录降级时间，用于冷却
+                gameState.lastLevelDownTime = Date.now();
+                
+                updateLevelDisplay();
+                loadNextQuestion();
+                
+                // 显示降级提示
+                document.getElementById('feedback').textContent = '需要巩固基础，已降低难度';
+                document.getElementById('feedback').style.color = '#dc3545';
+            }
+        }
+
+        // 检查是否需要降级
+        function checkLevelDown() {
+            const accuracy = gameState.total > 0 ? Math.round((gameState.score / gameState.total) * 100) : 0;
+            
+            // 条件1：正确率低于60%且答题数量≥5
+            const condition1 = gameState.total >= 5 && accuracy < 60;
+            
+            // 条件2：连续错误次数≥3
+            const condition2 = gameState.consecutiveErrors >= gameState.maxConsecutiveErrors;
+            
+            // 条件3：避免频繁降级（冷却时间30秒）
+            const lastLevelDownTime = gameState.lastLevelDownTime || 0;
+            const currentTime = Date.now();
+            const condition3 = currentTime - lastLevelDownTime > 30000; // 30秒冷却
+            
+            return (condition1 || condition2) && condition3;
+        }
+
+        // 等级升级（随机解锁音符）
+        function levelUp() {
+            if (gameState.currentLevel < 6) {  // 最多6个等级
+                gameState.currentLevel++;
+                
+                // 从尚未解锁的音符中随机选择一个
+                const lockedNotes = gameState.allNotes.filter(note => 
+                    !gameState.unlockedNotes.includes(note)
+                );
+                
+                if (lockedNotes.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * lockedNotes.length);
+                    const newNote = lockedNotes[randomIndex];
+                    gameState.unlockedNotes.push(newNote);
+                    gameState.unlockedNotes.sort(); // 保持排序
+                    
+                    // 新解锁的音符初始频率为0（已经默认是0）
+                    // 这样在加权随机选择中会有很高的权重
+                }
+                
+                // 升级时只清零进度，不清零频率统计
+                gameState.score = 0;
+                gameState.total = 0;
+                gameState.consecutiveErrors = 0;  // 重置连续错误计数
+                // 注意：noteFrequency不清零！
+                
+                updateLevelDisplay();
+                loadNextQuestion();
+            }
+        }
+
+        // 更新等级显示
+        function updateLevelDisplay() {
+            const levelElement = document.getElementById('current-level');
+            if (levelElement) {
+                levelElement.textContent = gameState.currentLevel;
+            }
+        }
+
+        // 检查答案
+        function checkAnswer(selectedOption) {
+            const options = document.querySelectorAll('.option-btn');
+            
+            // 判断对错
+            if (selectedOption.note === gameState.currentPitch.note) {
+                // 播放正确音频
+                playAudio(gameState.currentPitch.audio);
+                
+                // 正确反馈：按钮变绿色
+                const selectedBtn = Array.from(options).find(btn => btn.textContent === selectedOption.name);
+                selectedBtn.style.background = '#d4edda';
+                selectedBtn.style.color = '#155724';
+                
+                // 禁用所有选项
+                options.forEach(btn => {
+                    btn.disabled = true;
+                    if (btn.textContent === gameState.currentPitch.name) {
+                        btn.style.background = '#d4edda';
+                        btn.style.color = '#155724';
+                    }
+                });
+                
+                gameState.score++;
+                gameState.total++;
+                
+                // 正确：重置连续错误计数
+                gameState.consecutiveErrors = 0;
+                
+                // 正确后直接进入下一题
+                setTimeout(() => {
+                    loadNextQuestion();
+                }, 500);
+            } else {
+                // 错误反馈：按钮变红色，0.2秒后变灰色
+                const selectedBtn = Array.from(options).find(btn => btn.textContent === selectedOption.name);
+                selectedBtn.style.background = '#f8d7da';
+                selectedBtn.style.color = '#721c24';
+                
+                // 0.2秒后变为灰色禁用状态
+                setTimeout(() => {
+                    selectedBtn.style.background = '#e9ecef';
+                    selectedBtn.style.color = '#6c757d';
+                    selectedBtn.disabled = true; // 禁用错误选项
+                }, 200);
+                
+                gameState.total++;
+                
+                // 错误：增加连续错误计数
+                gameState.consecutiveErrors++;
+                
+                // 检查是否需要降级
+                if (checkLevelDown()) {
+                    levelDown();
+                } else {
+                    updateScore();
+                }
+            }
+        }
+
+        // 加载下一题
+        function loadNextQuestion() {
+            // 重置界面
+            document.getElementById('feedback').textContent = '';
+            
+            // 使用智能调度算法选择下一个音符
+            gameState.currentPitch = getNextPitchWeighted();
+            
+            if (gameState.currentPitch) {
+                // 更新音符出现频率
+                gameState.noteFrequency[gameState.currentPitch.note]++;
+                
+                // 渲染音符
+                renderPitch(gameState.currentPitch);
+                
+                // 生成选项（所有7个按钮，未解锁的灰色禁用）
+                generateOptions(gameState.currentPitch);
+                
+                // 更新分数显示
+                updateScore();
+            }
+        }
+
+        // 更新分数显示
+        function updateScore() {
+            const accuracy = gameState.total > 0 ? Math.round((gameState.score / gameState.total) * 100) : 0;
+            
+            // 控制进度条显示/隐藏
+            // const progressContainer = document.querySelector('.progress-container');
+            // if (gameState.total <= 5) {
+            //     progressContainer.classList.add('hidden');
+            // } else {
+            //     progressContainer.classList.remove('hidden');
+            // }
+            
+            // 更新进度条
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            
+            progressBar.style.width = `${accuracy}%`;
+            progressText.textContent = `进度: ${gameState.score}/${gameState.total}`;
+            
+            // 根据正确率设置进度条颜色
+            progressBar.className = 'progress-bar'; // 重置类名
+            
+            if (accuracy <= 70) {
+                progressBar.classList.add('red');
+            } else if (accuracy <= 90) {
+                progressBar.classList.add('orange');
+            } else {
+                progressBar.classList.add('green');
+            }
+            
+            // 检查是否需要降级（在升级检查之前）
+            if (checkLevelDown()) {
+                levelDown();
+            }
+            // 只有答题超过5题后才检查是否通过
+            else if (gameState.total > 5 && accuracy > 90) {
+                // 检查是否满足升级条件（正确率>90%且答题数量≥5）
+                if (gameState.total >= 5) {
+                    levelUp();
+                } else {
+                    document.getElementById('feedback').textContent = '恭喜！正确率超过90%，已通过！';
+                    document.getElementById('feedback').style.color = '#28a745';
+                }
+            }
+        }
+    </script>
+</body>
+</html>

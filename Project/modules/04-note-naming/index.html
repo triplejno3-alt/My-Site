@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>T4 - 音名唱名转换训练</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/vexflow@4.0.1/build/cjs/vexflow-debug.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- 设置按钮 -->
+        <div class="header-buttons">
+            <button id="analytics-btn" class="icon-btn" aria-label="数据分析">📊</button>
+            <button id="settings-btn" class="icon-btn" aria-label="设置">⚙️</button>
+        </div>
+
+        <header class="header">
+            <h1 class="title">音名唱名转换训练</h1>
+            <p class="subtitle">将音名 (CDEFGAB) 转换为数字 (1234567)</p>
+        </header>
+
+        <!-- 数据分析页面 Overlay -->
+        <div id="analytics-overlay" class="overlay hidden">
+            <div class="overlay-content analytics-content">
+                <div class="overlay-header">
+                    <h2>学习数据分析</h2>
+                    <button id="close-analytics" class="close-btn">&times;</button>
+                </div>
+                
+                <div class="analytics-body">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-label">总答题数</div>
+                            <div id="total-answers" class="stat-value">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">平均准确率</div>
+                            <div id="avg-accuracy" class="stat-value">-</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">当前等级</div>
+                            <div id="current-level-stat" class="stat-value">1</div>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3>数据可视化</h3>
+                            <div class="chart-tabs">
+                                <button class="chart-tab active" data-target="mode-chart">模式表现</button>
+                                <button class="chart-tab" data-target="note-chart">音符掌握</button>
+                                <button class="chart-tab" data-target="trend-chart">准确率趋势</button>
+                            </div>
+                        </div>
+                        
+                        <div id="mode-chart" class="chart-view active">
+                            <!-- 模式准确率对比 -->
+                        </div>
+                        <div id="note-chart" class="chart-view">
+                            <!-- 音符掌握情况 -->
+                        </div>
+                        <div id="trend-chart" class="chart-view">
+                            <!-- 准确率趋势 -->
+                        </div>
+                    </div>
+
+                    <div class="history-list">
+                        <h3>最近练习</h3>
+                        <div id="history-items" class="history-items">
+                            <!-- 动态生成 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 设置页面 Overlay -->
+        <div id="settings-overlay" class="overlay hidden">
+            <div class="overlay-content settings-content">
+                <div class="settings-header">
+                    <h2>训练设置</h2>
+                    <button id="close-settings" class="close-btn">&times;</button>
+                </div>
+                
+                <!-- 设置选项组 -->
+                <div class="settings-body">
+                    <!-- 模式选择 -->
+                    <div class="setting-group">
+                        <div class="setting-label">训练模式</div>
+                        <div class="mode-buttons">
+                            <button class="mode-btn active" data-mode="noteToNumber">音名 → 数字</button>
+                            <button class="mode-btn" data-mode="noteToSolfege">音名 → 唱名</button>
+                            <button class="mode-btn" data-mode="numberToNote">数字 → 音名</button>
+                            <button class="mode-btn" data-mode="mixed">混合模式</button>
+                        </div>
+                    </div>
+
+                    <!-- 等级选择 -->
+                    <div class="setting-group">
+                        <div class="setting-label">难度等级</div>
+                        <select id="level-select" class="level-select">
+                            <option value="1">1. 基础训练 (C, D, E)</option>
+                            <option value="2">2. 扩展训练 (C - G)</option>
+                            <option value="3">3. 完整训练 (C - B)</option>
+                            <option value="4">4. 综合测试 (全范围)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 等级显示区域 -->
+        <div class="level-container">
+            <div class="level-info">
+                <span>当前等级: </span>
+                <span id="current-level" class="current-level">1</span>
+                <span id="level-type" class="level-type">(基础训练)</span>
+            </div>
+        </div>
+        
+        <!-- 动态显示区域 -->
+        <div class="display-area">
+            <!-- 当前题目 -->
+            <div class="question-container">
+                <div id="question-main" class="question-main">C</div>
+                <div id="question-sub" class="question-sub">C = 1 = Do</div>
+            </div>
+
+            <!-- 五线谱显示区域 -->
+            <div class="stave-container">
+                <div id="stave" class="stave"></div>
+            </div>
+        </div>
+
+        <!-- 选择题区域 -->
+        <div class="options-container">
+            <div class="options" id="options">
+                <!-- 选项按钮将由JS动态生成 -->
+            </div>
+        </div>
+
+        <!-- 反馈区域 -->
+        <div id="feedback" class="feedback"></div>
+
+        <!-- 进度条显示 -->
+        <div class="progress-container hidden">
+            <div id="progress-text" class="progress-text">进度: 0/0</div>
+            <div class="progress-bar-container">
+                <div id="progress-bar" class="progress-bar red" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

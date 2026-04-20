@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>T5 - 视奏练习</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/vexflow@4.0.1/build/cjs/vexflow-debug.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <header class="header">
+            <h1 class="title">视奏练习</h1>
+            <p class="subtitle">限时识谱挑战</p>
+            
+            <!-- 进度条 -->
+            <div id="progress-container" class="progress-container hidden">
+                <div class="progress-info">
+                    <span class="progress-label">正确率</span>
+                    <span id="accuracy-text" class="progress-value">0%</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div id="progress-bar-fill" class="progress-bar-fill" style="width: 0%"></div>
+                </div>
+                <div id="pass-message" class="pass-message hidden">恭喜！正确率超过90%，已通过！</div>
+            </div>
+        </header>
+
+        <!-- 设置按钮 -->
+        <div class="header-buttons">
+            <button id="analytics-btn" class="icon-btn" aria-label="数据分析">📊</button>
+            <button id="settings-btn" class="icon-btn" aria-label="设置">⚙️</button>
+        </div>
+
+        <!-- 数据分析页面 Overlay -->
+        <div id="analytics-overlay" class="overlay hidden">
+            <div class="overlay-content analytics-content">
+                <div class="overlay-header">
+                    <h2>学习数据分析</h2>
+                    <button id="close-analytics" class="close-btn">&times;</button>
+                </div>
+                
+                <div class="analytics-body">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-label">总练习次数</div>
+                            <div id="total-sessions" class="stat-value">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">最佳平均用时</div>
+                            <div id="best-avg-time" class="stat-value">-</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">平均准确率</div>
+                            <div id="avg-accuracy" class="stat-value">-</div>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3>数据可视化</h3>
+                            <div class="chart-tabs">
+                                <button class="chart-tab active" data-target="trend-chart">速度趋势</button>
+                                <button class="chart-tab" data-target="accuracy-chart">准确率趋势</button>
+                                <button class="chart-tab" data-target="scatter-chart">速度-准确率</button>
+                            </div>
+                        </div>
+                        
+                        <div id="trend-chart" class="chart-view active">
+                            <!-- 动态生成的柱状图 -->
+                        </div>
+                        <div id="accuracy-chart" class="chart-view">
+                            <!-- 动态生成的折线图 -->
+                        </div>
+                        <div id="scatter-chart" class="chart-view scatter-chart">
+                            <!-- 动态生成的散点图 -->
+                        </div>
+                    </div>
+
+                    <div class="history-list">
+                        <h3>最近记录</h3>
+                        <div id="history-items" class="history-items">
+                            <!-- 动态生成的历史记录 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 设置页面 Overlay -->
+        <!-- 设置页面 Overlay -->
+        <div id="settings-overlay" class="overlay hidden">
+            <div class="overlay-content settings-content">
+                <div class="overlay-header">
+                    <h2>训练设置</h2>
+                    <button id="close-settings" class="close-btn">&times;</button>
+                </div>
+                
+                <div class="settings-body">
+                    <!-- 乐句长度 -->
+                    <div class="setting-group">
+                        <div class="setting-label">乐句长度 (音符数量)</div>
+                        <select id="length-select" class="level-select">
+                            <option value="4">4个音符</option>
+                            <option value="6">6个音符</option>
+                            <option value="8" selected>8个音符</option>
+                            <option value="12">12个音符</option>
+                        </select>
+                    </div>
+
+                    <!-- 难度范围 -->
+                    <div class="setting-group">
+                        <div class="setting-label">音域范围</div>
+                        <select id="range-select" class="level-select">
+                            <option value="C4-G4">C4 - G4 (基础)</option>
+                            <option value="C4-C5" selected>C4 - C5 (进阶)</option>
+                            <option value="A3-E5">A3 - E5 (完整)</option>
+                        </select>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- 游戏区域 -->
+        <div class="game-area">
+            <!-- 五线谱显示 -->
+            <div class="stave-container">
+                <div id="stave" class="stave"></div>
+                <button id="play-audio-btn" class="play-audio-btn hidden" aria-label="播放乐句">
+                    🔊 播放乐句
+                </button>
+            </div>
+
+            <!-- 用户输入状态 -->
+            <div class="input-status">
+                <div id="input-sequence" class="input-sequence">
+                    <!-- 动态生成的输入槽位 -->
+                </div>
+            </div>
+
+            <!-- 键盘输入区域 -->
+            <div class="keyboard-container">
+                <div class="piano-keyboard">
+                    <div class="piano-key white" data-note="C"><span>C</span></div>
+                    <div class="piano-key black disabled"></div>
+                    <div class="piano-key white" data-note="D"><span>D</span></div>
+                    <div class="piano-key black disabled"></div>
+                    <div class="piano-key white" data-note="E"><span>E</span></div>
+                    <div class="piano-key white" data-note="F"><span>F</span></div>
+                    <div class="piano-key black disabled"></div>
+                    <div class="piano-key white" data-note="G"><span>G</span></div>
+                    <div class="piano-key black disabled"></div>
+                    <div class="piano-key white" data-note="A"><span>A</span></div>
+                    <div class="piano-key black disabled"></div>
+                    <div class="piano-key white" data-note="B"><span>B</span></div>
+                </div>
+                <div class="controls-row">
+                    <button id="backspace-btn" class="control-btn" aria-label="回退">⌫</button>
+                    <button id="start-btn" class="action-btn">开始挑战</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 结果反馈 -->
+        <div id="result-overlay" class="result-overlay hidden">
+            <div class="result-content">
+                <h2 id="result-title">挑战完成!</h2>
+                <div class="result-score">
+                    <span id="score-text">8/8</span>
+                    <span class="score-label">正确</span>
+                </div>
+                <p id="result-time">耗时: 12秒</p>
+                <div class="result-actions">
+                    <button id="retry-btn" class="action-btn">再来一次</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

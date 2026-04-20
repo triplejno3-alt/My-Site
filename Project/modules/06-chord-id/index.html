@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>T6 - 节奏练习</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/vexflow@4.0.1/build/cjs/vexflow-debug.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部按钮 -->
+        <div class="header-buttons">
+            <button id="analytics-btn" class="icon-btn" title="统计分析">📊</button>
+            <button id="settings-btn" class="icon-btn" title="设置">⚙️</button>
+        </div>
+
+        <header class="header">
+            <h1 class="title">节奏同步练习</h1>
+            <p class="subtitle">根据节拍器提示，准确敲击出所示节奏</p>
+        </header>
+
+        <!-- 核心显示区域 -->
+        <div class="display-area">
+            <!-- 五线谱显示 -->
+            <div id="stave-container" class="stave-container">
+                <div id="stave"></div>
+            </div>
+
+            <!-- 时间轴/反馈轴 -->
+            <div id="timeline-container" class="timeline-container">
+                <div id="playhead" class="playhead hidden"></div>
+                <div id="target-markers" class="markers-layer"></div>
+                <div id="user-markers" class="markers-layer"></div>
+            </div>
+
+            <!-- 节拍器状态 -->
+            <div class="metronome-status">
+                <div id="beat-indicator" class="beat-indicator">
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+                <div id="bpm-display">80 BPM</div>
+            </div>
+        </div>
+
+        <!-- 交互区域 -->
+        <div class="action-area">
+            <div id="feedback-text" class="feedback-text">准备好了吗？</div>
+            
+            <div class="main-buttons">
+                <button id="start-btn" class="primary-btn">开始挑战</button>
+                <button id="tap-btn" class="tap-btn hidden">
+                    <span class="tap-label">TAP</span>
+                    <span class="tap-hint">或按空格键</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 进度与评分 -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                <span class="label">准确度</span>
+                <span id="accuracy-display" class="value">0%</span>
+            </div>
+            <div class="stat-item">
+                <span class="label">评价</span>
+                <span id="rating-display" class="value">-</span>
+            </div>
+        </div>
+
+        <!-- 设置面板 -->
+        <div id="settings-overlay" class="overlay hidden">
+            <div class="overlay-content">
+                <div class="overlay-header">
+                    <h2>练习设置</h2>
+                    <button id="close-settings" class="close-btn">&times;</button>
+                </div>
+                <div class="overlay-body">
+                    <div class="setting-item">
+                        <label>难度等级</label>
+                        <select id="level-select">
+                            <option value="1">Level 1: 基础时值</option>
+                            <option value="2">Level 2: 八分音符</option>
+                            <option value="3">Level 3: 附点与切分</option>
+                            <option value="4">Level 4: 十六分音符</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label>速度 (BPM)</label>
+                        <div class="range-control">
+                            <input type="range" id="bpm-range" min="40" max="180" value="80">
+                            <span id="bpm-value">80</span>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <label>预备拍</label>
+                        <input type="checkbox" id="count-in-toggle" checked>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 统计面板 -->
+        <div id="analytics-overlay" class="overlay hidden">
+            <div class="overlay-content">
+                <div class="overlay-header">
+                    <h2>练习分析</h2>
+                    <button id="close-analytics" class="close-btn">&times;</button>
+                </div>
+                <div class="overlay-body">
+                    <div class="chart-container">
+                        <div class="chart-title">近期准确率趋势</div>
+                        <div id="trend-chart" class="chart"></div>
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-title">时间偏差分布 (早/晚)</div>
+                        <div id="offset-chart" class="chart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 结果弹窗 -->
+        <div id="result-overlay" class="overlay hidden">
+            <div class="result-card">
+                <h2 id="result-title">练习完成</h2>
+                <div class="result-score">
+                    <span id="result-accuracy">0%</span>
+                </div>
+                <div id="result-details" class="result-details">
+                    <!-- 详细得分 -->
+                </div>
+                <button id="retry-btn" class="primary-btn">再练一次</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

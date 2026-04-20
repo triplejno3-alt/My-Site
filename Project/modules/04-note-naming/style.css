@@ -1,0 +1,614 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #333;
+}
+
+.container {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    width: 95%;
+    max-width: 500px;
+    text-align: center;
+    position: relative;
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 头部样式 */
+.header {
+    margin-bottom: 20px;
+}
+
+.title {
+    color: #2c3e50;
+    margin-bottom: 5px;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.subtitle {
+    color: #6c757d;
+    font-size: 14px;
+}
+
+.header-buttons {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: background 0.2s ease;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.icon-btn:hover {
+    background: #f8f9fa;
+}
+
+/* 通用 Overlay */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.98);
+    border-radius: 20px;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 40px;
+    transition: opacity 0.3s ease;
+    opacity: 1;
+    pointer-events: auto;
+    overflow-y: auto;
+}
+
+.overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.overlay-content {
+    width: 90%;
+    max-width: 500px;
+    background: white;
+    padding-bottom: 40px;
+}
+
+.overlay-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 10;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.overlay-header h2 {
+    font-size: 22px;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 32px;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 0 10px;
+    line-height: 1;
+}
+
+/* 设置面板样式 */
+.settings-content {
+    max-width: 400px;
+}
+
+.setting-group {
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.setting-label {
+    font-size: 16px;
+    color: #495057;
+    margin-bottom: 10px;
+    font-weight: 600;
+    display: block;
+}
+
+.mode-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.mode-btn {
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    background: white;
+    color: #495057;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+}
+
+.mode-btn.active {
+    background: #a8edea;
+    border-color: #56ccf2;
+    color: #0056b3;
+    font-weight: 600;
+}
+
+.level-select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    background-color: white;
+    font-size: 16px;
+}
+
+/* 数据分析面板样式 */
+.analytics-content {
+    width: 100%;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.stat-card {
+    background: #f8f9fa;
+    padding: 15px 10px;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid #e9ecef;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #6c757d;
+    margin-bottom: 5px;
+}
+
+.stat-value {
+    font-size: 18px;
+    font-weight: 800;
+    color: #2c3e50;
+}
+
+.chart-container {
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.chart-header h3 {
+    font-size: 16px;
+    color: #495057;
+    margin: 0;
+}
+
+.chart-tabs {
+    display: flex;
+    gap: 5px;
+    background: #f1f3f5;
+    padding: 3px;
+    border-radius: 8px;
+}
+
+.chart-tab {
+    border: none;
+    background: none;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    color: #6c757d;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.chart-tab.active {
+    background: white;
+    color: #2c3e50; /* Changed from theme color to dark grey for better contrast */
+    font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.chart-view {
+    display: none;
+    height: 180px; /* Slightly taller for T4 charts */
+    position: relative;
+    border: 1px solid #e9ecef; /* Added border for clarity */
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.chart-view.active {
+    display: block;
+}
+
+.no-data {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #adb5bd;
+    font-style: italic;
+}
+
+/* SVG Chart Styles */
+.bar-chart-svg, .line-chart-svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.chart-bar-rect {
+    fill: #a8edea;
+    transition: height 0.3s;
+}
+.chart-bar-rect:hover {
+    fill: #56ccf2;
+}
+
+.line-path {
+    fill: none;
+    stroke: #56ccf2;
+    stroke-width: 2px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.data-point {
+    fill: #56ccf2;
+    stroke: white;
+    stroke-width: 2px;
+    r: 4;
+}
+
+.chart-label {
+    font-size: 10px;
+    fill: #6c757d;
+    text-anchor: middle;
+}
+
+.chart-axis {
+    stroke: #e9ecef;
+    stroke-width: 1px;
+}
+
+/* History List */
+.history-list {
+    text-align: left;
+}
+
+.history-list h3 {
+    font-size: 16px;
+    margin-bottom: 15px;
+    color: #495057;
+}
+
+.history-items {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.history-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 12px;
+}
+
+.history-item:last-child {
+    border-bottom: none;
+}
+
+.history-time {
+    color: #adb5bd;
+    width: 80px;
+}
+
+.history-detail {
+    flex: 1;
+    display: flex;
+    gap: 10px;
+    color: #495057;
+}
+
+.history-result {
+    font-weight: bold;
+}
+.result-correct { color: #28a745; }
+.result-wrong { color: #dc3545; }
+
+/* 统计表格样式 */
+.stats-table-container {
+    margin-top: 15px;
+    overflow-x: auto;
+}
+
+.stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+.stats-table th, .stats-table td {
+    padding: 8px;
+    text-align: center;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.stats-table th {
+    color: #6c757d;
+    font-weight: 600;
+}
+
+.stats-table tr:hover {
+    background: #f8f9fa;
+}
+
+.score-high { color: #28a745; font-weight: bold; }
+.score-medium { color: #fd7e14; }
+.score-low { color: #dc3545; }
+.weak-note { background-color: #fff3f3; }
+.weak-note .note-name::after {
+    content: "⚠️";
+    font-size: 10px;
+    margin-left: 2px;
+}
+
+
+/* 等级显示 */
+.level-container {
+    margin-bottom: 20px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+.level-info {
+    font-size: 14px;
+    color: #495057;
+}
+
+.current-level {
+    font-weight: 800;
+    color: #0056b3;
+    font-size: 18px;
+    margin: 0 5px;
+}
+
+.level-type {
+    color: #6c757d;
+}
+
+/* 显示区域 */
+.display-area {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 25px;
+    min-height: 250px; /* 增加最小高度以适应五线谱 */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.correct-state {
+    border-color: #28a745;
+    background-color: #f0fff4;
+}
+
+.question-container {
+    margin-bottom: 15px;
+}
+
+.question-main {
+    font-size: 64px;
+    font-weight: 800;
+    color: #2c3e50;
+    margin-bottom: 5px;
+    line-height: 1;
+}
+
+.question-sub {
+    font-size: 20px;
+    color: #6c757d;
+    height: 24px; /* 保持高度避免跳动 */
+}
+
+/* 五线谱容器 */
+.stave-container {
+    width: 100%;
+    height: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.hidden-sub, .hidden-stave {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* 选项区域 */
+.options-container {
+    margin-bottom: 25px;
+}
+
+.options {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.option-btn {
+    min-width: 60px;
+    height: 60px;
+    border: none;
+    border-radius: 12px;
+    background: white;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    font-size: 24px;
+    font-weight: 600;
+    color: #495057;
+    cursor: pointer;
+    transition: all 0.1s;
+    border-bottom: 4px solid #dee2e6;
+}
+
+.option-btn:active {
+    transform: translateY(2px);
+    border-bottom-width: 2px;
+}
+
+.option-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.option-btn.correct-highlight {
+    background-color: #d4edda;
+    border-color: #28a745;
+    color: #155724;
+    border-bottom-color: #155724;
+    transform: translateY(2px);
+    border-bottom-width: 2px;
+}
+
+.option-btn.error {
+    background-color: #f8d7da;
+    border-color: #dc3545;
+    color: #721c24;
+    border-bottom-color: #721c24;
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* 反馈区域 */
+.feedback {
+    height: 30px;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.feedback.correct {
+    color: #28a745;
+}
+
+.feedback.wrong {
+    color: #dc3545;
+}
+
+/* 进度条 */
+.progress-container {
+    margin-top: auto;
+    width: 100%;
+}
+
+.progress-text {
+    font-size: 14px;
+    color: #6c757d;
+    margin-bottom: 5px;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 8px;
+    background: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.progress-bar.red { background-color: #dc3545; }
+.progress-bar.orange { background-color: #fd7e14; }
+.progress-bar.green { background-color: #28a745; }
+
+.hidden {
+    display: none !important;
+}
+
+/* 移动端适配 */
+@media (max-width: 480px) {
+    .question-main {
+        font-size: 48px;
+    }
+    
+    .option-btn {
+        min-width: 50px;
+        height: 50px;
+        font-size: 20px;
+    }
+    
+    .mode-buttons {
+        grid-template-columns: 1fr;
+    }
+}

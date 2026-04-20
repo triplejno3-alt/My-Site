@@ -3,21 +3,34 @@
     <div class="footer-info">
       <h3 class="footer-title">{{ site.title | escape }}</h3>
       {% include cobe.html %}
-      <p class="footer-desc" style="margin-top: 1.5rem;">{{ site.description | escape }}</p>
+      <p class="footer-desc" style="margin-top: 1rem;">{{ site.description | escape }}</p>
     </div>
     
     <div class="footer-links-group">
       <div class="footer-contact">
         <h4>联系我</h4>
         {%- if site.email -%}
-        <a href="mailto:{{ site.email }}">Email Me</a>
+        <div class="footer-link-item">
+          <a href="mailto:{{ site.email }}">
+            <span class="icon">✉️</span> Email
+          </a>
+        </div>
         {%- endif -%}
       </div>
       
       <div class="footer-social">
         <h4>关注我</h4>
         <div class="social-icons">
-          {%- include social.html -%}
+          {%- if site.github_username -%}
+          <a href="https://github.com/{{ site.github_username }}" target="_blank" rel="noopener" title="GitHub">
+            <span class="icon">🐙</span> GitHub
+          </a>
+          {%- endif -%}
+          {%- if site.twitter_username -%}
+          <a href="https://twitter.com/{{ site.twitter_username }}" target="_blank" rel="noopener" title="Twitter">
+            <span class="icon">🐦</span> Twitter
+          </a>
+          {%- endif -%}
         </div>
       </div>
     </div>
@@ -30,90 +43,126 @@
 
 <style>
   .modern-footer {
-    background: #1a1a2e; /* 深蓝背景 */
-    color: #eeeeee;
-    padding: 4rem 0 2rem 0;
-    margin-top: 5rem;
-    border-top: 1px solid #eeeeee;
+    background: #0f172a; /* 更深邃的蓝黑色，更有现代感 */
+    color: #94a3b8;
+    padding: 2.5rem 0 1.5rem 0; /* 减小上下内边距 */
+    margin-top: 3rem; /* 减小顶部外边距 */
+    border-top: 1px solid #1e293b;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
 
   .footer-container {
-    max-width: 1400px;
+    max-width: 1100px; /* 缩小最大宽度使布局更紧凑 */
     margin: 0 auto;
     padding: 0 2rem;
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 3rem;
+    gap: 4rem;
   }
 
   .footer-info {
-    flex: 1;
+    flex: 2; /* 增加信息栏的占比 */
     min-width: 300px;
   }
 
   .footer-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    color: #ffffff;
+    font-size: 1.25rem; /* 略微减小标题字号 */
+    font-weight: 800;
+    margin-bottom: 1rem; /* 减小标题下边距 */
+    color: #f8fafc;
+    letter-spacing: -0.025em;
   }
 
   .footer-desc {
-    color: #aaaaaa;
-    line-height: 1.6;
-    max-width: 400px;
-    font-style: italic;
+    color: #64748b;
+    line-height: 1.7;
+    max-width: 450px;
+    font-size: 0.95rem;
   }
 
   .footer-links-group {
+    flex: 1;
     display: flex;
     gap: 4rem;
-    flex-wrap: wrap;
+    min-width: fit-content;
   }
 
   .modern-footer h4 {
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 1.2rem;
-    color: #ffffff;
+    font-size: 0.875rem;
+    font-weight: 700;
+    margin-bottom: 1rem; /* 减小标题下边距 */
+    color: #f8fafc;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.1em;
   }
 
-  .footer-contact a {
-    color: #007bff;
+  .footer-contact, .footer-social {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .social-icons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .footer-contact a, .social-icons a {
+    color: #94a3b8;
     text-decoration: none;
-    transition: color 0.2s;
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
-  .footer-contact a:hover {
-    color: #0056b3;
-    text-decoration: underline;
+  .footer-link-item {
+    margin-bottom: 0.75rem;
+  }
+
+  .footer-contact a:hover, .social-icons a:hover {
+    color: #38bdf8; /* 亮的明蓝色 */
+    transform: translateX(4px);
   }
 
   .footer-bottom {
-    max-width: 1400px;
-    margin: 3rem auto 0 auto;
-    padding: 2rem 2rem 0 2rem;
-    border-top: 1px solid #eeeeee;
+    max-width: 1100px;
+    margin: 2.5rem auto 0 auto; /* 减小底部栏的顶部边距 */
+    padding: 1.5rem 2rem 0 2rem; /* 减小底部栏的内边距 */
+    border-top: 1px solid #1e293b;
     text-align: center;
-    color: #999999;
-    font-size: 0.9rem;
+    color: #64748b;
+    font-size: 0.85rem;
+  }
+
+  .footer-bottom p {
+    margin: 0;
+  }
+
+  .icon {
+    font-size: 1.1rem;
   }
 
   @media (max-width: 768px) {
     .footer-container {
       flex-direction: column;
-      text-align: center;
+      text-align: left; /* 移动端靠左对齐通常比居中更好看 */
+      gap: 3rem;
     }
-    .footer-desc {
-      margin: 0 auto;
+    .footer-info {
+      order: 1;
     }
     .footer-links-group {
-      justify-content: center;
-      gap: 2rem;
+      order: 2;
+      flex-direction: row;
+      justify-content: flex-start;
+      gap: 3rem;
+    }
+    .footer-bottom {
+      text-align: left;
+      margin-top: 3rem;
     }
   }
 </style>

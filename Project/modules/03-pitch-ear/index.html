@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>T3 - 音高走向识别训练</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/vexflow@4.0.1/build/cjs/vexflow-debug.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- 设置按钮 -->
+        <div class="header-buttons">
+            <button id="settings-btn" class="icon-btn" aria-label="设置">⚙️</button>
+        </div>
+
+        <header class="header">
+            <h1 class="title">音高走向识别训练</h1>
+            <p class="subtitle">听两个音，判断第二个音走向</p>
+        </header>
+
+        <!-- 设置页面 Overlay -->
+        <div id="settings-overlay" class="overlay hidden">
+            <div class="overlay-content settings-content">
+                <div class="settings-header">
+                    <h2>训练设置</h2>
+                    <button id="close-settings" class="close-btn">&times;</button>
+                </div>
+                
+                <div class="settings-body">
+                    <!-- 等级选择 -->
+                    <div class="setting-group">
+                        <div class="setting-label">难度等级</div>
+                        <select id="level-select" class="level-select">
+                            <option value="1">1. 纯五度</option>
+                            <option value="2">2. 纯四度</option>
+                            <option value="3">3. 大三度</option>
+                            <option value="4">4. 小三度</option>
+                            <option value="5">5. 大二度（全音）</option>
+                            <option value="6">6. 小二度（半音）</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 等级显示区域 -->
+        <div class="level-container">
+            <div class="level-info">
+                <span>当前等级: </span>
+                <span id="current-level" class="current-level">1</span>
+                <span id="interval-type" class="interval-type">(纯五度)</span>
+            </div>
+        </div>
+
+        <!-- 动态显示区域 -->
+        <div class="display-area">
+            <!-- 五线谱显示区域 -->
+            <div id="stave-container" class="stave-container hidden-stave">
+                <div id="stave" class="stave"></div>
+            </div>
+
+            <!-- 音频控制 -->
+            <div class="audio-controls">
+                <button id="play-both" class="audio-btn play-main-btn"><span>再听一遍</span></button>
+            </div>
+        </div>
+
+        <!-- 选择题区域 -->
+        <div class="options-container">
+            <div class="options">
+                <button class="option-btn" data-direction="lower">更低</button>
+                <button class="option-btn" data-direction="same">相同</button>
+                <button class="option-btn" data-direction="higher">更高</button>
+            </div>
+        </div>
+
+        <!-- 反馈区域 -->
+        <div id="feedback" class="feedback"></div>
+
+        <!-- 进度条显示 -->
+        <div class="progress-container">
+            <div id="progress-text" class="progress-text">进度: 0/0</div>
+            <div class="progress-bar-container">
+                <div id="progress-bar" class="progress-bar red" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- 音程信息 -->
+        <div class="interval-info">
+            <div>当前音程: <span id="current-interval">-</span></div>
+            <div>正确率: <span id="accuracy-rate">0%</span></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

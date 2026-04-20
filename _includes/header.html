@@ -8,7 +8,7 @@
     
     <nav class="header-right">
       <ul class="nav-links">
-        <li><a href="{{ "/" | relative_url }}">首页</a></li>
+        <li><a href="{{ "/" | relative_url }}">Resume</a></li>
         {%- for page in site.pages -%}
           {%- if page.title -%}
           <li><a href="{{ page.url | relative_url }}">{{ page.title | escape }}</a></li>
@@ -21,10 +21,13 @@
 
 <style>
   .modern-header {
-    background: linear-gradient(to right, #0f0c29, #302b63, #24243e); /* 深邃月夜渐变 */
-    color: #ffffff;
-    padding: 1rem 0;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    background: #ffffff;
+    color: #2c3e50;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #ecf0f1;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
 
@@ -45,14 +48,13 @@
   }
 
   .logo-text {
-    font-size: 1.5rem;
-    font-weight: 700;
-    letter-spacing: 1px;
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
     text-transform: uppercase;
-    background: linear-gradient(45deg, #e0e0e0, #ffffff); /* 月光白渐变 */
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 10px rgba(255,255,255,0.3);
+    color: #2c3e50;
+    background: none;
+    -webkit-text-fill-color: initial;
   }
 
   .nav-links {
@@ -65,15 +67,15 @@
 
   .nav-links a {
     text-decoration: none;
-    color: #cccccc;
-    font-size: 0.95rem;
-    font-weight: 500;
-    transition: color 0.3s, transform 0.2s;
+    color: #7f8c8d;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: color 0.3s;
+    text-transform: uppercase;
   }
 
   .nav-links a:hover {
-    color: #ffffff;
-    transform: translateY(-2px);
+    color: #3498db;
   }
 
   @media (max-width: 768px) {
