@@ -1,0 +1,134 @@
+<div id="cobe-container" style="width: 100%; max-width: 300px; aspect-ratio: 1; margin-top: 1rem; position: relative; margin-left: 0;">
+  <canvas id="cobe" style="width: 100%; height: 100%; cursor: grab;" onpointerdown="this.style.cursor='grabbing'" onpointerup="this.style.cursor='grab'"></canvas>
+  <div id="cobe-labels" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden;"></div>
+</div>
+
+<script type="module">
+  import createGlobe from 'https://esm.sh/cobe'
+
+  let phi = -1.6;
+  let theta = 0.3;
+  let canvas = document.getElementById("cobe");
+  let pointerInteracting = null;
+  let pointerInteractingY = null;
+
+  const updatePointerInteraction = (value) => {
+    pointerInteracting = value;
+    canvas.style.cursor = value ? 'grabbing' : 'grab';
+  };
+
+  const globe = createGlobe(canvas, {
+    devicePixelRatio: 2,
+    width: 600,
+    height: 600,
+    phi: phi,
+    theta: theta,
+    dark: 0.1,
+    diffuse: 1.5,
+    mapSamples: 12000,
+    mapBrightness: 8,
+    mapBaseBrightness: 0.10,
+    baseColor: [0.95, 0.98, 1],
+    markerColor: [0, 1, 1],
+    glowColor: [0, 0, 0],
+    arcColor: [1, 0.2, 0.8],
+    arcWidth: 1.2,
+    arcHeight: 0.35,
+    markers: [
+      // longitude latitude
+      { location: [23.1291, 113.2644], size: 0.05, color: [1, 0.5, 0] }, // Guangzhou - 橙色
+    ],
+    
+    onRender: (state) => {
+      const labelsContainer = document.getElementById("cobe-labels");
+      const width = state.width / 2;
+      const height = state.height / 2;
+      
+      const guangzhou = [23.1291, 113.2644];
+      
+      const updateLabel = (location, text, id) => {
+        let label = document.getElementById(id);
+        if (!label) {
+          label = document.createElement("div");
+          label.id = id;
+          label.innerText = text;
+          label.style.position = "absolute";
+          label.style.color = "cyan";
+          label.style.fontSize = "12px";
+          label.style.fontWeight = "bold";
+          label.style.pointerEvents = "none";
+          label.style.textShadow = "0 0 4px black";
+          labelsContainer.appendChild(label);
+        }
+
+        const r = 1;
+        const lat = (location[0] * Math.PI) / 180;
+        const lng = (location[1] * Math.PI) / 180;
+        
+        // Cobe base rotation logic
+        const x = r * Math.cos(lat) * Math.sin(lng + state.phi);
+        const y = r * Math.sin(lat) * Math.cos(state.theta) - r * Math.cos(lat) * Math.cos(lng + state.phi) * Math.sin(state.theta);
+        const z = r * Math.sin(lat) * Math.sin(state.theta) + r * Math.cos(lat) * Math.cos(lng + state.phi) * Math.cos(state.theta);
+
+        if (z > 0) {
+          label.style.display = "block";
+          const screenX = (x + 1) * (width / 2);
+          const screenY = (1 - y) * (height / 2);
+          label.style.left = `${screenX}px`;
+          label.style.top = `${screenY}px`;
+          label.style.transform = "translate(-50%, -100%)";
+        } else {
+          label.style.display = "none";
+        }
+      };
+
+      updateLabel(guangzhou, "guangzhou", "label-guangzhou");
+    },
+  });
+
+  // 鼠标按下，开始拖动
+  canvas.addEventListener('pointerdown', (e) => {
+    updatePointerInteraction(e.clientX);
+    pointerInteractingY = e.clientY;
+  });
+
+  // 鼠标移动，更新旋转角度
+  window.addEventListener('pointermove', (e) => {
+    if (pointerInteracting !== null) {
+      const deltaX = e.clientX - pointerInteracting;
+      const deltaY = e.clientY - pointerInteractingY;
+      pointerInteracting = e.clientX;
+      pointerInteractingY = e.clientY;
+      phi += deltaX / 200;
+      theta += deltaY / 200;
+    }
+  });
+
+  // 鼠标松开，停止拖动
+  window.addEventListener('pointerup', () => {
+    updatePointerInteraction(null);
+  });
+
+  // 鼠标离开窗口，停止拖动
+  window.addEventListener('mouseout', () => {
+    updatePointerInteraction(null);
+  });
+
+  // 窗口大小改变时更新
+  window.addEventListener('resize', () => {
+    const width = canvas.offsetWidth;
+    globe.update({ width: width * 2, height: width * 2 });
+  });
+
+  // 启动动画循环
+  function animate() {
+    // 在非交互时自动旋转
+    if (!pointerInteracting) {
+      phi += 0.005; 
+    }
+    globe.update({ phi, theta });
+
+    requestAnimationFrame(animate);
+  }
+  animate();
+</script>

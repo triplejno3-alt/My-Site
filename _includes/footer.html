@@ -2,14 +2,15 @@
   <div class="footer-container">
     <div class="footer-info">
       <h3 class="footer-title">{{ site.title | escape }}</h3>
-      <p class="footer-desc">{{ site.description | escape }}</p>
+      {% include cobe.html %}
+      <p class="footer-desc" style="margin-top: 1.5rem;">{{ site.description | escape }}</p>
     </div>
     
     <div class="footer-links-group">
       <div class="footer-contact">
-        <h4>联系我们</h4>
+        <h4>联系我</h4>
         {%- if site.email -%}
-        <a href="mailto:{{ site.email }}">{{ site.email }}</a>
+        <a href="mailto:{{ site.email }}">Email Me</a>
         {%- endif -%}
       </div>
       
@@ -29,8 +30,8 @@
 
 <style>
   .modern-footer {
-    background: #f8f9fa;
-    color: #333333;
+    background: #1a1a2e; /* 深蓝背景 */
+    color: #eeeeee;
     padding: 4rem 0 2rem 0;
     margin-top: 5rem;
     border-top: 1px solid #eeeeee;
@@ -56,13 +57,14 @@
     font-size: 1.5rem;
     font-weight: 700;
     margin-bottom: 1rem;
-    color: #1a1a1a;
+    color: #ffffff;
   }
 
   .footer-desc {
-    color: #666666;
+    color: #aaaaaa;
     line-height: 1.6;
     max-width: 400px;
+    font-style: italic;
   }
 
   .footer-links-group {
@@ -75,7 +77,7 @@
     font-size: 1rem;
     font-weight: 600;
     margin-bottom: 1.2rem;
-    color: #1a1a1a;
+    color: #ffffff;
     text-transform: uppercase;
     letter-spacing: 1px;
   }
