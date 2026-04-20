@@ -1,0 +1,49 @@
+---
+layout: default
+---
+
+<article class="post note-post">
+
+  <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 12px; margin-bottom: 2rem;">
+    <h1 class="post-title" style="margin:0; color:white;">{{ page.title | escape }}</h1>
+    <p style="margin:1rem 0 0 0; opacity:0.9;">
+      📝 笔记分类: {{ page.category | default: "知识笔记" }}
+      &nbsp;&nbsp;|&nbsp;&nbsp;
+      ⏰ 创建于 {{ page.date | date: "%Y年%m月%d日" }}
+      &nbsp;&nbsp;|&nbsp;&nbsp;
+      ⭐ 重要性: {{ page.importance | default: "普通" }}
+    </p>
+  </div>
+
+  {% if page.tags %}
+  <div class="note-tags" style="margin-bottom: 1.5rem;">
+    {% for tag in page.tags %}
+    <span style="display:inline-block; background:#f0f2f5; padding:4px 12px; margin-right:8px; border-radius:20px; font-size:0.9rem;">
+      #{{ tag }}
+    </span>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if page.summary %}
+  <div class="note-summary" style="border-left: 4px solid #667eea; padding:1rem 1.5rem; background:#f8f9ff; margin-bottom:2rem; border-radius:0 8px 8px 0;">
+    <strong>📌 要点摘要:</strong> {{ page.summary }}
+  </div>
+  {% endif %}
+
+  <div class="post-content note-content" style="line-height: 1.8;">
+    {{ content }}
+  </div>
+
+  {% if page.related %}
+  <div class="related-notes" style="margin-top:3rem; padding-top:2rem; border-top:1px solid #eee;">
+    <h4>🔗 相关笔记</h4>
+    <ul>
+    {% for note in page.related %}
+      <li>{{ note }}</li>
+    {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+</article>

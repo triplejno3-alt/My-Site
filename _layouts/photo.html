@@ -1,0 +1,38 @@
+---
+layout: default
+---
+
+<article class="post photo-post">
+
+  <header class="post-header">
+    <h1 class="post-title">{{ page.title | escape }}</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="{{ page.date | date_to_xmlschema }}">
+        {{ page.date | date: "%Y年%m月%d日" }}
+      </time>
+      {% if page.author %} • {{ page.author }}{% endif %}
+    </p>
+  </header>
+
+  {% if page.featured_image %}
+  <div class="featured-image">
+    <img src="{{ page.featured_image }}" alt="{{ page.title | escape }}" style="width:100%; border-radius:8px; margin:1rem 0;">
+    {% if page.image_caption %}
+    <p class="image-caption" style="text-align:center; color:#666; font-style:italic; font-size:0.9rem; margin-top:0.5rem;">{{ page.image_caption }}</p>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <div class="post-content">
+    {{ content }}
+  </div>
+
+  {% if page.location %}
+  <div class="photo-meta" style="background:#f8f9fa; padding:1rem; border-radius:8px; margin-top:2rem;">
+    <p><strong>📍 拍摄地点:</strong> {{ page.location }}</p>
+    <p><strong>📅 拍摄时间:</strong> {{ page.shot_date | default: page.date | date: "%Y年%m月%d日" }}</p>
+    <p><strong>📷 设备:</strong> {{ page.camera | default: "未知" }}</p>
+  </div>
+  {% endif %}
+
+</article>
