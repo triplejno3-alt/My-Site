@@ -22,10 +22,10 @@ title: Find a better way
 email: triplejno3@gmail.com
 description: >- # this means to ignore newlines until "baseurl:"
   Where logic meets the Moon Dream, seeking clarity and finding a better way in every line of thought.
-baseurl: "" # the subpath of your site, e.g. /blog
-url: "" # the base hostname & protocol for your site, e.g. http://example.com
-twitter_username: jekyllrb
-github_username:  jekyll
+baseurl: "/My-Site" # the subpath of your site, e.g. /blog
+url: "https://triplejno3-alt.github.io" # the base hostname & protocol for your site, e.g. http://example.com
+twitter_username: triplejno3
+github_username:  triplejno3-alt
 
 # Build settings
 theme: minima
