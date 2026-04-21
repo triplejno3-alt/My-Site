@@ -44,15 +44,28 @@
     </div>
     <script>
       window.addEventListener('load', function() {
-          var url = 'https://{{ site.goatcounter_code }}.goatcounter.com/counter/all.json';
+          // 使用首页路径 (/) 的统计数据作为全站展示参考，或者尝试使用 TOTAL.json (如果开启了公开视图)
+          var url = 'https://{{ site.goatcounter_code }}.goatcounter.com/counter/%2F.json';
           var r = new XMLHttpRequest();
           r.onreadystatechange = function() {
-              if (this.readyState === 4 && this.status === 200) {
-                  try {
-                      var data = JSON.parse(this.responseText);
-                      document.getElementById('stats-total-count').innerText = data.count || "0";
-                  } catch (e) {
-                      console.error("Error parsing GoatCounter data", e);
+              if (this.readyState === 4) {
+                  var countElement = document.getElementById('stats-total-count');
+                  if (this.status === 200) {
+                      try {
+                          var data = JSON.parse(this.responseText);
+                          countElement.innerText = data.count || "0";
+                      } catch (e) {
+                          countElement.innerText = "0";
+                      }
+                  } else {
+                      // 如果 404，尝试请求 TOTAL.json (GoatCounter 某些版本支持)
+                      if (this.status === 404 && url.indexOf('%2F.json') !== -1) {
+                          url = 'https://{{ site.goatcounter_code }}.goatcounter.com/counter/TOTAL.json';
+                          r.open('GET', url, true);
+                          r.send();
+                      } else {
+                          countElement.innerText = "0";
+                      }
                   }
               }
           };
