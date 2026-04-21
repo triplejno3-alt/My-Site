@@ -194,13 +194,31 @@ document.addEventListener('DOMContentLoaded', function() {
 
   async function getVisitorInfo() {
     try {
-      // 1. Get location
-      const geoResponse = await fetch('https://freeipapi.com/api/json');
-      if (!geoResponse.ok) throw new Error('Failed to fetch location');
-      const geoData = await geoResponse.json();
-      const city = geoData.cityName || 'somewhere';
-      const lat = geoData.latitude;
-      const lon = geoData.longitude;
+      // 1. Get location with fallback
+      async function fetchGeoLocation() {
+        try { // Try ipapi.co first
+            const res = await fetch('https://ipapi.co/json/');
+            if (res.ok) {
+              const data = await res.json();
+              return { city: data.city, lat: data.latitude, lon: data.longitude };
+            }
+        } catch(e) {}
+        
+        // Fallback: JSONP via ip-api.com
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+            window[callbackName] = (data) => {
+                delete window[callbackName];
+                document.head.removeChild(script);
+                resolve({ city: data.city, lat: data.lat, lon: data.lon });
+            };
+            script.src = `https://ip-api.com/json/?callback=${callbackName}`;
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
+      }
+      const { city, lat, lon } = await fetchGeoLocation();
 
       window.dispatchEvent(new CustomEvent('visitorLocationFound', { detail: { city, lat, lon } }));
 
