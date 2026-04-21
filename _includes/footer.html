@@ -39,10 +39,14 @@
   <div class="footer-bottom">
     <p>&copy; {{ "now" | date: "%Y" }} {{ site.title | escape }}. Built with ❤️ using <a href="https://jekyllrb.com/" target="_blank" rel="noopener">Jekyll</a> with AI assistance.</p>
     {% if site.goatcounter_code %}
-    <div class="site-total-views">
-      <span class="icon">📊</span> 全站总访问量：<span id="stats-total-count">...</span> 次
+    <div class="footer-stats-row">
+      <div class="site-total-views">
+        <span class="icon">📊</span> 全站总访问量：<span id="stats-total-count">...</span> 次
+      </div>
+      <div class="footer-time"><span class="icon">🕒</span> <span id="current-time">...</span></div>
     </div>
     <script>
+        // GoatCounter total views script
         window.goatcounter = {
             allow_local: true,
         };
@@ -58,7 +62,18 @@
             });
             r.open('GET', 'https://{{ site.goatcounter_code }}.goatcounter.com/counter/TOTAL.json');
             r.send();
-        })
+        });
+
+        // Real-time clock
+        function updateTime() {
+            const timeEl = document.getElementById('current-time');
+            if (timeEl) {
+                const now = new Date();
+                timeEl.textContent = now.toLocaleString('sv-SE'); // 'sv-SE' gives a YYYY-MM-DD HH:mm:ss format
+            }
+        }
+        setInterval(updateTime, 1000);
+        updateTime(); // initial call
     </script>
     {% endif %}
   </div>
@@ -164,13 +179,19 @@
     margin: 0;
   }
 
-  .site-total-views {
-    margin-top: 0.75rem;
+  .footer-stats-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+  .site-total-views, .footer-time {
     font-size: 0.8rem;
     color: #64748b;
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 0.4rem;
   }
 
