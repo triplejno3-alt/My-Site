@@ -4,7 +4,7 @@ layout: default
 <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title p-name" itemprop="name headline">{{ page.title | escape }}</h1>
+    <h1 class="post-title p-name" itemprop="headline">{{ page.title | escape }}</h1>
     <p class="post-meta">
       <time class="dt-published" datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
         {%- assign date_format = site.minima.date_format | default: "%b %-d, %Y" -%}
@@ -15,10 +15,7 @@ layout: default
       {%- endif -%}
       {% if site.goatcounter_code %}
         • <span class="post-views">
-            <img src="https://{{ site.goatcounter_code }}.goatcounter.com/counter/{{ page.url | url_encode }}.svg" 
-                 alt="Views" 
-                 style="display: inline-block; vertical-align: middle; height: 1.2em; filter: grayscale(1) brightness(0.8);">
-            次阅读
+            <span id="stats-view-count">...</span> 次阅读
           </span>
       {% endif %}
     </p>
@@ -27,6 +24,40 @@ layout: default
   <div class="post-content e-content" itemprop="articleBody">
     {{ content }}
   </div>
+
+  {% if site.goatcounter_code %}
+  <script>
+    window.addEventListener('load', function() {
+        // 获取当前页面的规范路径，去掉 .html 后缀以匹配 GoatCounter 的默认记录方式
+        var path = window.location.pathname.replace(/index\.html$/, '').replace(/\/$/, '');
+        if (path === '') path = '/';
+        
+        var url = 'https://{{ site.goatcounter_code }}.goatcounter.com/counter/' + encodeURIComponent(path) + '.json';
+        
+        var r = new XMLHttpRequest();
+        r.onreadystatechange = function() {
+            if (this.readyState === 4) {
+                var countElement = document.getElementById('stats-view-count');
+                if (this.status === 200) {
+                    try {
+                        var data = JSON.parse(this.responseText);
+                        // 处理可能的数字格式（带逗号等）
+                        countElement.innerText = data.count || "0";
+                    } catch (e) {
+                        countElement.innerText = "0";
+                    }
+                } else {
+                    // 如果请求失败（如 CORS），显示 0 而不让界面卡在 "..."
+                    countElement.innerText = "0";
+                    console.warn("GoatCounter request failed with status: " + this.status);
+                }
+            }
+        };
+        r.open('GET', url, true);
+        r.send();
+    });
+  </script>
+  {% endif %}
 
   <a class="u-url" href="{{ page.url | relative_url }}" hidden></a>
 </article>
