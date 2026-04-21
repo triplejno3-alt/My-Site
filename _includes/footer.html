@@ -38,6 +38,29 @@
   
   <div class="footer-bottom">
     <p>&copy; {{ "now" | date: "%Y" }} {{ site.title | escape }}. Built with ❤️ using <a href="https://jekyllrb.com/" target="_blank" rel="noopener">Jekyll</a> with AI assistance.</p>
+    {% if site.goatcounter_code %}
+    <div class="site-total-views">
+      <span class="icon">📊</span> 全站总访问量：<span id="stats-total-count">...</span> 次
+    </div>
+    <script>
+      window.addEventListener('load', function() {
+          var url = 'https://{{ site.goatcounter_code }}.goatcounter.com/counter/all.json';
+          var r = new XMLHttpRequest();
+          r.onreadystatechange = function() {
+              if (this.readyState === 4 && this.status === 200) {
+                  try {
+                      var data = JSON.parse(this.responseText);
+                      document.getElementById('stats-total-count').innerText = data.count || "0";
+                  } catch (e) {
+                      console.error("Error parsing GoatCounter data", e);
+                  }
+              }
+          };
+          r.open('GET', url, true);
+          r.send();
+      });
+    </script>
+    {% endif %}
   </div>
 </footer>
 
@@ -139,6 +162,21 @@
 
   .footer-bottom p {
     margin: 0;
+  }
+
+  .site-total-views {
+    margin-top: 0.75rem;
+    font-size: 0.8rem;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+  }
+
+  #stats-total-count {
+    color: #38bdf8;
+    font-weight: 600;
   }
 
   .footer-bottom a {
