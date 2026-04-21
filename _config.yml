@@ -28,7 +28,7 @@ url: "https://triplejno3-alt.github.io" # the base hostname & protocol for your 
 github_username:  triplejno3-alt
 google_analytics: G-LH19577VTW
 goatcounter_code: way
-
+goatcounter_api_token: 1lf3lupfunccb7awges6d8v96pgprwubf38je1zgle0yw67w6c
 # Build settings
 theme: minima
 plugins:

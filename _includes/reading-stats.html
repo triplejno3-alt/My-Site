@@ -8,27 +8,38 @@
     window.addEventListener('load', function() {
         if (!window.goatcounter || !window.goatcounter.get_data) return;
 
-        // 直接使用 GoatCounter 提供的、已经编码好的路径
         var path = window.goatcounter.get_data()['p'];
+        var token = "{{ site.goatcounter_api_token }}";
+        var url = "https://{{ site.goatcounter_code }}.goatcounter.com/api/v0/stats/hits";
 
-        var r = new XMLHttpRequest();
-        r.addEventListener('load', function() {
-            if (this.status === 200) {
-                try {
-                    var data = JSON.parse(this.responseText);
-                    document.querySelector('#stats-view-count').innerText = data.count || "0";
-                } catch (e) {
-                    document.querySelector('#stats-view-count').innerText = "0";
-                }
-            } else {
-                // 如果返回 404 等，说明该路径尚无统计数据
-                document.querySelector('#stats-view-count').innerText = "0";
+        fetch(url, {
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
             }
+        })
+        .then(function(response) {
+            if (response.ok) {
+                return response.json();
+            }
+            return Promise.reject(new Error('Network response was not ok.'));
+        })
+        .then(function(data) {
+            var count = "0";
+            if (data && data.hits) {
+                var pageStats = data.hits.find(function(hit) {
+                    return hit.path === path;
+                });
+                if (pageStats) {
+                    count = pageStats.total || "0";
+                }
+            }
+            document.querySelector('#stats-view-count').innerText = count;
+        })
+        .catch(function(error) {
+            console.error('Error fetching reading stats:', error);
+            document.querySelector('#stats-view-count').innerText = "0";
         });
-        
-        // API 请求路径为 /counter{path}.json，path 已包含前导 /
-        r.open('GET', 'https://{{ site.goatcounter_code }}.goatcounter.com/counter' + path + '.json');
-        r.send();
     });
   </script>
 {% endif %}
