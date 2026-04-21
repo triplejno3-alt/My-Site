@@ -1,5 +1,5 @@
 ---
-layout: note
+layout: post_note
 title:  "HTTP缓存机制学习笔记"
 date:   2026-04-28 14:20:00 +0800
 category: 后端技术

@@ -10,7 +10,8 @@ layout: default
       📝 笔记分类: {{ page.category | default: "知识笔记" }}
       &nbsp;&nbsp;|&nbsp;&nbsp;
       ⏰ 创建于 {{ page.date | date: "%Y年%m月%d日" }}
-      {% include reading-stats.html %}
+      {%- assign words = content | strip_html | number_of_words -%}
+      <span class="reading-time"> • 阅读时间: {{ words | divided_by: 180 | plus: 1 }} 分钟</span>
       &nbsp;&nbsp;|&nbsp;&nbsp;
       ⭐ 重要性: {{ page.importance | default: "普通" }}
     </p>
@@ -34,6 +35,7 @@ layout: default
 
   <div class="post-content note-content" style="line-height: 1.8;">
     {{ content }}
+    {% include reading-stats.html %}
   </div>
 
   {% if page.related %}

@@ -11,7 +11,8 @@ layout: default
         {{ page.date | date: "%Y年%m月%d日" }}
       </time>
       {% if page.author %} • {{ page.author }}{% endif %}
-      {% include reading-stats.html %}
+      {%- assign words = content | strip_html | number_of_words -%}
+      <span class="reading-time">• 阅读时间: {{ words | divided_by: 180 | plus: 1 }} 分钟</span>
     </p>
   </header>
 
@@ -26,6 +27,7 @@ layout: default
 
   <div class="post-content">
     {{ content }}
+    {% include reading-stats.html %}
   </div>
 
   {% if page.location %}

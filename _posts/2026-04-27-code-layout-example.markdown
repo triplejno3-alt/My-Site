@@ -1,5 +1,5 @@
 ---
-layout: code
+layout: post_code
 title: "代码布局示例：Jekyll-TOC 插件使用指南"
 date: 2026-04-27 10:00:00 +0800
 categories: [技术, Jekyll]

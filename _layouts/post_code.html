@@ -211,7 +211,8 @@
           <time datetime="{{ page.date | date_to_xmlschema }}">
             {{ page.date | date: "%Y年%m月%d日" }}
           </time>
-          {% include reading-stats.html %}
+          {%- assign words = content | strip_html | number_of_words -%}
+          <span class="reading-time">• 阅读时间: {{ words | divided_by: 180 | plus: 1 }} 分钟</span>
         </p>
       </header>
 
@@ -231,6 +232,7 @@
             {% endif %}
 
             {{ post_content }}
+            {% include reading-stats.html %}
           </div>
 
           {% if page.toc %}

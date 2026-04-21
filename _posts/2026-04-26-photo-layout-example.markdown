@@ -1,5 +1,5 @@
 ---
-layout: photo
+layout: post_photo
 title:  "京都樱花摄影手记"
 date:   2026-04-26 15:30:00 +0800
 categories: [摄影, 旅行]

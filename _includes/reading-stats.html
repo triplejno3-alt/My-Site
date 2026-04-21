@@ -1,8 +1,6 @@
-{%- assign words = content | strip_html | number_of_words -%}
-<span class="reading-time">• 阅读时间: {{ words | divided_by: 180 | plus: 1 }} 分钟</span>
 {% if site.goatcounter_code %}
-  • <span class="post-views">
-      <span id="stats-view-count">...</span> 次阅读
+  <span class="post-views">
+      • <span id="stats-view-count">...</span> 次阅读
     </span>
   <script>
     window.addEventListener('load', function() {
