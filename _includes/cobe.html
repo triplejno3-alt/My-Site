@@ -11,6 +11,15 @@
   let canvas = document.getElementById("cobe");
   let pointerInteracting = null;
   let pointerInteractingY = null;
+  
+  let currentMarkers = [
+    { location: [23.1291, 113.2644], size: 0.05, color: [1, 0.5, 0] } // Guangzhou
+  ];
+  
+  const weatherCache = JSON.parse(localStorage.getItem('weatherData'));
+  if (weatherCache && weatherCache.lat && weatherCache.lon) {
+    currentMarkers.push({ location: [weatherCache.lat, weatherCache.lon], size: 0.1, color: [1, 0, 0] });
+  }
 
   const updatePointerInteraction = (value) => {
     pointerInteracting = value;
@@ -34,10 +43,7 @@
     arcColor: [1, 0.2, 0.8],
     arcWidth: 1.2,
     arcHeight: 0.35,
-    markers: [
-      // longitude latitude
-      { location: [23.1291, 113.2644], size: 0.05, color: [1, 0.5, 0] }, // Guangzhou - 橙色
-    ],
+    markers: currentMarkers,
     
     onRender: (state) => {
       const labelsContainer = document.getElementById("cobe-labels");
@@ -84,6 +90,16 @@
 
       updateLabel(guangzhou, "guangzhou", "label-guangzhou");
     },
+  });
+
+  window.addEventListener('visitorLocationFound', (e) => {
+    const { lat, lon } = e.detail;
+    if (lat && lon) {
+      // Remove previous visitor marker if it exists
+      currentMarkers = currentMarkers.filter(m => m.color.join(',') !== '1,0,0');
+      currentMarkers.push({ location: [lat, lon], size: 0.1, color: [1, 0, 0] });
+      globe.update({ markers: currentMarkers });
+    }
   });
 
   // 鼠标按下，开始拖动
