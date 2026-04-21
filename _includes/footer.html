@@ -40,9 +40,26 @@
     <p>&copy; {{ "now" | date: "%Y" }} {{ site.title | escape }}. Built with ❤️ using <a href="https://jekyllrb.com/" target="_blank" rel="noopener">Jekyll</a> with AI assistance.</p>
     {% if site.goatcounter_code %}
     <div class="site-total-views">
-      <span class="icon">📊</span> 全站访问量：
-      <img src="https://{{ site.goatcounter_code }}.goatcounter.com/count?p=/TOTAL" alt="Views" style="height: 1.2em; vertical-align: middle; filter: invert(0.8) hue-rotate(180deg);">
+      <span class="icon">📊</span> 全站总访问量：<span id="stats-total-count">...</span> 次
     </div>
+    <script>
+        window.goatcounter = {
+            allow_local: true,
+        };
+        window.addEventListener('load', function() {
+            var r = new XMLHttpRequest();
+            r.addEventListener('load', function() {
+                try {
+                    var data = JSON.parse(this.responseText);
+                    document.querySelector('#stats-total-count').innerText = data.count || "0";
+                } catch (e) {
+                    document.querySelector('#stats-total-count').innerText = "0";
+                }
+            });
+            r.open('GET', 'https://{{ site.goatcounter_code }}.goatcounter.com/counter/TOTAL.json');
+            r.send();
+        })
+    </script>
     {% endif %}
   </div>
 </footer>
@@ -157,15 +174,11 @@
     gap: 0.4rem;
   }
 
-  .site-total-views img {
-    border-radius: 4px;
-    opacity: 0.8;
-    transition: opacity 0.2s;
+  #stats-total-count {
+    color: #38bdf8;
+    font-weight: 600;
   }
 
-  .site-total-views img:hover {
-    opacity: 1;
-  }
 
   .footer-bottom a {
     color: #38bdf8;
