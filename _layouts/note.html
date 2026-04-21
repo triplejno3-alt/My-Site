@@ -10,6 +10,7 @@ layout: default
       📝 笔记分类: {{ page.category | default: "知识笔记" }}
       &nbsp;&nbsp;|&nbsp;&nbsp;
       ⏰ 创建于 {{ page.date | date: "%Y年%m月%d日" }}
+      {% include reading-stats.html %}
       &nbsp;&nbsp;|&nbsp;&nbsp;
       ⭐ 重要性: {{ page.importance | default: "普通" }}
     </p>

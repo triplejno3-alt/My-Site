@@ -211,9 +211,7 @@
           <time datetime="{{ page.date | date_to_xmlschema }}">
             {{ page.date | date: "%Y年%m月%d日" }}
           </time>
-          •
-          {% assign words = content | strip_html | size %}
-          <span>阅读时间: {{ words | divided_by: 400 | plus: 1 }} 分钟</span>
+          {% include reading-stats.html %}
         </p>
       </header>
 

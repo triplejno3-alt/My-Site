@@ -13,46 +13,13 @@ layout: default
       {%- if page.author -%}
         • <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">{{ page.author }}</span></span>
       {%- endif -%}
-      {% if site.goatcounter_code %}
-        • <span class="post-views">
-            <span id="stats-view-count">...</span> 次阅读
-          </span>
-      {% endif %}
+      {% include reading-stats.html %}
     </p>
   </header>
 
   <div class="post-content e-content" itemprop="articleBody">
     {{ content }}
   </div>
-
-  {% if site.goatcounter_code %}
-  <script>
-    window.addEventListener('load', function() {
-        if (!window.goatcounter || !window.goatcounter.get_data) return;
-        
-        // 获取规范路径并移除项目名前缀（针对 GitHub Pages 子目录部署）
-        // get_data()['p'] 返回的是已编码的路径，先解码再统一编码以避免二次编码问题
-        var path = decodeURIComponent(window.goatcounter.get_data()['p']).replace(/^\/My-Site/, '');
-        
-        var r = new XMLHttpRequest();
-        r.addEventListener('load', function() {
-            if (this.status === 200) {
-                try {
-                    var data = JSON.parse(this.responseText);
-                    document.querySelector('#stats-view-count').innerText = data.count || "0";
-                } catch (e) {
-                    document.querySelector('#stats-view-count').innerText = "0";
-                }
-            } else {
-                // 如果返回 404 等，说明该路径尚无统计数据
-                document.querySelector('#stats-view-count').innerText = "0";
-            }
-        });
-        r.open('GET', 'https://{{ site.goatcounter_code }}.goatcounter.com/counter/' + encodeURIComponent(path) + '.json');
-        r.send();
-    });
-  </script>
-  {% endif %}
 
   <a class="u-url" href="{{ page.url | relative_url }}" hidden></a>
 </article>
