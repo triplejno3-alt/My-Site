@@ -15,7 +15,10 @@ layout: default
       {%- endif -%}
       {% if site.goatcounter_code %}
         • <span class="post-views">
-            <span id="stats-{{ page.url | slugify }}">...</span> 次阅读
+            <img src="https://{{ site.goatcounter_code }}.goatcounter.com/counter/{{ page.url | url_encode }}.svg" 
+                 alt="Views" 
+                 style="display: inline-block; vertical-align: middle; height: 1.2em; filter: grayscale(1) brightness(0.8);">
+            次阅读
           </span>
       {% endif %}
     </p>
@@ -24,26 +27,6 @@ layout: default
   <div class="post-content e-content" itemprop="articleBody">
     {{ content }}
   </div>
-
-  {% if site.goatcounter_code %}
-  <script>
-    window.addEventListener('load', function() {
-        var slug = "{{ page.url }}";
-        var r = new XMLHttpRequest();
-        r.addEventListener('load', function() {
-            try {
-                var data = JSON.parse(this.responseText);
-                var count = data.count || "0";
-                document.getElementById('stats-{{ page.url | slugify }}').innerText = count;
-            } catch (e) {
-                console.error("Failed to parse GoatCounter data", e);
-            }
-        });
-        r.open('GET', 'https://{{ site.goatcounter_code }}.goatcounter.com/counter/' + encodeURIComponent(slug) + '.json');
-        r.send();
-    });
-  </script>
-  {% endif %}
 
   <a class="u-url" href="{{ page.url | relative_url }}" hidden></a>
 </article>
