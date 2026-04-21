@@ -26,6 +26,7 @@ baseurl: "/My-Site" # the subpath of your site, e.g. /blog
 url: "https://triplejno3-alt.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 # twitter_username: triplejno3
 github_username:  triplejno3-alt
+google_analytics: G-LH19577VTW
 
 # Build settings
 theme: minima
