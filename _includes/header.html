@@ -10,6 +10,7 @@
       <a class="header-logo" href="{{ "/" | relative_url }}">
         <span class="logo-text">{{ site.title | escape }}</span>
       </a>
+      <div id="visitor-info" class="visitor-info"></div>
     </div>
     
     <nav class="header-right">
@@ -84,6 +85,74 @@
     color: #3498db;
   }
 
+  .visitor-info {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin-left: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 300px;
+    height: 1.2rem;
+    visibility: hidden;
+  }
+  .visitor-info.loaded {
+    visibility: visible;
+  }
+
+  .theme-toggle {
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    padding: 0;
+    line-height: 1;
+  }
+
+  :root {
+    --primary: #2c3e50;
+    --accent: #3498db;
+    --text-main: #34495e;
+    --text-light: #7f8c8d;
+    --bg-light: #f8f9fa;
+    --border-color: #ecf0f1;
+    --bg-main: #ffffff;
+    transition: all 0.3s ease;
+  }
+  html[data-theme='sunny'] {
+    --primary: #d35400;
+    --accent: #f39c12;
+    --text-main: #34495e;
+    --text-light: #7f8c8d;
+    --bg-light: #fff8e1;
+    --border-color: #fce5cd;
+    --bg-main: #fffaf0;
+  }
+  html[data-theme='rainy'] {
+    --primary: #2c3e50;
+    --accent: #3498db;
+    --text-main: #34495e;
+    --text-light: #95a5a6;
+    --bg-light: #ecf0f1;
+    --border-color: #bdc3c7;
+    --bg-main: #f4f6f7;
+  }
+  html[data-theme='cloudy'] {
+    --primary: #7f8c8d;
+    --accent: #95a5a6;
+    --text-main: #34495e;
+    --text-light: #b0b9bd;
+    --bg-light: #fafafa;
+    --border-color: #e0e0e0;
+    --bg-main: #ffffff;
+  }
+  body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+
   @media (max-width: 768px) {
     .header-container {
       flex-direction: column;
@@ -95,3 +164,126 @@
     }
   }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const visitorInfo = document.getElementById('visitor-info');
+
+  // --- Immediate theme application on load ---
+  const themes = ['default', 'sunny', 'rainy', 'cloudy'];
+  let currentThemeIndex = 0;
+
+  function applyTheme(theme) {
+    if (!themes.includes(theme)) theme = 'default';
+    document.documentElement.setAttribute('data-theme', theme);
+    currentThemeIndex = themes.indexOf(theme);
+    localStorage.setItem('theme', theme);
+  }
+
+  const savedTheme = localStorage.getItem('theme');
+  applyTheme(savedTheme || 'default');
+  
+  // --- Immediate weather data application from cache ---
+  const weatherCache = JSON.parse(localStorage.getItem('weatherData'));
+  if (weatherCache && (new Date().getTime() - weatherCache.timestamp < 1800000)) { // 30 minutes cache
+    displayWeatherInfo(weatherCache.city, weatherCache.icon, weatherCache.temp, weatherCache.advice);
+  } else {
+    getVisitorInfo();
+  }
+  // --- End of immediate weather data application ---
+
+  async function getVisitorInfo() {
+    try {
+      // 1. Get location
+      const geoResponse = await fetch('http://ip-api.com/json');
+      if (!geoResponse.ok) throw new Error('Failed to fetch location');
+      const geoData = await geoResponse.json();
+      const city = geoData.city || 'somewhere';
+
+      // 2. Get weather
+      const weatherResponse = await fetch(`https://wttr.in/${city}?format=j1`);
+      if (!weatherResponse.ok) throw new Error('Failed to fetch weather');
+      const weatherData = await weatherResponse.json();
+      const temp = weatherData.current_condition[0].temp_C;
+      const weatherDesc = weatherData.current_condition[0].weatherDesc[0].value;
+      const weatherIcon = getWeatherIcon(weatherDesc);
+
+      // 3. Get advice
+      const advice = getAdvice(temp, weatherDesc);
+
+      // 4. Cache and Display info
+      const weatherDataForCache = { city, icon: weatherIcon, temp, advice, timestamp: new Date().getTime() };
+      localStorage.setItem('weatherData', JSON.stringify(weatherDataForCache));
+      displayWeatherInfo(city, weatherIcon, temp, advice);
+
+      // Apply weather-based theme only if no manual choice exists
+      if (!localStorage.getItem('theme')) {
+        const weatherTheme = getWeatherTheme(weatherDesc);
+        applyTheme(weatherTheme);
+      }
+
+    } catch (error) {
+      console.error("Could not fetch visitor info:", error);
+      if (!weatherCache) { // Only show error if there's no cached data
+        visitorInfo.innerHTML = "👋 欢迎来到我的网站！";
+        visitorInfo.classList.add('loaded');
+      }
+    }
+  }
+
+  function displayWeatherInfo(city, icon, temp, advice) {
+    visitorInfo.innerHTML = `<span>📍 ${city} &nbsp; ${icon} ${temp}°C &nbsp; | &nbsp; ${advice}</span>`;
+    const toggleButton = document.createElement('button');
+    toggleButton.className = 'theme-toggle';
+    toggleButton.innerHTML = '🎨';
+    toggleButton.onclick = cycleTheme;
+    visitorInfo.appendChild(toggleButton);
+    visitorInfo.classList.add('loaded');
+  }
+  
+  function cycleTheme() {
+    currentThemeIndex = (currentThemeIndex + 1) % themes.length;
+    const nextTheme = themes[currentThemeIndex];
+    applyTheme(nextTheme);
+  }
+
+  function getWeatherTheme(desc) {
+    const d = desc.toLowerCase();
+    if (d.includes('sunny') || d.includes('clear')) return 'sunny';
+    if (d.includes('rain') || d.includes('shower')) return 'rainy';
+    if (d.includes('cloudy') || d.includes('overcast') || d.includes('mist') || d.includes('fog')) return 'cloudy';
+    return 'default';
+  }
+
+  function getWeatherIcon(desc) {
+    const d = desc.toLowerCase();
+    if (d.includes('sunny') || d.includes('clear')) return '☀️';
+    if (d.includes('partly cloudy')) return '⛅️';
+    if (d.includes('cloudy') || d.includes('overcast')) return '☁️';
+    if (d.includes('rain') || d.includes('shower')) return '🌧️';
+    if (d.includes('snow') || d.includes('sleet')) return '❄️';
+    if (d.includes('mist') || d.includes('fog')) return '🌫️';
+    if (d.includes('thunder') || d.includes('storm')) return '⛈️';
+    return '🌍';
+  }
+
+  function getAdvice(temp, desc) {
+    const d = desc.toLowerCase();
+    const tempNum = parseInt(temp, 10);
+
+    if (d.includes('rain') || d.includes('shower') || d.includes('storm')) return '出门记得带伞哦！';
+    if (d.includes('snow') || d.includes('sleet')) return '路面湿滑，注意安全。';
+    
+    if (tempNum < 5) return '天寒地冻，注意保暖防滑！';
+    if (tempNum < 15) return '天气微凉，记得加件外套。';
+    if (tempNum > 30) return '天气炎热，注意防暑降温。';
+
+    if (d.includes('sunny') || d.includes('clear')) return '阳光明媚，祝你一天好心情！';
+    if (d.includes('cloudy') || d.includes('overcast')) return '阴天也别让心情“多云”哦。';
+    
+    return '欢迎你，来自远方的朋友！';
+  }
+
+  getVisitorInfo();
+});
+</script>
