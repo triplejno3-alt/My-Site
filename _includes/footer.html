@@ -40,39 +40,9 @@
     <p>&copy; {{ "now" | date: "%Y" }} {{ site.title | escape }}. Built with ❤️ using <a href="https://jekyllrb.com/" target="_blank" rel="noopener">Jekyll</a> with AI assistance.</p>
     {% if site.goatcounter_code %}
     <div class="site-total-views">
-      <span class="icon">📊</span> 全站总访问量：<span id="stats-total-count">...</span> 次
+      <span class="icon">📊</span> 全站访问量：
+      <img src="https://{{ site.goatcounter_code }}.goatcounter.com/count?p=/TOTAL" alt="Views" style="height: 1.2em; vertical-align: middle; filter: invert(0.8) hue-rotate(180deg);">
     </div>
-    <script>
-      window.addEventListener('load', function() {
-          // 使用首页路径 (/) 的统计数据作为全站展示参考，或者尝试使用 TOTAL.json (如果开启了公开视图)
-          var url = 'https://{{ site.goatcounter_code }}.goatcounter.com/counter/%2F.json';
-          var r = new XMLHttpRequest();
-          r.onreadystatechange = function() {
-              if (this.readyState === 4) {
-                  var countElement = document.getElementById('stats-total-count');
-                  if (this.status === 200) {
-                      try {
-                          var data = JSON.parse(this.responseText);
-                          countElement.innerText = data.count || "0";
-                      } catch (e) {
-                          countElement.innerText = "0";
-                      }
-                  } else {
-                      // 如果 404，尝试请求 TOTAL.json (GoatCounter 某些版本支持)
-                      if (this.status === 404 && url.indexOf('%2F.json') !== -1) {
-                          url = 'https://{{ site.goatcounter_code }}.goatcounter.com/counter/TOTAL.json';
-                          r.open('GET', url, true);
-                          r.send();
-                      } else {
-                          countElement.innerText = "0";
-                      }
-                  }
-              }
-          };
-          r.open('GET', url, true);
-          r.send();
-      });
-    </script>
     {% endif %}
   </div>
 </footer>
@@ -187,9 +157,14 @@
     gap: 0.4rem;
   }
 
-  #stats-total-count {
-    color: #38bdf8;
-    font-weight: 600;
+  .site-total-views img {
+    border-radius: 4px;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+  }
+
+  .site-total-views img:hover {
+    opacity: 1;
   }
 
   .footer-bottom a {
