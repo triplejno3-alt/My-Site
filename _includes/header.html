@@ -195,10 +195,12 @@ document.addEventListener('DOMContentLoaded', function() {
   async function getVisitorInfo() {
     try {
       // 1. Get location
-      const geoResponse = await fetch('http://ip-api.com/json?fields=city,lat,lon');
+      const geoResponse = await fetch('https://freeipapi.com/api/json');
       if (!geoResponse.ok) throw new Error('Failed to fetch location');
       const geoData = await geoResponse.json();
-      const { city, lat, lon } = geoData;
+      const city = geoData.cityName || 'somewhere';
+      const lat = geoData.latitude;
+      const lon = geoData.longitude;
 
       window.dispatchEvent(new CustomEvent('visitorLocationFound', { detail: { city, lat, lon } }));
 
