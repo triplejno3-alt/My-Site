@@ -29,13 +29,22 @@ layout: default
   <script>
     window.addEventListener('load', function() {
         if (!window.goatcounter || !window.goatcounter.get_data) return;
-        var path = window.goatcounter.get_data()['p'];
+        
+        // 获取规范路径并移除项目名前缀（针对 GitHub Pages 子目录部署）
+        // get_data()['p'] 返回的是已编码的路径，先解码再统一编码以避免二次编码问题
+        var path = decodeURIComponent(window.goatcounter.get_data()['p']).replace(/^\/My-Site/, '');
+        
         var r = new XMLHttpRequest();
         r.addEventListener('load', function() {
-            try {
-                var data = JSON.parse(this.responseText);
-                document.querySelector('#stats-view-count').innerText = data.count || "0";
-            } catch (e) {
+            if (this.status === 200) {
+                try {
+                    var data = JSON.parse(this.responseText);
+                    document.querySelector('#stats-view-count').innerText = data.count || "0";
+                } catch (e) {
+                    document.querySelector('#stats-view-count').innerText = "0";
+                }
+            } else {
+                // 如果返回 404 等，说明该路径尚无统计数据
                 document.querySelector('#stats-view-count').innerText = "0";
             }
         });

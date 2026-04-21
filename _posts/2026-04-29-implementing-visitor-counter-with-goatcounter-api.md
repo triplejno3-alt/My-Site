@@ -23,11 +23,16 @@ GoatCounter 官方提供了一些快速集成的方案，如通过 `visit_count(
 
 ### 1. 准确获取页面路径
 
-这是最关键的一步。由于静态站点的 URL 可能带有 `.html` 后缀，也可能省略，或者末尾带有斜杠。为了确保 API 请求的路径与后台记录的一致，我们利用 GoatCounter 脚本内置的方法：
+这是最关键的一步。由于静态站点的 URL 可能带有 `.html` 后缀，也可能省略，或者末尾带有斜杠。为了确保 API 请求的路径与后台记录的一致，我们利用 GoatCounter 脚本内置的方法。
+
+同时，为了应对子目录部署（如 GitHub Pages）和字符编码问题，我们需要对路径进行适当的清洗：
 
 ```javascript
-// 使用 count.js 提供的 get_data 方法获取规范化的路径 'p'
-var path = window.goatcounter.get_data()['p'];
+// 1. 获取规范化路径 'p'
+// 2. decodeURIComponent 避免二次编码问题
+// 3. 移除可能的项目名称前缀
+var path = decodeURIComponent(window.goatcounter.get_data()['p'])
+           .replace(/^\/My-Site/, '');
 ```
 
 ### 2. 获取单篇文章访问量
@@ -38,15 +43,20 @@ var path = window.goatcounter.get_data()['p'];
 window.addEventListener('load', function() {
     if (!window.goatcounter || !window.goatcounter.get_data) return;
     
-    var path = window.goatcounter.get_data()['p'];
+    var path = decodeURIComponent(window.goatcounter.get_data()['p'])
+               .replace(/^\/My-Site/, '');
     var r = new XMLHttpRequest();
     
     r.addEventListener('load', function() {
-        try {
-            var data = JSON.parse(this.responseText);
-            // 填充到指定的容器中
-            document.querySelector('#stats-view-count').innerText = data.count || "0";
-        } catch (e) {
+        if (this.status === 200) {
+            try {
+                var data = JSON.parse(this.responseText);
+                document.querySelector('#stats-view-count').innerText = data.count || "0";
+            } catch (e) {
+                document.querySelector('#stats-view-count').innerText = "0";
+            }
+        } else {
+            // 处理 404 等情况（如新页面尚未产生数据）
             document.querySelector('#stats-view-count').innerText = "0";
         }
     });
