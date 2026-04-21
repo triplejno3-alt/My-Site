@@ -27,6 +27,7 @@ url: "https://triplejno3-alt.github.io" # the base hostname & protocol for your 
 # twitter_username: triplejno3
 github_username:  triplejno3-alt
 google_analytics: G-LH19577VTW
+goatcounter_code: way
 
 # Build settings
 theme: minima
