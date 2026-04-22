@@ -6,7 +6,7 @@ layout: media
 <div class="media-item">
   <h2>Bilibili 视频</h2>
   <div class="media-embed-container">
-    <iframe src="//player.bilibili.com/player.html?aid=29088212&bvid=BV1qs411P7C1&cid=50616492&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
+    <iframe src="//player.bilibili.com/player.html?aid=29088212&bvid=BV1qs411P7C1&cid=50616492&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allow="fullscreen"></iframe>
   </div>
   <p>一个关于WebGL的有趣视频。</p>
 </div>
