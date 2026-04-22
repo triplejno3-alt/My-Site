@@ -82,3 +82,10 @@ resume:
       role: "Frontend Engineer"
       period: "2019 - 2022"
       desc: "主导多个响应式网站开发，获得年度最佳设计奖。"
+  links:
+    - name: "友情链接 1"
+      url: "#"
+    - name: "友情链接 2"
+      url: "#"
+    - name: "友情链接 3"
+      url: "#"

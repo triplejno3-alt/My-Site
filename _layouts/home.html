@@ -41,6 +41,15 @@
       </div>
       {% endfor %}
     </div>
+
+    <div class="links-section">
+      <h2 class="sidebar-title">友情链接</h2>
+      <div class="skill-tags">
+        {% for link in site.resume.links %}
+        <a href="{{ link.url }}" class="skill-tag" target="_blank">{{ link.name }}</a>
+        {% endfor %}
+      </div>
+    </div>
   </aside>
 
   <main class="resume-main">
