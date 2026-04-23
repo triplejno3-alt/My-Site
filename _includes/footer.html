@@ -44,6 +44,7 @@
         <span class="icon">📊</span> 全站总访问量：<span id="stats-total-count">...</span> 次
       </div>
       <div class="footer-time"><span class="icon">🕒</span> <span id="current-time">...</span></div>
+      <div class="footer-port"><span class="icon">🔌</span> 端口：<span id="current-port">...</span></div>
     </div>
     <script>
         // GoatCounter total views script
@@ -74,6 +75,16 @@
         }
         setInterval(updateTime, 1000);
         updateTime(); // initial call
+
+        // Display current port
+        function updatePort() {
+            const portEl = document.getElementById('current-port');
+            if (portEl) {
+                const port = window.location.port || (window.location.protocol === 'https:' ? '443' : '80');
+                portEl.textContent = port;
+            }
+        }
+        updatePort();
     </script>
     {% endif %}
   </div>
@@ -187,7 +198,7 @@
     margin-top: 1rem;
     flex-wrap: wrap;
   }
-  .site-total-views, .footer-time {
+  .site-total-views, .footer-time, .footer-port {
     font-size: 0.8rem;
     color: #64748b;
     display: flex;
@@ -197,6 +208,11 @@
 
   #stats-total-count {
     color: #38bdf8;
+    font-weight: 600;
+  }
+
+  #current-port {
+    color: #f472b6;
     font-weight: 600;
   }
 
