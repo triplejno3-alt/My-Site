@@ -1,0 +1,53 @@
+name: Deploy to AWS EC2
+
+on:
+  push:
+    branches: [ main, master ]  # 根据您的默认分支调整
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    # 如果您的项目需要构建（例如React/Vue/Node.js），取消下面的注释
+    # - name: Setup Node.js
+    #   uses: actions/setup-node@v4
+    #   with:
+    #     node-version: '18'
+    #     
+    # - name: Install dependencies
+    #   run: npm ci
+    #   
+    # - name: Build project
+    #   run: npm run build
+    
+    - name: Deploy to EC2 via SSH
+      uses: appleboy/ssh-action@v1
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USERNAME }}
+        key: ${{ secrets.SERVER_SSH_KEY }}
+        port: ${{ secrets.SERVER_PORT }}
+        script: |
+          # 进入网站目录
+          cd /home/ubuntu/My-Site
+          
+          # 拉取最新代码
+          git fetch --all
+          git reset --hard origin/$(git rev-parse --abbrev-ref HEAD)
+          
+          # 安装 Jekyll 依赖
+          bundle install
+          
+          # 构建静态网站
+          bundle exec jekyll build
+          
+          # 静态网站权限调整
+          sudo chown -R www-data:www-data /home/ubuntu/My-Site
+          sudo chmod -R 755 /home/ubuntu/My-Site
+          
+          # 输出部署时间
+          echo "✅ Deployment completed at $(date)"
