@@ -33,6 +33,13 @@
           {%- endif -%}
         </div>
       </div>
+      
+      <div class="footer-music">
+        <h4>音乐</h4>
+        <div id="music-player-container" class="music-player-container">
+          <iframe id="music-player" style="border-radius:12px" src="https://open.spotify.com/embed/album/1dBWNF06b7lnCF1M2SLTTZ?utm_source=generator&theme=0" width="100%" height="80" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        </div>
+      </div>
     </div>
   </div>
   
@@ -174,6 +181,27 @@
   .footer-contact a:hover, .social-icons a:hover {
     color: #38bdf8; /* 亮的明蓝色 */
     transform: translateX(4px);
+  }
+
+  .footer-music {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .music-player-container {
+    width: 280px;
+    height: 60px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  #music-player {
+    transform: scale(0.75);
+    transform-origin: left center;
+    width: 133.33%;
+    height: 133.33%;
   }
 
   .footer-bottom {
