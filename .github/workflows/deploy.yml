@@ -51,6 +51,9 @@ jobs:
           bundle config set --local path 'vendor/bundle'
           bundle install
           
+          echo "🧹 清理旧的构建产物..."
+          sudo rm -rf /home/ubuntu/My-Site/_site
+          
           echo "🔨 构建静态网站..."
           bundle exec jekyll build
           
