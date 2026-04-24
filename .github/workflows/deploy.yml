@@ -32,22 +32,31 @@ jobs:
         key: ${{ secrets.SERVER_SSH_KEY }}
         port: ${{ secrets.SERVER_PORT }}
         script: |
+          set -e
+          
+          echo "🚀 开始部署流程..."
+          
+          # 配置 Git
+          git config --global --add safe.directory /home/ubuntu/My-Site
+          
           # 进入网站目录
-          cd /home/ubuntu/My-Site
+          cd /home/ubuntu/My-Site || exit 1
           
-          # 拉取最新代码
-          git fetch --all
-          git reset --hard origin/$(git rev-parse --abbrev-ref HEAD)
+          echo "📥 拉取最新代码..."
+          git fetch origin main
+          git reset --hard origin/main
+          git clean -fd
           
-          # 安装 Jekyll 依赖
+          echo "📦 安装项目依赖..."
+          bundle config set --local path 'vendor/bundle'
           bundle install
           
-          # 构建静态网站
-          bundle exec jekyll build
+          echo "🔨 构建静态网站..."
+          bundle exec jekyll build --trace
           
-          # 静态网站权限调整
-          sudo chown -R www-data:www-data /home/ubuntu/My-Site
-          sudo chmod -R 755 /home/ubuntu/My-Site
+          echo "🔧 设置文件权限..."
+          sudo chown -R www-data:www-data /home/ubuntu/My-Site/_site
+          sudo chmod -R 755 /home/ubuntu/My-Site/_site
           
           # 输出部署时间
-          echo "✅ Deployment completed at $(date)"
+          echo "✅ Deployment completed successfully at $(date)"
