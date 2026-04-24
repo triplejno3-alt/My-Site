@@ -52,7 +52,7 @@ jobs:
           bundle install
           
           echo "🔨 构建静态网站..."
-          bundle exec jekyll build --trace
+          bundle exec jekyll build
           
           echo "🔧 设置文件权限..."
           sudo chown -R www-data:www-data /home/ubuntu/My-Site/_site
