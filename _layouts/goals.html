@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="{{ page.lang | default: site.lang | default: 'zh-CN' }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page.title | escape }} | {{ site.title | escape }}</title>
+  <link rel="stylesheet" href="{{ '/assets/main.css' | relative_url }}">
+  {% if site.google_analytics %}
+    {% include google-analytics.html %}
+  {% endif %}
+  {% if site.goatcounter_code %}
+    <script data-goatcounter="https://{{ site.goatcounter_code }}.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  {% endif %}
+</head>
+<body>
+{% include header.html %}
+
+
+<div class="goals-layout-wrapper wrapper">
+  <aside class="goals-sidebar">
+    <!-- 📋 我的订阅 -->
+    <div class="subscription-section">
+
+      <h2 class="sidebar-title">📋 我的订阅</h2>
+      <p class="subscription-intro">以下是我每月的固定开销，了解这些能让你更清楚我的运营成本。</p>
+      
+      <div class="subscription-list">
+        <div class="sub-item">
+          <div class="sub-icon">🎵</div>
+          <div class="sub-info">
+            <span class="sub-name">网易云音乐</span>
+            <span class="sub-desc">音乐流媒体</span>
+          </div>
+          <span class="sub-price">¥15<small>/月</small></span>
+        </div>
+
+        <div class="sub-item">
+          <div class="sub-icon">☁️</div>
+          <div class="sub-info">
+            <span class="sub-name">iCloud</span>
+            <span class="sub-desc">云存储</span>
+          </div>
+          <span class="sub-price">¥6<small>/月</small></span>
+        </div>
+
+        <div class="sub-item">
+          <div class="sub-icon">🤖</div>
+          <div class="sub-info">
+            <span class="sub-name">ChatGPT Plus</span>
+            <span class="sub-desc">AI 对话助手</span>
+          </div>
+          <span class="sub-price">¥140<small>/月</small></span>
+        </div>
+
+        <div class="sub-item">
+          <div class="sub-icon">🌐</div>
+          <div class="sub-info">
+            <span class="sub-name">域名</span>
+            <span class="sub-desc">网站域名续费</span>
+          </div>
+          <span class="sub-price">¥8.3<small>/月</small></span>
+        </div>
+      </div>
+
+      <div class="sub-total">
+        <span class="total-label">月均合计</span>
+        <span class="total-price">¥169.3<small>/月</small></span>
+      </div>
+    </div>
+  </aside>
+
+
+  <main class="goals-main">
+    {{ content }}
+  </main>
+</div>
+
+{% include footer.html %}
+
+<style>
+  .goals-layout-wrapper {
+
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 3rem;
+    padding: 4rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    align-items: start;
+  }
+
+  /* Sidebar Styles */
+  .goals-sidebar {
+    position: sticky;
+    top: 2rem;
+  }
+
+  .sidebar-title {
+
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--accent);
+    display: inline-block;
+  }
+
+  /* ===== 订阅区域 ===== */
+  .subscription-section {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    margin-bottom: 2rem;
+  }
+
+  .subscription-intro {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    line-height: 1.5;
+    margin-bottom: 1.2rem;
+  }
+
+  .subscription-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .sub-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.8rem;
+    background: var(--bg-light);
+    border-radius: 10px;
+    transition: transform 0.2s;
+  }
+
+  .sub-item:hover {
+    transform: translateX(3px);
+  }
+
+  .sub-icon {
+    font-size: 1.2rem;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  .sub-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .sub-name {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--primary);
+  }
+
+  .sub-desc {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--text-light);
+  }
+
+  .sub-price {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+
+  .sub-price small {
+    font-size: 0.7rem;
+    font-weight: 400;
+    color: var(--text-light);
+  }
+
+  .sub-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    border-top: 2px dashed var(--border-color);
+  }
+
+  .total-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-main);
+  }
+
+  .total-price {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--accent);
+  }
+
+  .total-price small {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--text-light);
+  }
+
+  /* ===== 技能 ===== */
+  .skills-section, .links-section {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    margin-bottom: 2rem;
+  }
+
+  .skill-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .skill-category {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-bottom: 0.75rem;
+    font-weight: 700;
+  }
+
+  .skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .skill-tag {
+    background: var(--bg-light);
+    color: var(--text-main);
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    border: 1px solid var(--border-color);
+    text-decoration: none;
+  }
+
+  .skill-tag:hover {
+    border-color: var(--accent);
+  }
+
+  /* Main Content */
+  .goals-main {
+    min-width: 0;
+  }
+
+  @media (max-width: 900px) {
+    .goals-layout-wrapper {
+      grid-template-columns: 1fr;
+      padding: 2rem 1rem;
+    }
+    .goals-sidebar {
+      position: static;
+    }
+  }
+</style>
+</body>
+</html>
+

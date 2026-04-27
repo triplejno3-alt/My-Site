@@ -17,8 +17,8 @@
 
     <nav class="header-right">
       <ul class="nav-links">
-        <li><a href="{{ "/" | relative_url }}">Resume</a></li>
         {%- for page in site.pages -%}
+
           {%- if page.title -%}
           <li><a href="{{ page.url | relative_url }}">{{ page.title | escape }}</a></li>
           {%- endif -%}
@@ -203,28 +203,31 @@ document.addEventListener('DOMContentLoaded', function() {
     try {
       // 1. Get location with fallback
       async function fetchGeoLocation() {
-        try { // Try ipapi.co first
-            const res = await fetch('https://ipapi.co/json/');
-            if (res.ok) {
-              const data = await res.json();
-              return { city: data.city, lat: data.latitude, lon: data.longitude };
-            }
-        } catch(e) {}
-        
-        // Fallback: JSONP via ip-api.com
+        // Use ip-api.com JSONP (no CORS issues)
         return new Promise((resolve, reject) => {
             const script = document.createElement('script');
             const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
             window[callbackName] = (data) => {
                 delete window[callbackName];
                 document.head.removeChild(script);
-                resolve({ city: data.city, lat: data.lat, lon: data.lon });
+                if (data.status === 'success') {
+                  resolve({ city: data.city, lat: data.lat, lon: data.lon });
+                } else {
+                  reject(new Error('ip-api failed'));
+                }
             };
-            script.src = `https://ip-api.com/json/?callback=${callbackName}`;
-            script.onerror = reject;
+            script.src = `https://ip-api.com/json/${callbackName}?callback=${callbackName}`;
+            script.onerror = () => {
+                delete window[callbackName];
+                document.head.removeChild(script);
+                // Final fallback: use timezone-based city guess
+                const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                resolve({ city: tz.split('/').pop().replace('_', ' ') || 'Unknown', lat: 0, lon: 0 });
+            };
             document.head.appendChild(script);
         });
       }
+
       const { city, lat, lon } = await fetchGeoLocation();
 
       window.dispatchEvent(new CustomEvent('visitorLocationFound', { detail: { city, lat, lon } }));

@@ -1,6 +1,7 @@
 ---
 layout: default
-title: 归档
+title: 文章
+
 permalink: /archive/
 ---
 

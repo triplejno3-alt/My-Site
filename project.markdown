@@ -1,6 +1,7 @@
 ---
 layout: project
-title: Project
+title: 作品
+
 ---
 
 <div class="project-grid">
