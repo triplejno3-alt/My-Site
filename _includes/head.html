@@ -1,0 +1,38 @@
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {%- seo -%}
+  <link rel="stylesheet" href="{{ "/assets/main.css" | relative_url }}">
+  {%- feed_meta -%}
+  {%- if jekyll.environment == 'production' and site.google_analytics -%}
+    {%- include google-analytics.html -%}
+  {%- endif -%}
+
+  <!-- PWA: Manifest -->
+  <link rel="manifest" href="{{ "/manifest.json" | relative_url }}">
+
+  <!-- PWA: iOS 支持 -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="{{ site.title | escape }}">
+  <link rel="apple-touch-icon" href="{{ "/assets/icons/icon-192.png" | relative_url }}">
+
+  <!-- PWA: 主题色 -->
+  <meta name="theme-color" content="#2c3e50">
+
+  <!-- PWA: Service Worker 注册 -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('{{ "/sw.js" | relative_url }}', {
+          scope: '{{ "/" | relative_url }}'
+        }).then(function(reg) {
+          console.log('⚡ PWA: Service Worker 注册成功', reg.scope);
+        }).catch(function(err) {
+          console.log('⚡ PWA: Service Worker 注册失败', err);
+        });
+      });
+    }
+  </script>
+</head>
