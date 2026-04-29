@@ -36,6 +36,22 @@ plugins:
   - jekyll-feed
   - jekyll-toc
 
+# TOC 配置
+toc:
+  min_level: 2
+  max_level: 3
+  list_class: toc-list
+  item_class: toc-item
+  no_toc_section_class: no_toc_section
+
+# 默认所有文章启用 TOC
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      toc: true
+
 # Exclude from processing.
 # The following items will not be processed, by default.
 # Any item listed under the `exclude:` key here will be automatically added to

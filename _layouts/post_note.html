@@ -2,57 +2,438 @@
 layout: default
 ---
 
-<article class="post note-post" style="max-width: 800px; margin: 0 auto; padding: 0 2rem;">
+<!-- ====== 双栏布局：左侧文章 + 右侧 TOC 侧边栏 ====== -->
+<div class="post-layout-dual">
+  <div class="post-main">
+    <article class="post note-post">
 
-  <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 12px; margin-bottom: 1.5rem;">
-    <h1 class="post-title" style="margin:0; color:white;">{{ page.title | escape }}</h1>
-    <p style="margin:1rem 0 0 0; opacity:0.9;">
-      📝 笔记分类: {{ page.category | default: "知识笔记" }}
-      &nbsp;&nbsp;|&nbsp;&nbsp;
-      ⏰ 创建于 {{ page.date | date: "%Y年%m月%d日" }}
-      {%- assign words = content | strip_html | number_of_words -%}
-      <span class="reading-time"> • 阅读时间: {{ words | divided_by: 180 | plus: 1 }} 分钟</span>
-      &nbsp;&nbsp;|&nbsp;&nbsp;
-      ⭐ 重要性: {{ page.importance | default: "普通" }}
-    </p>
+    <!-- ====== 标题 ====== -->
+      <header style="margin-bottom: 1.5rem;">
+        <h1 class="post-title" style="margin:0; color: var(--primary, #2c3e50);">{{ page.title | escape }}</h1>
+
+        <!-- ====== 作者行（从 frontmatter 读取） ====== -->
+        {%- assign authors_list = page.authors | default: page.author | default: "" -%}
+        {%- if authors_list != "" -%}
+        {%- if authors_list.first -%}
+          {%- assign author_keys = authors_list -%}
+        {%- else -%}
+          {%- assign author_keys = "" | split: "" -%}
+          {%- assign author_keys = author_keys | push: authors_list -%}
+        {%- endif -%}
+        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.75rem;">
+          {%- for author_key in author_keys -%}
+            {%- assign author_data = site.data.authors[author_key] -%}
+            {%- if author_data -%}
+              {%- if forloop.index > 1 -%}
+              <span style="color: var(--text-light, #7f8c8d); font-size: 0.7rem; margin: 0 0.2rem;">&</span>
+              {%- endif -%}
+              <span style="width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--accent, #667eea), #764ba2); display: inline-flex; align-items: center; justify-content: center; color: white; font-size: 0.7rem; font-weight: 700; flex-shrink: 0;">
+                {{ author_data.short_name | default: author_data.name | slice: 0, 1 | upcase }}
+              </span>
+              <span style="font-weight: 600; color: var(--primary, #2c3e50); font-size: 0.9rem;">{{ author_data.name }}</span>
+              {% if author_data.role %}
+              <span style="color: var(--text-light, #7f8c8d); font-size: 0.8rem;">· {{ author_data.role }}</span>
+              {% endif %}
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+        {%- endif -%}
+
+        <!-- ====== 时间行 ====== -->
+        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; margin-top: 0.5rem; color: var(--text-light, #7f8c8d); font-size: 0.85rem;">
+          <span>📅 {{ page.date | date: "%Y年%m月%d日" }}</span>
+          <span>📁 {{ page.categories | join: ' / ' | default: page.category | default: "知识笔记" }}</span>
+          {%- assign words = content | strip_html | number_of_words -%}
+          <span>⏱ {{ words | divided_by: 180 | plus: 1 }} 分钟阅读</span>
+          {% if page.importance %}<span>⭐ {{ page.importance }}</span>{% endif %}
+        </div>
+
+        <!-- ====== 关键词行（标签） ====== -->
+        {% if page.tags %}
+        <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.75rem;">
+          {% for tag in page.tags %}
+          <span style="display:inline-block; background:#f0f2f5; padding:3px 10px; border-radius:20px; font-size:0.8rem; color: var(--text-main, #34495e);">#{{ tag }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </header>
+
+      {% if page.summary %}
+      <div class="note-summary" style="border-left: 4px solid #667eea; padding:1rem 1.5rem; background:#f8f9ff; margin-bottom:2rem; border-radius:0 8px 8px 0;">
+        <strong>📌 要点摘要:</strong> {{ page.summary }}
+      </div>
+      {% endif %}
+
+      <div class="post-content note-content post-content-with-toc" style="line-height: 1.8;">
+        {{ content | inject_anchors }}
+        {% include reading-stats.html %}
+      </div>
+
+      {% if page.related %}
+      <div class="related-notes" style="margin-top:3rem; padding-top:2rem; border-top:1px solid #eee;">
+        <h4>🔗 相关笔记</h4>
+        <ul>
+        {% for note in page.related %}
+          <li>{{ note }}</li>
+        {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+    </article>
   </div>
 
-  {%- assign author_id = page.author | default: "way" -%}
-  {%- assign author = site.data.authors[author_id] -%}
-  {%- if author -%}
-    {% include author-card.html %}
-  {%- endif -%}
-
-  {% if page.tags %}
-  <div class="note-tags" style="margin-bottom: 1.5rem;">
-    {% for tag in page.tags %}
-    <span style="display:inline-block; background:#f0f2f5; padding:4px 12px; margin-right:8px; border-radius:20px; font-size:0.9rem;">
-      #{{ tag }}
-    </span>
-    {% endfor %}
-  </div>
+  {% if page.toc != false %}
+  <!-- ====== 右侧 TOC 侧边栏 ====== -->
+  <aside class="post-toc-sidebar" id="tocSidebar">
+    <div class="toc-sticky">
+      <div class="toc-header">📑 目录</div>
+      {% assign toc_html = content | toc_only %}
+      {% if toc_html != "" %}
+      <nav class="toc-nav" id="tocNav">
+        {{ toc_html }}
+      </nav>
+      {% endif %}
+    </div>
+  </aside>
   {% endif %}
+</div>
 
-  {% if page.summary %}
-  <div class="note-summary" style="border-left: 4px solid #667eea; padding:1rem 1.5rem; background:#f8f9ff; margin-bottom:2rem; border-radius:0 8px 8px 0;">
-    <strong>📌 要点摘要:</strong> {{ page.summary }}
-  </div>
-  {% endif %}
+<style>
+/* ====== 双栏布局 ====== */
+.post-layout-dual {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  position: relative;
+}
 
-  <div class="post-content note-content" style="line-height: 1.8;">
-    {{ content }}
-    {% include reading-stats.html %}
-  </div>
+.post-main {
+  flex: 0 1 800px;
+  min-width: 0;
+}
 
-  {% if page.related %}
-  <div class="related-notes" style="margin-top:3rem; padding-top:2rem; border-top:1px solid #eee;">
-    <h4>🔗 相关笔记</h4>
-    <ul>
-    {% for note in page.related %}
-      <li>{{ note }}</li>
-    {% endfor %}
-    </ul>
-  </div>
-  {% endif %}
+/* ====== TOC 侧边栏 ====== */
+.post-toc-sidebar {
+  flex: 0 0 240px;
+  min-width: 0;
+  position: relative;
+}
 
-</article>
+.toc-sticky {
+  position: sticky;
+  top: 2rem;
+  max-height: calc(100vh - 4rem);
+  overflow-y: auto;
+  padding: 0 0 1rem 0;
+}
+
+.toc-header {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--primary, #2c3e50);
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.toc-nav {
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.toc-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.toc-nav ul ul {
+  padding-left: 1rem;
+  margin-top: 0.15rem;
+  margin-bottom: 0.15rem;
+}
+
+.toc-nav li {
+  margin: 0.15rem 0;
+}
+
+.toc-nav a {
+  display: block;
+  padding: 0.2rem 0;
+  color: #6b7280;
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  padding-left: 0.75rem;
+  transition: all 0.15s ease;
+  border-radius: 0;
+}
+
+.toc-nav a:hover {
+  color: var(--accent, #667eea);
+  border-left-color: var(--accent, #667eea);
+}
+
+.toc-nav a.active {
+  color: var(--accent, #667eea);
+  font-weight: 600;
+  border-left-color: var(--accent, #667eea);
+}
+
+/* ====== 小屏隐藏侧边栏 ====== */
+@media (max-width: 1100px) {
+  .post-toc-sidebar {
+    display: none;
+  }
+}
+
+/* ====== 代码块 ====== */
+.note-content pre {
+  position: relative;
+  background: #1e1e2e !important;
+  color: #cdd6f4 !important;
+  border-radius: 8px;
+  padding: 1rem 1.25rem !important;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  overflow-x: auto;
+  border: 1px solid #313244;
+}
+
+.note-content pre code {
+  background: none !important;
+  color: inherit !important;
+  padding: 0 !important;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SF Mono', Consolas, monospace;
+  font-size: 0.85rem;
+}
+
+/* 代码块语言标签 */
+.pre-lang-label {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.75rem;
+  font-size: 0.7rem;
+  color: #6c7086;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  pointer-events: none;
+}
+
+/* Copy 按钮 */
+.pre-copy-btn {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.75rem;
+  background: none;
+  border: 1px solid transparent;
+  color: #6c7086;
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: 4px;
+  opacity: 0;
+  transition: all 0.15s ease;
+  z-index: 2;
+}
+
+pre:hover .pre-copy-btn,
+.pre-copy-btn:focus-visible {
+  opacity: 1;
+}
+
+.pre-copy-btn:hover {
+  color: #cdd6f4;
+  border-color: #45475a;
+  background: #313244;
+}
+
+.pre-copy-btn.copied {
+  color: #a6e3a1;
+  border-color: #a6e3a1;
+}
+
+/* ====== 代码折叠（仅 >40 行，默认展开） ====== */
+pre.collapsible-code {
+  max-height: none;
+  cursor: default;
+}
+
+.pre-code-fold-btn {
+  display: block;
+  width: 100%;
+  padding: 6px 0;
+  background: #181825;
+  color: #6c7086;
+  font-size: 0.8rem;
+  text-align: center;
+  cursor: pointer;
+  border: 1px solid #313244;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  transition: color 0.2s, background 0.2s;
+  font-family: inherit;
+  margin-top: -1px;
+}
+
+.pre-code-fold-btn:hover {
+  color: #cdd6f4;
+  background: #1e1e2e;
+}
+
+/* ====== TOC 为空的文章不显示占位 ====== */
+.post-toc-sidebar:empty {
+  display: none;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var tocNav = document.getElementById('tocNav');
+  if (!tocNav) return;
+
+  var links = tocNav.querySelectorAll('a');
+  if (links.length === 0) return;
+
+  // 收集所有的标题元素（toc a 的 href 对应页面上的 id）
+  var headings = [];
+  links.forEach(function(link) {
+    var href = link.getAttribute('href');
+    if (href && href.startsWith('#')) {
+      var el = document.getElementById(href.substring(1));
+      if (el) headings.push({ el: el, link: link });
+    }
+  });
+
+  if (headings.length === 0) {
+    // 降级：toc 的 href 可能包含中文，用 decodeURI 匹配
+    links.forEach(function(link) {
+      var href = link.getAttribute('href');
+      if (href && href.startsWith('#')) {
+        var decodedId = decodeURIComponent(href.substring(1));
+        var el = document.getElementById(decodedId);
+        if (el) headings.push({ el: el, link: link });
+      }
+    });
+  }
+
+  if (headings.length === 0) return;
+
+  function updateActiveLink() {
+    var scrollY = window.scrollY + 80; // 偏移量，让高亮更灵敏
+
+    var current = null;
+    for (var i = headings.length - 1; i >= 0; i--) {
+      if (headings[i].el.offsetTop <= scrollY) {
+        current = headings[i];
+        break;
+      }
+    }
+
+    // 如果还没滚到任何标题，选择第一个
+    if (!current && headings.length > 0) {
+      current = headings[0];
+    }
+
+    links.forEach(function(l) { l.classList.remove('active'); });
+
+    if (current) {
+      current.link.classList.add('active');
+    }
+  }
+
+  // 初始加载时激活
+  setTimeout(updateActiveLink, 100);
+
+  window.addEventListener('scroll', updateActiveLink, { passive: true });
+});
+
+// ====== 代码块样式增强：折叠 + 语言标签 + Copy ======
+document.addEventListener('DOMContentLoaded', function() {
+  var threshold = 40; // 超过 40 行才折叠
+  var codeBlocks = document.querySelectorAll('.note-content pre');
+
+  codeBlocks.forEach(function(pre) {
+    var code = pre.querySelector('code');
+    if (!code) return;
+
+    // 设置相对定位（给 Copy/标签按钮定位用）
+    var style = window.getComputedStyle(pre);
+    if (style.position === 'static') pre.style.position = 'relative';
+
+    // 尝试提取语言（从 class 名如 language-js, language-bash 中取）
+    var lang = '';
+    code.className.split(/\s+/).forEach(function(cls) {
+      var m = cls.match(/^language-(.+)$/);
+      if (m) lang = m[1];
+    });
+
+    // 语言标签
+    if (lang) {
+      var label = document.createElement('span');
+      label.className = 'pre-lang-label';
+      // 给 Copy 按钮腾位置：语言标签放左上，Copy 右上
+      label.style.left = '0.75rem';
+      label.style.right = 'auto';
+      label.textContent = lang;
+      pre.appendChild(label);
+    }
+
+    // Copy 按钮
+    var btn = document.createElement('button');
+    btn.className = 'pre-copy-btn';
+    btn.textContent = 'Copy';
+    pre.appendChild(btn);
+
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var text = code.textContent || code.innerText;
+      navigator.clipboard.writeText(text).then(function() {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(function() {
+          btn.textContent = 'Copy';
+          btn.classList.remove('copied');
+        }, 2000);
+      }).catch(function() {
+        btn.textContent = 'Fail';
+      });
+    });
+
+    // 折叠逻辑：仅 >=40 行的才折叠，默认展开
+    var lines = code.innerHTML.split('\n');
+    var start = 0, end = lines.length - 1;
+    while (start < lines.length && lines[start].trim() === '') start++;
+    while (end > start && lines[end].trim() === '') end--;
+    var codeLineCount = Math.max(0, end - start + 1);
+
+    if (codeLineCount < threshold) return;
+
+    // 默认展开全部，加一个「收起」按钮
+    pre.classList.add('collapsible-code');
+
+    var foldBtn = document.createElement('button');
+    foldBtn.className = 'pre-code-fold-btn';
+    foldBtn.textContent = '▲ 收起代码';
+    pre.parentNode.insertBefore(foldBtn, pre.nextSibling);
+
+    var isFolded = false;
+
+    var prevSiblingLabel = null; // 语言标签放在 pre 里，不受影响
+
+    foldBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      isFolded = !isFolded;
+      if (isFolded) {
+        // 折叠：只显示前 threshold 行
+        code.innerHTML = lines.slice(0, start + threshold).join('\n');
+        foldBtn.textContent = '▼ 展开剩余 ' + (codeLineCount - threshold) + ' 行';
+      } else {
+        // 展开全部
+        code.innerHTML = lines.join('\n');
+        foldBtn.textContent = '▲ 收起代码';
+      }
+    });
+  });
+});
+</script>

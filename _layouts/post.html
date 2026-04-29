@@ -1,46 +1,244 @@
 ---
 layout: default
 ---
-<article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+<div class="post-layout-dual">
+  <div class="post-main">
+    <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
 
-  <header class="post-header">
-    <h1 class="post-title p-name" itemprop="headline">{{ page.title | escape }}</h1>
-    <p class="post-meta">
-      <time class="dt-published" datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
-        {%- assign date_format = site.minima.date_format | default: "%b %-d, %Y" -%}
-        {{ page.date | date: date_format }}
-      </time>
-      {%- assign author_id = page.author | default: "way" -%}
-      {%- assign author = site.data.authors[author_id] -%}
-      {%- if author -%}
-        • <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">{{ author.short_name | default: author.name }}</span></span>
+      <header class="post-header">
+        <h1 class="post-title p-name" itemprop="headline">{{ page.title | escape }}</h1>
+        <p class="post-meta">
+          <time class="dt-published" datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
+            {%- assign date_format = site.minima.date_format | default: "%b %-d, %Y" -%}
+            {{ page.date | date: date_format }}
+          </time>
+          {%- assign author_id = page.author | default: "way" -%}
+          {%- assign author = site.data.authors[author_id] -%}
+          {%- if author -%}
+            • <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">{{ author.short_name | default: author.name }}</span></span>
+          {%- endif -%}
+          {%- assign words = content | strip_html | number_of_words -%}
+          <span class="reading-time">• 阅读时间: {{ words | divided_by: 180 | plus: 1 }} 分钟</span>
+        </p>
+        {%- if author -%}
+          {% include author-card.html %}
+        {%- endif -%}
+      </header>
+
+      <div class="post-content e-content post-content-with-toc" itemprop="articleBody">
+        {{ content | inject_anchors }}
+        {% include reading-stats.html %}
+      </div>
+
+      {%- if page.tags.size > 0 -%}
+      <div class="post-tags">
+        <span class="post-tags-label">🏷️ 标签：</span>
+        {% for tag in page.tags %}
+        <a href="{{ '/' | relative_url }}?tag={{ tag | url_encode }}" class="post-tag">{{ tag }}</a>
+        {% endfor %}
+      </div>
       {%- endif -%}
-      {%- assign words = content | strip_html | number_of_words -%}
-      <span class="reading-time">• 阅读时间: {{ words | divided_by: 180 | plus: 1 }} 分钟</span>
-    </p>
-    {%- if author -%}
-      {% include author-card.html %}
-    {%- endif -%}
-  </header>
 
-  <div class="post-content e-content" itemprop="articleBody">
-    {{ content }}
-    {% include reading-stats.html %}
+      <a class="u-url" href="{{ page.url | relative_url }}" hidden></a>
+    </article>
   </div>
 
-  {%- if page.tags.size > 0 -%}
-  <div class="post-tags">
-    <span class="post-tags-label">🏷️ 标签：</span>
-    {% for tag in page.tags %}
-    <a href="{{ '/' | relative_url }}?tag={{ tag | url_encode }}" class="post-tag">{{ tag }}</a>
-    {% endfor %}
-  </div>
-  {%- endif -%}
-
-  <a class="u-url" href="{{ page.url | relative_url }}" hidden></a>
-</article>
+  {% if page.toc != false %}
+  <aside class="post-toc-sidebar" id="tocSidebar">
+    <div class="toc-sticky">
+      <div class="toc-header">📑 目录</div>
+      {% assign toc_html = content | toc_only %}
+      {% if toc_html != "" %}
+      <nav class="toc-nav" id="tocNav">
+        {{ toc_html }}
+      </nav>
+      {% endif %}
+    </div>
+  </aside>
+  {% endif %}
+</div>
 
 <style>
+  .post-layout-dual {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    position: relative;
+  }
+
+  .post-main {
+    flex: 0 1 800px;
+    min-width: 0;
+  }
+
+  .post-toc-sidebar {
+    flex: 0 0 240px;
+    min-width: 0;
+    position: relative;
+  }
+
+  .toc-sticky {
+    position: sticky;
+    top: 2rem;
+    max-height: calc(100vh - 4rem);
+    overflow-y: auto;
+    padding: 0 0 1rem 0;
+  }
+
+  .toc-header {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--primary, #2c3e50);
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .toc-nav {
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+
+  .toc-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .toc-nav ul ul {
+    padding-left: 1rem;
+    margin-top: 0.15rem;
+    margin-bottom: 0.15rem;
+  }
+
+  .toc-nav li {
+    margin: 0.15rem 0;
+  }
+
+  .toc-nav a {
+    display: block;
+    padding: 0.2rem 0;
+    color: #6b7280;
+    text-decoration: none;
+    border-left: 2px solid transparent;
+    padding-left: 0.75rem;
+    transition: all 0.15s ease;
+    border-radius: 0;
+  }
+
+  .toc-nav a:hover {
+    color: var(--accent, #667eea);
+    border-left-color: var(--accent, #667eea);
+  }
+
+  .toc-nav a.active {
+    color: var(--accent, #667eea);
+    font-weight: 600;
+    border-left-color: var(--accent, #667eea);
+  }
+
+  @media (max-width: 1100px) {
+    .post-toc-sidebar {
+      display: none;
+    }
+  }
+
+  .post-toc-sidebar:empty {
+    display: none;
+  }
+
+  /* ====== 代码块（post layout） ====== */
+  .e-content pre {
+    position: relative;
+    background: #1e1e2e !important;
+    color: #cdd6f4 !important;
+    border-radius: 8px;
+    padding: 1rem 1.25rem !important;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    overflow-x: auto;
+    border: 1px solid #313244;
+  }
+
+  .e-content pre code {
+    background: none !important;
+    color: inherit !important;
+    padding: 0 !important;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SF Mono', Consolas, monospace;
+    font-size: 0.85rem;
+  }
+
+  .pre-lang-label {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.75rem;
+    font-size: 0.7rem;
+    color: #6c7086;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .pre-copy-btn {
+    position: absolute;
+    top: 0.4rem;
+    right: 0.75rem;
+    background: none;
+    border: 1px solid transparent;
+    color: #6c7086;
+    font-size: 0.75rem;
+    cursor: pointer;
+    padding: 2px 8px;
+    border-radius: 4px;
+    opacity: 0;
+    transition: all 0.15s ease;
+    z-index: 2;
+  }
+
+  pre:hover .pre-copy-btn,
+  .pre-copy-btn:focus-visible {
+    opacity: 1;
+  }
+
+  .pre-copy-btn:hover {
+    color: #cdd6f4;
+    border-color: #45475a;
+    background: #313244;
+  }
+
+  .pre-copy-btn.copied {
+    color: #a6e3a1;
+    border-color: #a6e3a1;
+  }
+
+  pre.collapsible-code {
+    max-height: none;
+    cursor: default;
+  }
+
+  .pre-code-fold-btn {
+    display: block;
+    width: 100%;
+    padding: 6px 0;
+    background: #181825;
+    color: #6c7086;
+    font-size: 0.8rem;
+    text-align: center;
+    cursor: pointer;
+    border: 1px solid #313244;
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    transition: color 0.2s, background 0.2s;
+    font-family: inherit;
+    margin-top: -1px;
+  }
+
+  .pre-code-fold-btn:hover {
+    color: #cdd6f4;
+    background: #1e1e2e;
+  }
+
   .post-header {
     margin-bottom: 2rem;
     padding-bottom: 1rem;
@@ -93,7 +291,6 @@ layout: default
     border-color: var(--accent);
   }
 
-  /* ========== 响应式 ========== */
   @media (max-width: 768px) {
     .post-title {
       font-size: 1.6rem;
@@ -109,3 +306,132 @@ layout: default
     }
   }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var tocNav = document.getElementById('tocNav');
+  if (!tocNav) return;
+
+  var links = tocNav.querySelectorAll('a');
+  if (links.length === 0) return;
+
+  var headings = [];
+  links.forEach(function(link) {
+    var href = link.getAttribute('href');
+    if (href && href.startsWith('#')) {
+      var el = document.getElementById(href.substring(1));
+      if (el) headings.push({ el: el, link: link });
+    }
+  });
+
+  if (headings.length === 0) {
+    links.forEach(function(link) {
+      var href = link.getAttribute('href');
+      if (href && href.startsWith('#')) {
+        var decodedId = decodeURIComponent(href.substring(1));
+        var el = document.getElementById(decodedId);
+        if (el) headings.push({ el: el, link: link });
+      }
+    });
+  }
+
+  if (headings.length === 0) return;
+
+  function updateActiveLink() {
+    var scrollY = window.scrollY + 80;
+    var current = null;
+    for (var i = headings.length - 1; i >= 0; i--) {
+      if (headings[i].el.offsetTop <= scrollY) {
+        current = headings[i];
+        break;
+      }
+    }
+    if (!current && headings.length > 0) {
+      current = headings[0];
+    }
+    links.forEach(function(l) { l.classList.remove('active'); });
+    if (current) {
+      current.link.classList.add('active');
+    }
+  }
+
+  setTimeout(updateActiveLink, 100);
+  window.addEventListener('scroll', updateActiveLink, { passive: true });
+});
+
+// ====== 代码块样式增强：折叠 + 语言标签 + Copy ======
+document.addEventListener('DOMContentLoaded', function() {
+  var threshold = 40;
+  var codeBlocks = document.querySelectorAll('.e-content pre');
+
+  codeBlocks.forEach(function(pre) {
+    var code = pre.querySelector('code');
+    if (!code) return;
+
+    var style = window.getComputedStyle(pre);
+    if (style.position === 'static') pre.style.position = 'relative';
+
+    var lang = '';
+    code.className.split(/\s+/).forEach(function(cls) {
+      var m = cls.match(/^language-(.+)$/);
+      if (m) lang = m[1];
+    });
+
+    if (lang) {
+      var label = document.createElement('span');
+      label.className = 'pre-lang-label';
+      label.textContent = lang;
+      pre.appendChild(label);
+    }
+
+    var btn = document.createElement('button');
+    btn.className = 'pre-copy-btn';
+    btn.textContent = 'Copy';
+    pre.appendChild(btn);
+
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var text = code.textContent || code.innerText;
+      navigator.clipboard.writeText(text).then(function() {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(function() {
+          btn.textContent = 'Copy';
+          btn.classList.remove('copied');
+        }, 2000);
+      }).catch(function() {
+        btn.textContent = 'Fail';
+      });
+    });
+
+    var lines = code.innerHTML.split('\n');
+    var start = 0, end = lines.length - 1;
+    while (start < lines.length && lines[start].trim() === '') start++;
+    while (end > start && lines[end].trim() === '') end--;
+    var codeLineCount = Math.max(0, end - start + 1);
+
+    if (codeLineCount < threshold) return;
+
+    pre.classList.add('collapsible-code');
+
+    var foldBtn = document.createElement('button');
+    foldBtn.className = 'pre-code-fold-btn';
+    foldBtn.textContent = '▲ 收起代码';
+    pre.parentNode.insertBefore(foldBtn, pre.nextSibling);
+
+    var isFolded = false;
+
+    foldBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      isFolded = !isFolded;
+      if (isFolded) {
+        code.innerHTML = lines.slice(0, start + threshold).join('\n');
+        foldBtn.textContent = '▼ 展开剩余 ' + (codeLineCount - threshold) + ' 行';
+      } else {
+        code.innerHTML = lines.join('\n');
+        foldBtn.textContent = '▲ 收起代码';
+      }
+    });
+  });
+});
+</script>

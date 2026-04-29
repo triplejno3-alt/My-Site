@@ -8,20 +8,67 @@ permalink: /archive/
 <div class="archive-wrapper wrapper">
   <h1 class="page-heading">文章归档</h1>
 
-  <!-- 标签筛选栏（可折叠） -->
+  <!-- 多维筛选栏（可折叠） -->
   <div class="archive-toolbar">
-    <div class="tag-filter-header" onclick="toggleTagFilter()">
-      <span class="tag-filter-label">🏷️ 标签筛选</span>
-      <span class="tag-filter-toggle" id="filter-toggle">展开 ▾</span>
+    <div class="filter-header" onclick="toggleFilter()">
+      <span class="filter-header-label">🔍 筛选</span>
+      <span class="filter-header-toggle" id="filter-toggle">展开 ▾</span>
     </div>
-    <div class="tag-filter-bar" id="tag-filter-bar" style="display:none;">
-      <a href="{{ page.url | relative_url }}" class="tag-filter-btn {% unless page.tags or page.categories %}active{% endunless %}">全部</a>
-      {% assign all_tags = site.posts | map: "tags" | flatten | uniq | sort %}
-      {% for tag in all_tags %}
-      <a href="?tag={{ tag | url_encode }}" class="tag-filter-btn" data-tag="{{ tag }}">{{ tag }}</a>
-      {% endfor %}
+    <div class="filter-panel" id="filter-panel" style="display:none;">
+
+      <!-- 第一维：作者筛选 -->
+      <div class="filter-dimension">
+        <span class="filter-dim-label">✍️ 作者</span>
+        <div class="filter-options" id="filter-author">
+          <a href="#" class="filter-btn active" data-dim="author" data-val="">全部</a>
+          {%- comment -%}从 author 单值字段收集{%- endcomment -%}
+          {%- assign author_from_field = site.posts | map: "author" | compact | uniq -%}
+          {%- comment -%}从 authors 数组字段收集：取每个数组的第一个值避免 nil{%- endcomment -%}
+          {%- assign author_from_array = "" | split: "" -%}
+          {%- for post in site.posts -%}
+            {%- if post.authors -%}
+              {%- for a in post.authors -%}
+                {%- assign author_from_array = author_from_array | push: a -%}
+              {%- endfor -%}
+            {%- endif -%}
+          {%- endfor -%}
+          {%- assign author_from_array = author_from_array | uniq -%}
+          {%- assign all_authors = author_from_field | concat: author_from_array | uniq | sort -%}
+          {%- for author_key in all_authors -%}
+            {%- unless author_key == "" or author_key == nil -%}
+              {%- assign author_data = site.data.authors[author_key] -%}
+          <a href="#" class="filter-btn" data-dim="author" data-val="{{ author_key }}">{{ author_data.name | default: author_key }}</a>
+            {%- endunless -%}
+          {%- endfor -%}
+        </div>
+      </div>
+
+      <!-- 第二维：时间筛选 -->
+      <div class="filter-dimension">
+        <span class="filter-dim-label">📅 时间</span>
+        <div class="filter-options" id="filter-time">
+          <a href="#" class="filter-btn active" data-dim="time" data-val="">全部</a>
+          {% assign years = site.posts | group_by_exp: "post", "post.date | date: '%Y'" %}
+          {% for year in years %}
+          <a href="#" class="filter-btn" data-dim="time" data-val="{{ year.name }}">{{ year.name }}年</a>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- 第三维：关键词筛选 -->
+      <div class="filter-dimension">
+        <span class="filter-dim-label">🏷️ 关键词</span>
+        <div class="filter-options" id="filter-tag">
+          <a href="#" class="filter-btn active" data-dim="tag" data-val="">全部</a>
+          {% assign all_tags = site.posts | map: "tags" | flatten | uniq | sort %}
+          {% for tag in all_tags %}
+          <a href="#" class="filter-btn" data-dim="tag" data-val="{{ tag }}">{{ tag }}</a>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="filter-info" id="filter-info"></div>
     </div>
-    <div class="archive-filter-info" id="filter-info"></div>
   </div>
 
   <div class="archive-list" id="archive-list">
@@ -31,7 +78,16 @@ permalink: /archive/
         <h2 class="archive-year">{{ year.name }}</h2>
         <ul class="post-list">
           {% for post in year.items %}
-            <li class="post-item" data-tags="{{ post.tags | join: ',' }}" data-title="{{ post.title | escape }}">
+            {%- assign post_author = post.author | default: "" -%}
+            {%- if post_author == "" and post.authors -%}
+              {%- assign post_author = post.authors | join: "," -%}
+            {%- endif -%}
+            <li class="post-item"
+                data-tags="{{ post.tags | join: ',' }}"
+                data-title="{{ post.title | escape }}"
+                data-author="{{ post_author }}"
+                data-year="{{ post.date | date: '%Y' }}"
+                data-month="{{ post.date | date: '%Y-%m' }}">
               <span class="post-date">{{ post.date | date: "%m-%d" }}</span>
               <a class="post-link" href="{{ post.url | relative_url }}">
                 {{ post.title | escape }}
@@ -56,84 +112,113 @@ permalink: /archive/
   'use strict';
 
   // 折叠切换
-  window.toggleTagFilter = function() {
-    const bar = document.getElementById('tag-filter-bar');
+  window.toggleFilter = function() {
+    const panel = document.getElementById('filter-panel');
     const toggle = document.getElementById('filter-toggle');
-    const isHidden = bar.style.display === 'none';
-    bar.style.display = isHidden ? 'flex' : 'none';
+    const isHidden = panel.style.display === 'none';
+    panel.style.display = isHidden ? 'block' : 'none';
     toggle.textContent = isHidden ? '收起 ▴' : '展开 ▾';
-    localStorage.setItem('tagFilterCollapsed', isHidden ? '0' : '1');
+    localStorage.setItem('filterCollapsed', isHidden ? '0' : '1');
   };
 
-  // 从 URL 读取 tag 参数
-  const params = new URLSearchParams(window.location.search);
-  const activeTag = params.get('tag');
-
-  // 如果有激活的标签，自动展开筛选栏
-  if (activeTag) {
-    const bar = document.getElementById('tag-filter-bar');
-    const toggle = document.getElementById('filter-toggle');
-    bar.style.display = 'flex';
-    toggle.textContent = '收起 ▴';
-  } else {
-    // 记住上次的折叠状态
-    const collapsed = localStorage.getItem('tagFilterCollapsed');
+  // 初始化折叠状态
+  (function initCollapse() {
+    const collapsed = localStorage.getItem('filterCollapsed');
     if (collapsed === '0') {
-      document.getElementById('tag-filter-bar').style.display = 'flex';
+      document.getElementById('filter-panel').style.display = 'block';
       document.getElementById('filter-toggle').textContent = '收起 ▴';
     }
-  }
+  })();
 
-  if (!activeTag) return;
+  // 当前激活的筛选条件
+  const filters = { author: '', time: '', tag: '' };
 
-  // 高亮标签按钮
-  document.querySelectorAll('.tag-filter-btn').forEach(btn => {
-    btn.classList.remove('active');
-    if (btn.dataset.tag === activeTag) {
-      btn.classList.add('active');
-    }
-  });
-
-  // 更新标题和统计
-  const heading = document.querySelector('.page-heading');
-  const filterInfo = document.getElementById('filter-info');
-  if (filterInfo) {
-    filterInfo.textContent = `🏷️ 标签：${activeTag}`;
-  }
-  if (heading) {
-    heading.textContent = `🏷️ ${activeTag}`;
-  }
-
-  // 过滤文章列表
-  const yearGroups = document.querySelectorAll('.archive-year-group');
-  let totalVisible = 0;
-
-  yearGroups.forEach(group => {
-    const items = group.querySelectorAll('.post-item');
-    let visibleCount = 0;
+  // 执行筛选
+  function applyFilters() {
+    const items = document.querySelectorAll('.post-item');
+    const yearGroups = document.querySelectorAll('.archive-year-group');
+    let totalVisible = 0;
 
     items.forEach(item => {
-      const tags = (item.dataset.tags || '').split(',').map(t => t.trim());
-      if (tags.includes(activeTag)) {
-        item.style.display = '';
-        visibleCount++;
+      let show = true;
+
+      // 作者筛选（支持单个 author 或多个 authors 含逗号的情况）
+      if (filters.author) {
+        const authors = item.dataset.author || '';
+        if (!authors.split(',').map(a => a.trim()).includes(filters.author)) show = false;
+      }
+
+      // 时间筛选
+      if (filters.time) {
+        // 匹配年或年月
+        if (!item.dataset.year.includes(filters.time) && !item.dataset.month.includes(filters.time)) show = false;
+      }
+
+      // 关键词筛选
+      if (filters.tag) {
+        const tags = (item.dataset.tags || '').split(',').map(t => t.trim());
+        if (!tags.includes(filters.tag)) show = false;
+      }
+
+      item.style.display = show ? '' : 'none';
+      if (show) totalVisible++;
+    });
+
+    // 隐藏空的年份组
+    yearGroups.forEach(group => {
+      const visibleItems = group.querySelectorAll('.post-item[style*="display: none"]');
+      const totalItems = group.querySelectorAll('.post-item');
+      if (visibleItems.length === totalItems.length) {
+        group.style.display = 'none';
       } else {
-        item.style.display = 'none';
+        group.style.display = '';
       }
     });
 
-    if (visibleCount > 0) {
-      group.style.display = '';
-      totalVisible += visibleCount;
+    // 更新信息栏
+    const info = document.getElementById('filter-info');
+    const activeFilters = Object.entries(filters).filter(([, v]) => v);
+    if (activeFilters.length > 0) {
+      const labels = activeFilters.map(([k, v]) => {
+        const names = { author: '作者', time: '时间', tag: '关键词' };
+        return `${names[k]}: ${v}`;
+      }).join(' · ');
+      info.textContent = `🔍 ${labels}（共 ${totalVisible} 篇）`;
+      info.style.display = 'block';
     } else {
-      group.style.display = 'none';
+      info.style.display = 'none';
     }
-  });
 
-  // 更新统计
-  if (filterInfo) {
-    filterInfo.textContent = `🏷️ 标签：${activeTag}（共 ${totalVisible} 篇文章）`;
+    // 更新页面标题
+    const heading = document.querySelector('.page-heading');
+    if (filters.tag) {
+      heading.textContent = `🏷️ ${filters.tag}`;
+    } else if (filters.author || filters.time) {
+      heading.textContent = '📂 筛选结果';
+    } else {
+      heading.textContent = '文章归档';
+    }
   }
+
+  // 绑定筛选按钮点击
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const dim = this.dataset.dim;
+      const val = this.dataset.val;
+
+      // 更新该维度的 active 状态
+      const siblings = this.closest('.filter-options').querySelectorAll('.filter-btn');
+      siblings.forEach(s => s.classList.remove('active'));
+      this.classList.add('active');
+
+      // 更新筛选条件
+      filters[dim] = val;
+
+      // 如果选了具体的值，更新信息栏对应维度的文字
+      applyFilters();
+    });
+  });
 })();
 </script>
 
@@ -150,12 +235,12 @@ permalink: /archive/
     text-align: center;
   }
 
-  /* 标签筛选栏（可折叠） */
+  /* 筛选栏 */
   .archive-toolbar {
     margin-bottom: 2rem;
   }
 
-  .tag-filter-header {
+  .filter-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -168,64 +253,85 @@ permalink: /archive/
     transition: background 0.15s;
   }
 
-  .tag-filter-header:hover {
+  .filter-header:hover {
     background: var(--border-color);
   }
 
-  .tag-filter-label {
+  .filter-header-label {
     font-size: 0.9rem;
     font-weight: 600;
     color: var(--text-main);
   }
 
-  .tag-filter-toggle {
+  .filter-header-toggle {
     font-size: 0.8rem;
     color: var(--text-light);
-    transition: transform 0.2s;
   }
 
-  .tag-filter-bar {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    padding: 1rem;
+  .filter-panel {
     background: var(--bg-light);
     border-radius: 0 0 12px 12px;
     border: 1px solid var(--border-color);
     border-top: none;
-    margin-top: 0;
+    padding: 0.75rem 1rem;
   }
 
-  .tag-filter-btn {
+  .filter-dimension {
+    margin-bottom: 0.75rem;
+  }
+
+  .filter-dimension:last-child {
+    margin-bottom: 0;
+  }
+
+  .filter-dim-label {
     display: inline-block;
-    padding: 0.3rem 0.8rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-light);
+    min-width: 60px;
+    margin-right: 0.5rem;
+  }
+
+  .filter-options {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .filter-btn {
+    display: inline-block;
+    padding: 0.25rem 0.7rem;
     border-radius: 20px;
     font-size: 0.8rem;
     text-decoration: none;
     color: var(--text-main);
     background: #fff;
     border: 1px solid var(--border-color);
-    transition: all 0.2s;
+    transition: all 0.15s;
+    cursor: pointer;
   }
 
-  .tag-filter-btn:hover {
+  .filter-btn:hover {
     background: var(--accent);
     color: #fff;
     border-color: var(--accent);
   }
 
-  .tag-filter-btn.active {
+  .filter-btn.active {
     background: var(--accent);
     color: #fff;
     border-color: var(--accent);
   }
 
-  .archive-filter-info {
+  .filter-info {
     text-align: center;
-    font-size: 0.9rem;
-    color: var(--text-light);
-    margin-top: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--accent);
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed var(--border-color);
+    display: none;
   }
 
   .archive-year {
@@ -288,7 +394,7 @@ permalink: /archive/
     color: #fff;
   }
 
-  /* ========== 响应式设计 ========== */
+  /* ========== 响应式 ========== */
 
   @media (max-width: 768px) {
     .archive-wrapper {
@@ -298,18 +404,12 @@ permalink: /archive/
       font-size: 1.6rem;
       margin-bottom: 1rem;
     }
-    .tag-filter-bar {
-      padding: 0.75rem;
-      gap: 0.3rem;
+    .filter-panel {
+      padding: 0.5rem 0.75rem;
     }
-    .tag-filter-btn {
-      font-size: 0.7rem;
-      padding: 0.25rem 0.6rem;
-    }
-    .tag-filter-label {
-      font-size: 0.8rem;
-      width: 100%;
-      margin-bottom: 0.2rem;
+    .filter-dim-label {
+      display: block;
+      margin-bottom: 0.3rem;
     }
     .archive-year {
       font-size: 1.3rem;
@@ -337,14 +437,6 @@ permalink: /archive/
     }
     .page-heading {
       font-size: 1.3rem;
-    }
-    .tag-filter-bar {
-      padding: 0.5rem;
-      border-radius: 8px;
-    }
-    .tag-filter-btn {
-      font-size: 0.65rem;
-      padding: 0.2rem 0.5rem;
     }
     .archive-year {
       font-size: 1.1rem;

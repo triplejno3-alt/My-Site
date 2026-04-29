@@ -8,7 +8,6 @@ image_caption: 京都哲学之道的樱花隧道
 location: 日本京都
 shot_date: 2026-04-05
 camera: Sony A7M4 + FE 50mm f/1.8
-author: 旅行摄影笔记
 ---
 
 ## 关于这次旅行
