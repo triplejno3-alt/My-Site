@@ -214,6 +214,11 @@
           {%- assign words = content | strip_html | number_of_words -%}
           <span class="reading-time">• 阅读时间: {{ words | divided_by: 180 | plus: 1 }} 分钟</span>
         </p>
+        {%- assign author_id = page.author | default: "way" -%}
+        {%- assign author = site.data.authors[author_id] -%}
+        {%- if author -%}
+          {% include author-card.html %}
+        {%- endif -%}
       </header>
 
       <div class="code-container">

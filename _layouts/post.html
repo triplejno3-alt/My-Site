@@ -10,18 +10,32 @@ layout: default
         {%- assign date_format = site.minima.date_format | default: "%b %-d, %Y" -%}
         {{ page.date | date: date_format }}
       </time>
-      {%- if page.author -%}
-        • <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">{{ page.author }}</span></span>
+      {%- assign author_id = page.author | default: "way" -%}
+      {%- assign author = site.data.authors[author_id] -%}
+      {%- if author -%}
+        • <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="p-author h-card" itemprop="name">{{ author.short_name | default: author.name }}</span></span>
       {%- endif -%}
       {%- assign words = content | strip_html | number_of_words -%}
       <span class="reading-time">• 阅读时间: {{ words | divided_by: 180 | plus: 1 }} 分钟</span>
     </p>
+    {%- if author -%}
+      {% include author-card.html %}
+    {%- endif -%}
   </header>
 
   <div class="post-content e-content" itemprop="articleBody">
     {{ content }}
     {% include reading-stats.html %}
   </div>
+
+  {%- if page.tags.size > 0 -%}
+  <div class="post-tags">
+    <span class="post-tags-label">🏷️ 标签：</span>
+    {% for tag in page.tags %}
+    <a href="{{ '/' | relative_url }}?tag={{ tag | url_encode }}" class="post-tag">{{ tag }}</a>
+    {% endfor %}
+  </div>
+  {%- endif -%}
 
   <a class="u-url" href="{{ page.url | relative_url }}" hidden></a>
 </article>
@@ -44,6 +58,39 @@ layout: default
   .post-views {
     color: var(--accent);
     font-weight: 600;
+  }
+
+  .post-tags {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .post-tags-label {
+    font-size: 0.9rem;
+    color: var(--text-light);
+  }
+
+  .post-tag {
+    display: inline-block;
+    background: var(--bg-light);
+    color: var(--accent);
+    padding: 0.25rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    text-decoration: none;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s;
+  }
+
+  .post-tag:hover {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
   }
 
 </style>

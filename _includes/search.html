@@ -147,11 +147,65 @@
     document.body.style.overflow = '';
   };
 
-  // ---------- URL parameter search ----------
+  // ---------- URL parameter search & tag mode ----------
+  function renderTagResults(tagName) {
+    const overlay = document.getElementById('search-overlay');
+    const input = document.getElementById('search-input');
+    const stats = document.getElementById('search-stats');
+    const container = document.getElementById('search-results');
+
+    overlay.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+
+    input.value = '';
+    input.placeholder = '在结果中过滤...';
+
+    const results = searchIndex.filter(p => p.tags && p.tags.some(t => t.toLowerCase() === tagName.toLowerCase()));
+    currentResults = results;
+    selectedIndex = -1;
+
+    if (results.length === 0) {
+      container.innerHTML = `<div class="search-empty">没有找到标签 "<strong>${escapeHtml(tagName)}</strong>" 的文章</div>`;
+      stats.textContent = '共 0 条结果';
+      return;
+    }
+
+    // Tag header
+    container.innerHTML = `<div class="tag-header">
+      <span class="tag-header-label">🏷️</span>
+      <span class="tag-header-name">${escapeHtml(tagName)}</span>
+      <span class="tag-header-count">${results.length} 篇文章</span>
+    </div>`;
+
+    results.forEach((post, i) => {
+      const date = post.date ? `<span class="result-date">${post.date}</span>` : '';
+      container.innerHTML += `<a href="${post.url}" class="search-result-item" data-index="${i}" onmouseenter="onResultHover(${i})">
+        <div class="result-title">${escapeHtml(post.title)}</div>
+        <div class="result-meta">${date}<span class="result-url">${post.url}</span></div>
+      </a>`;
+    });
+
+    selectResult(0);
+    stats.textContent = '';
+
+    // Back to normal on input
+    input.addEventListener('input', function handler() {
+      if (this.value.trim()) {
+        input.placeholder = '搜索文章...';
+        doSearch(this.value);
+      }
+      input.removeEventListener('input', handler);
+    }, { once: true });
+  }
+
   function checkURLSearch() {
     const params = new URLSearchParams(window.location.search);
     const q = params.get('q');
-    if (q && q.trim()) {
+    const tag = params.get('tag');
+
+    if (tag && tag.trim()) {
+      setTimeout(() => renderTagResults(tag.trim()), 500);
+    } else if (q && q.trim()) {
       setTimeout(() => {
         window.openSearch();
         const input = document.getElementById('search-input');
@@ -392,6 +446,31 @@
   border: 1px solid #cbd5e0;
   border-radius: 4px;
   margin: 0 0.1rem;
+}
+
+.tag-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem 0.5rem;
+  border-bottom: 2px solid #e2e8f0;
+  margin-bottom: 0.25rem;
+}
+
+.tag-header-label {
+  font-size: 1.2rem;
+}
+
+.tag-header-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #2d3748;
+}
+
+.tag-header-count {
+  font-size: 0.8rem;
+  color: #a0aec0;
+  margin-left: auto;
 }
 
 /* Dark mode support */

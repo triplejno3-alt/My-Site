@@ -10,10 +10,15 @@ layout: default
       <time class="dt-published" datetime="{{ page.date | date_to_xmlschema }}">
         {{ page.date | date: "%Y年%m月%d日" }}
       </time>
-      {% if page.author %} • {{ page.author }}{% endif %}
+      {%- assign author_id = page.author | default: "way" -%}
+      {%- assign author = site.data.authors[author_id] -%}
+      {%- if author %} • {{ author.short_name | default: author.name }}{% endif -%}
       {%- assign words = content | strip_html | number_of_words -%}
       <span class="reading-time">• 阅读时间: {{ words | divided_by: 180 | plus: 1 }} 分钟</span>
     </p>
+    {%- if author -%}
+      {% include author-card.html %}
+    {%- endif -%}
   </header>
 
   {% if page.featured_image %}

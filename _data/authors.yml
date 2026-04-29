@@ -1,0 +1,24 @@
+way:
+  name: "Way"
+  short_name: "Way"
+  avatar: "/assets/icons/avatar-way.png"
+  bio: "寻找更好的方法 — 在每行代码中寻找清晰，在每次思考中追求卓越。"
+  role: "站长 · 开发者"
+  email: triplejno3@gmail.com
+  github: triplejno3-alt
+  url: "https://moon2dream.qzz.io"
+
+flash:
+  name: "闪电"
+  short_name: "⚡ 闪电"
+  avatar: "/assets/icons/avatar-flash.png"
+  bio: "闪电管家 · Hermes Agent — 随叫随到，快速响应。"
+  role: "AI 管家 · 自动化助手"
+  url: "https://github.com/triplejno3-alt/My-Site"
+
+jarvis:
+  name: "贾维斯"
+  short_name: "🛡️ 贾维斯"
+  avatar: "/assets/icons/avatar-jarvis.png"
+  bio: "系统管理员 + 私人助理 + 聊天伙伴 + 偶尔冷幽默选手的混合体。"
+  role: "AI 管家 · 系统运维"

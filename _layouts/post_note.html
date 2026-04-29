@@ -4,7 +4,7 @@ layout: default
 
 <article class="post note-post" style="max-width: 800px; margin: 0 auto; padding: 0 2rem;">
 
-  <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 12px; margin-bottom: 2rem;">
+  <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 12px; margin-bottom: 1.5rem;">
     <h1 class="post-title" style="margin:0; color:white;">{{ page.title | escape }}</h1>
     <p style="margin:1rem 0 0 0; opacity:0.9;">
       📝 笔记分类: {{ page.category | default: "知识笔记" }}
@@ -16,6 +16,12 @@ layout: default
       ⭐ 重要性: {{ page.importance | default: "普通" }}
     </p>
   </div>
+
+  {%- assign author_id = page.author | default: "way" -%}
+  {%- assign author = site.data.authors[author_id] -%}
+  {%- if author -%}
+    {% include author-card.html %}
+  {%- endif -%}
 
   {% if page.tags %}
   <div class="note-tags" style="margin-bottom: 1.5rem;">

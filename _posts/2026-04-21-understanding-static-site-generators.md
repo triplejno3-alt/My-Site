@@ -3,7 +3,7 @@ layout: post
 title: "深入理解静态站点生成器 (SSG)：从原理到选型"
 date: 2026-04-21 11:10:00 +0800
 categories: 技术 编程
-tags: SSG Jekyll 静态网站
+tags: [SSG, Jekyll, 静态网站]
 ---
 
 **静态站点生成器（Static Site Generator，SSG）**，本质上就是**一个把你写的内容（如Markdown）和选好的模板（如HTML），自动“合并”成完整HTML网站的工具**。

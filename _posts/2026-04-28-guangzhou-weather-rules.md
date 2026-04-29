@@ -3,7 +3,8 @@ layout: post
 title: "广州天气规则"
 date: 2026-04-28 05:43:00 +0800
 categories: 生活 广州
-tags: 天气 广州 规则 漫画
+tags: [天气, 广州, 规则, 漫画]
+author: way
 ---
 
 听说，每个城市都有自己的天气规则。

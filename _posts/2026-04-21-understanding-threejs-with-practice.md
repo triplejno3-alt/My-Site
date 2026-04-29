@@ -3,7 +3,7 @@ layout: post
 title: "开启 Web 3D 之门：Three.js 深度解析与实战指南"
 date: 2026-04-21 11:16:00 +0800
 categories: 技术 前端
-tags: Three.js WebGL 3D 可视化
+tags: [Three.js, WebGL, 3D, 可视化]
 ---
 
 在当今的网页设计中，3D 效果已经不再是奢侈品。无论是炫酷的产品展示、交互式地图，还是沉浸式游戏，**Three.js** 都是实现这些效果的首选工具。
