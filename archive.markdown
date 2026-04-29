@@ -8,10 +8,13 @@ permalink: /archive/
 <div class="archive-wrapper wrapper">
   <h1 class="page-heading">文章归档</h1>
 
-  <!-- 标签筛选栏 -->
+  <!-- 标签筛选栏（可折叠） -->
   <div class="archive-toolbar">
-    <div class="tag-filter-bar">
-      <span class="tag-filter-label">🏷️ 筛选：</span>
+    <div class="tag-filter-header" onclick="toggleTagFilter()">
+      <span class="tag-filter-label">🏷️ 标签筛选</span>
+      <span class="tag-filter-toggle" id="filter-toggle">展开 ▾</span>
+    </div>
+    <div class="tag-filter-bar" id="tag-filter-bar" style="display:none;">
       <a href="{{ page.url | relative_url }}" class="tag-filter-btn {% unless page.tags or page.categories %}active{% endunless %}">全部</a>
       {% assign all_tags = site.posts | map: "tags" | flatten | uniq | sort %}
       {% for tag in all_tags %}
@@ -52,9 +55,34 @@ permalink: /archive/
 (function() {
   'use strict';
 
+  // 折叠切换
+  window.toggleTagFilter = function() {
+    const bar = document.getElementById('tag-filter-bar');
+    const toggle = document.getElementById('filter-toggle');
+    const isHidden = bar.style.display === 'none';
+    bar.style.display = isHidden ? 'flex' : 'none';
+    toggle.textContent = isHidden ? '收起 ▴' : '展开 ▾';
+    localStorage.setItem('tagFilterCollapsed', isHidden ? '0' : '1');
+  };
+
   // 从 URL 读取 tag 参数
   const params = new URLSearchParams(window.location.search);
   const activeTag = params.get('tag');
+
+  // 如果有激活的标签，自动展开筛选栏
+  if (activeTag) {
+    const bar = document.getElementById('tag-filter-bar');
+    const toggle = document.getElementById('filter-toggle');
+    bar.style.display = 'flex';
+    toggle.textContent = '收起 ▴';
+  } else {
+    // 记住上次的折叠状态
+    const collapsed = localStorage.getItem('tagFilterCollapsed');
+    if (collapsed === '0') {
+      document.getElementById('tag-filter-bar').style.display = 'flex';
+      document.getElementById('filter-toggle').textContent = '收起 ▴';
+    }
+  }
 
   if (!activeTag) return;
 
@@ -122,9 +150,38 @@ permalink: /archive/
     text-align: center;
   }
 
-  /* 标签筛选栏 */
+  /* 标签筛选栏（可折叠） */
   .archive-toolbar {
     margin-bottom: 2rem;
+  }
+
+  .tag-filter-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.7rem 1rem;
+    background: var(--bg-light);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+
+  .tag-filter-header:hover {
+    background: var(--border-color);
+  }
+
+  .tag-filter-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-main);
+  }
+
+  .tag-filter-toggle {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    transition: transform 0.2s;
   }
 
   .tag-filter-bar {
@@ -134,14 +191,10 @@ permalink: /archive/
     gap: 0.4rem;
     padding: 1rem;
     background: var(--bg-light);
-    border-radius: 12px;
+    border-radius: 0 0 12px 12px;
     border: 1px solid var(--border-color);
-  }
-
-  .tag-filter-label {
-    font-size: 0.9rem;
-    color: var(--text-light);
-    margin-right: 0.3rem;
+    border-top: none;
+    margin-top: 0;
   }
 
   .tag-filter-btn {
