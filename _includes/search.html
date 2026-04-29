@@ -1,0 +1,447 @@
+<!-- Search Overlay -->
+<div id="search-overlay" class="search-overlay" style="display:none;">
+  <div class="search-modal">
+    <div class="search-header">
+      <input type="text" id="search-input" class="search-input" placeholder="搜索文章..." autofocus>
+      <button class="search-close-btn" onclick="closeSearch()">✕</button>
+    </div>
+    <div id="search-stats" class="search-stats"></div>
+    <div id="search-results" class="search-results"></div>
+    <div class="search-footer">
+      <span>按 <kbd>Esc</kbd> 关闭 &nbsp;|&nbsp; <kbd>↑</kbd><kbd>↓</kbd> 导航 &nbsp;|&nbsp; <kbd>Enter</kbd> 打开</span>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---------- Search Index ----------
+(function() {
+  const POSTS_API_PATH = '{{ "/api/posts.json" | relative_url }}';
+
+  let searchIndex = [];
+  let currentResults = [];
+  let selectedIndex = -1;
+
+  // Load search index
+  async function loadSearchIndex() {
+    try {
+      const resp = await fetch(POSTS_API_PATH);
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      const data = await resp.json();
+      searchIndex = data.posts || [];
+      console.log('🔍 搜索索引加载完成，共 ' + searchIndex.length + ' 篇文章');
+    } catch (e) {
+      console.warn('🔍 搜索索引加载失败:', e);
+      // Fallback: build index from page content
+      searchIndex = buildIndexFromDOM();
+    }
+  }
+
+  function buildIndexFromDOM() {
+    const links = document.querySelectorAll('.post-title-mini a, .post-link, .post-title a');
+    const map = new Map();
+    links.forEach(a => {
+      const title = a.textContent.trim();
+      const url = a.getAttribute('href');
+      if (title && url && !map.has(url)) {
+        map.set(url, { title, url, date: '', excerpt: '' });
+      }
+    });
+    return Array.from(map.values());
+  }
+
+  // ---------- Search Logic ----------
+  function searchPosts(query) {
+    if (!query.trim()) return [];
+    const q = query.toLowerCase();
+    return searchIndex.filter(post => {
+      return post.title.toLowerCase().includes(q) ||
+             (post.excerpt && post.excerpt.toLowerCase().includes(q)) ||
+             (post.tags && post.tags.some(t => t.toLowerCase().includes(q)));
+    }).slice(0, 30);
+  }
+
+  // ---------- Render ----------
+  function renderResults(results, query) {
+    const container = document.getElementById('search-results');
+    const stats = document.getElementById('search-stats');
+    currentResults = results;
+    selectedIndex = -1;
+
+    if (!query.trim()) {
+      container.innerHTML = '<div class="search-hint">输入关键词开始搜索...</div>';
+      stats.textContent = '';
+      return;
+    }
+
+    if (results.length === 0) {
+      container.innerHTML = `<div class="search-empty">未找到包含 "<strong>${escapeHtml(query)}</strong>" 的文章</div>`;
+      stats.textContent = '共 0 条结果';
+      return;
+    }
+
+    stats.textContent = `共 ${results.length} 条结果`;
+
+    container.innerHTML = results.map((post, i) => {
+      const date = post.date ? `<span class="result-date">${post.date}</span>` : '';
+      const excerpt = post.excerpt ? `<p class="result-excerpt">${highlightText(post.excerpt, query)}</p>` : '';
+      return `<a href="${post.url}" class="search-result-item" data-index="${i}" onmouseenter="onResultHover(${i})">
+        <div class="result-title">${highlightText(post.title, query)}</div>
+        <div class="result-meta">${date}<span class="result-url">${post.url}</span></div>
+        ${excerpt}
+      </a>`;
+    }).join('');
+
+    // Auto-select first
+    selectResult(0);
+  }
+
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  function highlightText(text, query) {
+    if (!query.trim()) return escapeHtml(text);
+    const q = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`(${q})`, 'gi');
+    return escapeHtml(text).replace(new RegExp(`(${q})`, 'gi'), '<mark>$1</mark>');
+  }
+
+  // ---------- Keyboard Navigation ----------
+  function selectResult(index) {
+    selectedIndex = index;
+    document.querySelectorAll('.search-result-item').forEach((el, i) => {
+      el.classList.toggle('selected', i === index);
+      if (i === index) el.scrollIntoView({ block: 'nearest' });
+    });
+  }
+
+  window.onResultHover = function(index) {
+    selectedIndex = index;
+    document.querySelectorAll('.search-result-item').forEach((el, i) => {
+      el.classList.toggle('selected', i === index);
+    });
+  };
+
+  function openSelected() {
+    const selected = document.querySelector('.search-result-item.selected');
+    if (selected) {
+      window.location.href = selected.getAttribute('href');
+    }
+  }
+
+  // ---------- Open/Close ----------
+  window.openSearch = function() {
+    const overlay = document.getElementById('search-overlay');
+    const input = document.getElementById('search-input');
+    overlay.style.display = 'flex';
+    setTimeout(() => input.focus(), 100);
+    document.body.style.overflow = 'hidden';
+  };
+
+  window.closeSearch = function() {
+    const overlay = document.getElementById('search-overlay');
+    overlay.style.display = 'none';
+    document.body.style.overflow = '';
+  };
+
+  // ---------- URL parameter search ----------
+  function checkURLSearch() {
+    const params = new URLSearchParams(window.location.search);
+    const q = params.get('q');
+    if (q && q.trim()) {
+      setTimeout(() => {
+        window.openSearch();
+        const input = document.getElementById('search-input');
+        if (input) {
+          input.value = q;
+          doSearch(q);
+        }
+      }, 500);
+    }
+  }
+
+  function doSearch(query) {
+    const results = searchPosts(query);
+    renderResults(results, query);
+  }
+
+  // ---------- Event Binding ----------
+  document.addEventListener('DOMContentLoaded', function() {
+    loadSearchIndex();
+    checkURLSearch();
+
+    // Keyboard shortcut: Ctrl+K or / to open search
+    document.addEventListener('keydown', function(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        window.openSearch();
+      }
+      if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes(e.target.tagName)) {
+        e.preventDefault();
+        window.openSearch();
+      }
+    });
+
+    // Search input events
+    const input = document.getElementById('search-input');
+    if (input) {
+      input.addEventListener('input', function() {
+        doSearch(this.value);
+      });
+
+      input.addEventListener('keydown', function(e) {
+        const items = document.querySelectorAll('.search-result-item');
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          selectResult(Math.min(selectedIndex + 1, items.length - 1));
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          selectResult(Math.max(selectedIndex - 1, 0));
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          openSelected();
+        } else if (e.key === 'Escape') {
+          e.preventDefault();
+          window.closeSearch();
+        }
+      });
+    }
+
+    // Click outside to close
+    document.getElementById('search-overlay').addEventListener('click', function(e) {
+      if (e.target === this) window.closeSearch();
+    });
+
+    // Copy URL with search query
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && e.ctrlKey) {
+        const input = document.getElementById('search-input');
+        if (input && input.value.trim()) {
+          const url = new URL(window.location);
+          url.searchParams.set('q', input.value.trim());
+          navigator.clipboard.writeText(url.toString()).catch(() => {});
+        }
+      }
+    });
+  });
+})();
+</script>
+
+<style>
+.search-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 10vh;
+}
+
+.search-modal {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  width: 100%;
+  max-width: 640px;
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: searchSlideIn 0.2s ease-out;
+}
+
+@keyframes searchSlideIn {
+  from { opacity: 0; transform: translateY(-20px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.search-header {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 0.75rem 1rem;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 1.2rem;
+  padding: 0.5rem;
+  background: transparent;
+  color: #1a202c;
+  font-family: inherit;
+}
+
+.search-input::placeholder {
+  color: #a0aec0;
+}
+
+.search-close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #718096;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+
+.search-close-btn:hover {
+  background: #f7fafc;
+  color: #2d3748;
+}
+
+.search-stats {
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  color: #a0aec0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.search-results {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem 0;
+}
+
+.search-hint, .search-empty {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: #a0aec0;
+  font-size: 0.95rem;
+}
+
+.search-result-item {
+  display: block;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+  border-left: 3px solid transparent;
+  transition: all 0.1s;
+}
+
+.search-result-item:hover, .search-result-item.selected {
+  background: #edf2f7;
+  border-left-color: #3498db;
+}
+
+.result-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 0.25rem;
+}
+
+.result-title mark {
+  background: #fefcbf;
+  color: #2d3748;
+  padding: 0 0.1rem;
+  border-radius: 2px;
+}
+
+.result-meta {
+  font-size: 0.8rem;
+  color: #a0aec0;
+  display: flex;
+  gap: 1rem;
+}
+
+.result-date {
+  font-family: monospace;
+}
+
+.result-excerpt {
+  font-size: 0.85rem;
+  color: #718096;
+  margin: 0.25rem 0 0;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.result-excerpt mark {
+  background: #fefcbf;
+  padding: 0 0.1rem;
+  border-radius: 2px;
+}
+
+.search-footer {
+  padding: 0.5rem 1rem;
+  border-top: 1px solid #e2e8f0;
+  font-size: 0.75rem;
+  color: #a0aec0;
+  text-align: center;
+}
+
+.search-footer kbd {
+  display: inline-block;
+  padding: 0.1rem 0.4rem;
+  font-size: 0.7rem;
+  font-family: monospace;
+  background: #edf2f7;
+  border: 1px solid #cbd5e0;
+  border-radius: 4px;
+  margin: 0 0.1rem;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .search-modal {
+    background: #1a202c;
+  }
+  .search-header {
+    border-bottom-color: #2d3748;
+  }
+  .search-input {
+    color: #e2e8f0;
+  }
+  .search-input::placeholder {
+    color: #4a5568;
+  }
+  .search-close-btn {
+    color: #a0aec0;
+  }
+  .search-close-btn:hover {
+    background: #2d3748;
+    color: #e2e8f0;
+  }
+  .search-result-item:hover, .search-result-item.selected {
+    background: #2d3748;
+  }
+  .result-title {
+    color: #e2e8f0;
+  }
+  .result-title mark {
+    background: #744210;
+    color: #fefcbf;
+  }
+  .result-excerpt {
+    color: #a0aec0;
+  }
+  .result-excerpt mark {
+    background: #744210;
+    color: #fefcbf;
+  }
+  .search-empty, .search-hint {
+    color: #4a5568;
+  }
+  .search-footer {
+    border-top-color: #2d3748;
+  }
+  .search-footer kbd {
+    background: #2d3748;
+    border-color: #4a5568;
+    color: #a0aec0;
+  }
+}
+</style>

@@ -7,7 +7,7 @@ permalink: /goals/
 
 <div class="goals-page-wrapper wrapper">
   <h1 class="page-heading">🎯 个人目标</h1>
-  <p class="page-subtitle">记录我的梦想与进度，每一份支持都让它们更近一步</p>
+  <p class="page-subtitle">记录我的目标与进度</p>
 
   <div class="goals-list">
     <!-- Goal 1 -->
