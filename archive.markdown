@@ -234,4 +234,75 @@ permalink: /archive/
     background: var(--accent);
     color: #fff;
   }
+
+  /* ========== 响应式设计 ========== */
+
+  @media (max-width: 768px) {
+    .archive-wrapper {
+      padding: 1.5rem 1rem;
+    }
+    .page-heading {
+      font-size: 1.6rem;
+      margin-bottom: 1rem;
+    }
+    .tag-filter-bar {
+      padding: 0.75rem;
+      gap: 0.3rem;
+    }
+    .tag-filter-btn {
+      font-size: 0.7rem;
+      padding: 0.25rem 0.6rem;
+    }
+    .tag-filter-label {
+      font-size: 0.8rem;
+      width: 100%;
+      margin-bottom: 0.2rem;
+    }
+    .archive-year {
+      font-size: 1.3rem;
+    }
+    .post-item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.3rem;
+    }
+    .post-date {
+      width: auto;
+      font-size: 0.8rem;
+    }
+    .post-link {
+      font-size: 1rem;
+    }
+    .post-tags-mini {
+      margin-left: 0;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .archive-wrapper {
+      padding: 1rem 0.75rem;
+    }
+    .page-heading {
+      font-size: 1.3rem;
+    }
+    .tag-filter-bar {
+      padding: 0.5rem;
+      border-radius: 8px;
+    }
+    .tag-filter-btn {
+      font-size: 0.65rem;
+      padding: 0.2rem 0.5rem;
+    }
+    .archive-year {
+      font-size: 1.1rem;
+      margin: 1.5rem 0 0.75rem;
+    }
+    .post-link {
+      font-size: 0.9rem;
+    }
+    .post-tag-link {
+      font-size: 0.65rem;
+      padding: 0.1rem 0.4rem;
+    }
+  }
 </style>
