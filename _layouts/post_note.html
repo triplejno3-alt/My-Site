@@ -81,6 +81,24 @@ layout: default
       {% endif %}
 
     </article>
+
+    <!-- ====== Disqus 评论区 ====== -->
+    <div id="disqus_thread" class="post-comments"></div>
+    <script>
+        var disqus_config = function () {
+            this.page.url = '{{ site.url }}{{ page.url | relative_url }}';
+            this.page.identifier = '{{ page.url | relative_url }}';
+        };
+        (function() {
+            var d = document, s = d.createElement('script');
+            s.src = 'https://wayblog.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <!-- ====== End Disqus ====== -->
+
   </div>
 
   {% if page.toc != false %}
@@ -284,6 +302,13 @@ pre.collapsible-code {
 /* ====== TOC 为空的文章不显示占位 ====== */
 .post-toc-sidebar:empty {
   display: none;
+}
+
+/* ====== 评论区 ====== */
+.post-comments {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border-color);
 }
 </style>
 

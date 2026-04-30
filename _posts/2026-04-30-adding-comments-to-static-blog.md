@@ -121,77 +121,66 @@ Twikoo 的竞品，功能类似，支持更多登录方式。**如果你需要�
 
 对于我的博客（读者以技术爱好者为主），**Giscus 是最优解**——零运维、数据自主、体验好。
 
+> ⚠️ **注意：** 目前代码里使用的是 Disqus 方案，shortname 为 `wayblog`。你需要注册 [Disqus](https://disqus.com) 账号，创建自己的站点，获取 shortname 后替换代码中的 `wayblog`。
+
 ---
 
-## 四、实战：给你的 Jekyll 站点接入 Giscus
+## 四、实战：给你的 Jekyll 站点接入 Disqus
 
-### 4.1 安装 Giscus GitHub App
+### 4.1 注册 Disqus
 
-打开 [github.com/apps/giscus](https://github.com/apps/giscus)，点击 **Install**，选择你的仓库（比如 `triplejno3-alt/triplejno3-alt.github.io`），授权它访问 Discussions。
+访问 [disqus.com](https://disqus.com)：
+1. 点击 **"Get started"**
+2. 选择 **"I want to install Disqus on my site"**
+3. 填写站点信息，获取你的 **shortname**（例如 `wayblog`）
+4. 选择 **Jekyll / Universal Code** 平台
 
-### 4.2 开启仓库的 Discussions
+### 4.2 复制 Universal Code
 
-在你的 GitHub 仓库页面：
-- 点击 **Settings**
-- 往下翻到 **Features**
-- 勾选 **Discussions**
-- （可选）设置 Discussion 分类，Giscus 默认用 `General` 就可以
-
-### 4.3 获取配置
-
-访问 [giscus.app](https://giscus.app)：
-1. 在 **Repository** 输入你的仓库名（如 `triplejno3-alt/triplejno3-alt.github.io`）
-2. 页面会自动校验并生成配置
-3. 选择你喜欢的主题
-4. 复制生成的 `<script>` 代码
-
-生成的代码长这样：
+Disqus 会给你一段嵌入代码，核心部分如下：
 
 ```html
-<script src="https://giscus.app/client.js"
-        data-repo="你的用户名/你的仓库名"
-        data-repo-id="R_kgDO..."
-        data-category="General"
-        data-category-id="DIC_kwDO..."
-        data-mapping="pathname"
-        data-strict="0"
-        data-reactions-enabled="1"
-        data-emit-metadata="0"
-        data-input-position="bottom"
-        data-theme="preferred_color_scheme"
-        data-lang="zh-CN"
-        crossorigin="anonymous"
-        async>
+<div id="disqus_thread"></div>
+<script>
+    var disqus_config = function () {
+        this.page.url = '你的文章URL';
+        this.page.identifier = '你的文章ID';
+    };
+    (function() {
+        var d = document, s = d.createElement('script');
+        s.src = 'https://你的shortname.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
 </script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
 ```
 
-### 4.4 嵌入到文章布局
+### 4.3 嵌入到文章布局
 
-把这段脚本放到 `_layouts/post.html`（或你用的自定义布局）的文章内容后面：
+把这段代码放在 `_layouts/post_note.html` 或 `_layouts/post.html` 的文章内容后面：
 
 ```html
 <!-- 评论区 -->
-<div class="post-comments">
-  <h3>💬 评论</h3>
-  <script src="https://giscus.app/client.js"
-          data-repo="你的用户名/你的仓库名"
-          data-repo-id="R_kgDO..."
-          data-category="General"
-          data-category-id="DIC_kwDO..."
-          data-mapping="pathname"
-          data-strict="0"
-          data-reactions-enabled="1"
-          data-emit-metadata="0"
-          data-input-position="bottom"
-          data-theme="preferred_color_scheme"
-          data-lang="zh-CN"
-          crossorigin="anonymous"
-          async>
-  </script>
-</div>
+<div id="disqus_thread" class="post-comments"></div>
+<script>
+    var disqus_config = function () {
+        this.page.url = '{{ site.url }}{{ page.url | relative_url }}';
+        this.page.identifier = '{{ page.url | relative_url }}';
+    };
+    (function() {
+        var d = document, s = d.createElement('script');
+        s.src = 'https://wayblog.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the
+  <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+</noscript>
 ```
 
-### 4.5 添加 CSS 美化
+### 4.4 添加 CSS
 
 ```css
 .post-comments {
@@ -199,18 +188,7 @@ Twikoo 的竞品，功能类似，支持更多登录方式。**如果你需要�
   padding-top: 2rem;
   border-top: 1px solid var(--border-color);
 }
-.post-comments h3 {
-  font-size: 1.1rem;
-  margin-bottom: 1.5rem;
-  color: var(--primary);
-}
 ```
-
-### 4.6 新文章自动关联
-
-Giscus 使用 **`data-mapping="pathname"`**，它会自动根据当前页面的 URL 路径来匹配对应的 Discussion。所以每篇新文章发布后，第一次有人加载页面时，Giscus 会自动在该文章的路径下创建一个 Discussion。
-
-**无需手动操作**，一劳永逸。
 
 ---
 
