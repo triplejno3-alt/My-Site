@@ -17,17 +17,6 @@ layout: default
 ]
 {% endcapture %}
 
-{% capture skills_json %}
-[
-  {% for category in site.resume.skills %}
-    {
-      "name": "{{ category.name }}",
-      "items": [{% for item in category.items %}"{{ item }}"{% unless forloop.last %},{% endunless %}{% endfor %}]
-    }{% unless forloop.last %},{% endunless %}
-  {% endfor %}
-]
-{% endcapture %}
-
 <div class="resume-wrapper wrapper">
   <aside class="resume-sidebar">
     <!-- 角色滑动卡片 -->
@@ -60,13 +49,6 @@ layout: default
       </div>
     </div>
 
-    <!-- 技能标签（扁平化） -->
-    <div class="skills-section">
-      <h2 class="sidebar-title">技能标签</h2>
-      <div class="skill-tags" id="skillTags">
-        <!-- JS 动态渲染 -->
-      </div>
-    </div>
   </aside>
 
   <main class="resume-main">
@@ -124,7 +106,6 @@ layout: default
 
 <script>
 const AUTHORS = {{ authors_json | strip_newlines }};
-const SKILLS = {{ skills_json | strip_newlines }};
 const SITE_BASEURL = '{{ site.baseurl }}';
 let allPosts = [];
 let currentSlug = null;
@@ -134,21 +115,9 @@ fetch(SITE_BASEURL + '/api/posts.json')
   .then(r => r.json())
   .then(data => {
     allPosts = data.posts || [];
-    renderSkills();
     pickRandom(allPosts);
     if (AUTHORS.length > 0) switchCharacter(AUTHORS[0].slug);
   });
-
-// ---------- 技能渲染 ----------
-function renderSkills() {
-  const container = document.getElementById('skillTags');
-  const seen = new Set();
-  const flat = [];
-  SKILLS.forEach(cat => (cat.items || []).forEach(item => {
-    if (!seen.has(item)) { seen.add(item); flat.push(item); }
-  }));
-  container.innerHTML = flat.map(s => `<span class="skill-tag">${s}</span>`).join('');
-}
 
 // ---------- 角色切换 ----------
 function switchCharacter(slug) {
@@ -464,35 +433,6 @@ function renderPosts(posts) {
 
 .dot.active { background: var(--accent); transform: scale(1.4); }
 
-/* ========== 技能标签 ========== */
-.skills-section { margin-top: 0; }
-
-.sidebar-title {
-  font-size: 1.1rem;
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid var(--accent);
-  display: inline-block;
-}
-
-.skill-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.skill-tag {
-  background: var(--bg-light);
-  color: var(--text-main);
-  padding: 0.3rem 0.8rem;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  border: 1px solid var(--border-color);
-  transition: background 0.2s, border-color 0.2s;
-}
-
-.skill-tag:hover { background: #eef2f7; border-color: var(--accent); }
-
 /* ========== 主内容区 ========== */
 .section-title {
   font-size: 1.5rem;
@@ -735,8 +675,6 @@ function renderPosts(posts) {
   .contact-item { font-size: 0.78rem; }
   .carousel-dots { margin-top: 0.5rem; }
   .dot { width: 6px; height: 6px; }
-  .sidebar-title { font-size: 1rem; margin-bottom: 1rem; }
-  .skill-tag { font-size: 0.75rem; padding: 0.2rem 0.6rem; }
   .section-title { font-size: 1.25rem; margin-bottom: 1.5rem; }
   .random-section { margin-bottom: 2rem; }
   .random-card-inner { padding: 1.2rem; }
