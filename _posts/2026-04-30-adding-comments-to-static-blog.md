@@ -121,7 +121,7 @@ Twikoo 的竞品，功能类似，支持更多登录方式。**如果你需要�
 
 对于我的博客（读者以技术爱好者为主），**Giscus 是最优解**——零运维、数据自主、体验好。
 
-> ⚠️ **注意：** 目前代码里使用的是 Disqus 方案，shortname 为 `wayblog`。你需要注册 [Disqus](https://disqus.com) 账号，创建自己的站点，获取 shortname 后替换代码中的 `wayblog`。
+> ⚠️ **注意：** 目前代码里使用的是 Disqus 方案，shortname 为 `https-moon2dream-qzz-io`。
 
 ---
 
@@ -170,7 +170,7 @@ Disqus 会给你一段嵌入代码，核心部分如下：
     };
     (function() {
         var d = document, s = d.createElement('script');
-        s.src = 'https://wayblog.disqus.com/embed.js';
+        s.src = 'https://https-moon2dream-qzz-io.disqus.com/embed.js';
         s.setAttribute('data-timestamp', +new Date());
         (d.head || d.body).appendChild(s);
     })();
