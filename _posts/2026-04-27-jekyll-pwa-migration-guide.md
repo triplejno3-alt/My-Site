@@ -206,8 +206,8 @@ PWA 的资源需要从 HTML 中引用。做法是给站点的 `<head>` 加上：
 <!-- Manifest -->
 <link rel="manifest" href="/My-Site/manifest.json">
 
-<!-- iOS 支持 -->
-<meta name="apple-mobile-web-app-capable" content="yes">
+<!-- iOS + Android 通用 -->
+<meta name="mobile-web-app-capable" content="yes">
 <link rel="apple-touch-icon" href="/My-Site/assets/icons/icon-192.png">
 
 <!-- 主题色 -->
@@ -253,17 +253,17 @@ Jekyll 站点使用了自定义的 `home.html` 布局，它没有继承 minima �
 
 `header.html` 加了一份，`head.html`（被 default 布局引用）也保留了一份。结果是文章页面的 PWA 标签出现了两次。不影响功能，只是 HTML 变长了。后续可以优化，把 `head.html` 中的 PWA 部分去掉，统一由 `header.html` 管理。
 
-### 坑四：iOS Safari 的 PWA 支持
+### 坑四：跨浏览器 PWA 支持差异
 
-iOS 上的 Safari 对 PWA 支持一直比较滞后。需要额外的 meta 标签才能让它在 iOS 上表现正常：
+iOS 上的 Safari 对 PWA 支持一直比较滞后，而部分 Android 浏览器也需要 `mobile-web-app-capable` 标签才能正确识别。需要额外的 meta 标签：
 
 ```html
-<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="apple-touch-icon" href="/assets/icons/icon-192.png">
 ```
 
-没有这些标签，iOS Safari 不会识别这是一个可安装的 Web App。
+没有这些标签，iOS Safari（以及部分 Android 浏览器）不会识别这是一个可安装的 Web App。
 
 ---
 
@@ -314,7 +314,7 @@ PWA 改造这件事，技术难度不高，但细节不少。最关键的几个�
 1. **子路径部署** — scope 和所有路径都要加上子路径前缀
 2. **缓存策略** — 静态资源 Cache First，页面 Network First
 3. **离线兜底** — 永远有个 offline.html 作为最后的回退
-4. **跨浏览器** — 别忘了 iOS 的 apple-meta 标签
+4. **跨浏览器** — 别忘了 `mobile-web-app-capable` meta 标签
 
 整个改造过程加上编写这篇文章，没有超过一小时。对于内容型网站来说，PWA 的投入产出比非常高——改几行代码，读者体验提升一个档次。
 
