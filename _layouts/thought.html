@@ -1,0 +1,242 @@
+---
+layout: default
+---
+
+<div class="thoughts-page">
+  <h1 class="thoughts-title">💭 想法</h1>
+  <p class="thoughts-subtitle">一些碎碎念、日常分享、不成文章的想法。</p>
+
+  <div class="thoughts-list">
+    {% assign thoughts = site.data.thoughts | sort: "date" | reverse %}
+    {% for thought in thoughts %}
+    <div class="thought-card" id="thought-{{ thought.id }}">
+      <!-- 头部：作者 + 时间 -->
+      <div class="thought-header">
+        <div class="thought-author">
+          {% assign author_data = site.data.authors[thought.author] %}
+          {% if author_data %}
+          <span class="thought-avatar" style="background: {{ author_data.color }}">{{ author_data.emoji }}</span>
+          <span class="thought-author-name">{{ author_data.name }}</span>
+          {% else %}
+          <span class="thought-author-name">{{ thought.author }}</span>
+          {% endif %}
+        </div>
+        <time class="thought-time" datetime="{{ thought.date | date_to_xmlschema }}">
+          {{ thought.date | date: "%Y年%m月%d日 %H:%M" }}
+        </time>
+      </div>
+
+      <!-- 正文 -->
+      <div class="thought-body">
+        {{ thought.content | markdownify }}
+      </div>
+
+      <!-- 标签 -->
+      {% if thought.tags %}
+      <div class="thought-tags">
+        {% for tag in thought.tags %}
+        <span class="thought-tag">#{{ tag }}</span>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <!-- Disqus 评论区 -->
+      <div class="thought-actions">
+        <button class="thought-comment-toggle" onclick="toggleComments('thought-{{ thought.id }}')">
+          💬 评论
+        </button>
+      </div>
+      <div class="thought-comments" id="comments-thought-{{ thought.id }}" style="display: none;">
+        <div id="disqus_thread_{{ thought.id }}"></div>
+        <script>
+          (function() {
+            var d = document, s = d.createElement('script');
+            s.src = 'https://https-moon2dream-qzz-io.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+          })();
+          // Disqus 用 URL 区分不同想法
+          window.DISQUS = window.DISQUS || [];
+          DISQUS.reset ? DISQUS.reset({
+            reload: true,
+            config: function config() {
+              this.page.url = '{{ site.url }}{{ "/thoughts/" | relative_url }}#thought-{{ thought.id }}';
+              this.page.identifier = 'thought-{{ thought.id }}';
+            }
+          }) : DISQUS.push(function() {
+            this.page.url = '{{ site.url }}{{ "/thoughts/" | relative_url }}#thought-{{ thought.id }}';
+            this.page.identifier = 'thought-{{ thought.id }}';
+          });
+        </script>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<style>
+.thoughts-page {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+}
+
+.thoughts-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--primary, #3c3c43);
+  margin: 0 0 0.3rem;
+}
+
+.thoughts-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-light, #7f8c8d);
+  margin: 0 0 3rem;
+  line-height: 1.5;
+}
+
+/* ====== 想法卡片 ====== */
+.thoughts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.thought-card {
+  background: #fff;
+  border: 1px solid var(--border-color, #e8e8ea);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: box-shadow 0.2s;
+}
+
+.thought-card:hover {
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+/* 头部 */
+.thought-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.thought-author {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.thought-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+.thought-author-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--primary, #3c3c43);
+}
+
+.thought-time {
+  font-size: 0.78rem;
+  font-family: var(--font-mono, monospace);
+  color: var(--text-light, #7f8c8d);
+}
+
+/* 正文 */
+.thought-body {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--text-main, #3c3c43);
+  margin-bottom: 0.75rem;
+}
+
+.thought-body p {
+  margin: 0;
+}
+
+.thought-body p + p {
+  margin-top: 0.5rem;
+}
+
+/* 标签 */
+.thought-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+}
+
+.thought-tag {
+  display: inline-block;
+  background: var(--tag-bg, rgba(142,150,170,0.14));
+  color: var(--tag-text, #3c3c43);
+  padding: 1px 8px;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
+/* 评论按钮 */
+.thought-actions {
+  border-top: 1px solid var(--border-color, #e8e8ea);
+  padding-top: 0.75rem;
+}
+
+.thought-comment-toggle {
+  background: none;
+  border: 1px solid var(--border-color, #e8e8ea);
+  border-radius: 8px;
+  padding: 0.35rem 1rem;
+  font-size: 0.82rem;
+  color: var(--text-light, #7f8c8d);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: all 0.2s;
+}
+
+.thought-comment-toggle:hover {
+  background: var(--bg-light, #f5f6f7);
+  color: var(--primary, #3c3c43);
+  border-color: var(--accent, #3451b2);
+}
+
+/* 评论区容器 */
+.thought-comments {
+  margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+  .thoughts-page {
+    padding: 1.5rem 1rem;
+  }
+  .thoughts-title {
+    font-size: 1.4rem;
+  }
+  .thought-card {
+    padding: 1rem;
+  }
+  .thought-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+  }
+}
+</style>
+
+<script>
+function toggleComments(thoughtId) {
+  var comments = document.getElementById('comments-' + thoughtId);
+  if (!comments) return;
+  var isHidden = comments.style.display === 'none';
+  comments.style.display = isHidden ? 'block' : 'none';
+}
+</script>
