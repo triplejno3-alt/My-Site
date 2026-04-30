@@ -9,29 +9,51 @@ layout: default
   <div class="thoughts-list">
     {% assign thoughts = site.data.thoughts | sort: "date" | reverse %}
     {% for thought in thoughts %}
-    <div class="thought-card" id="thought-{{ thought.id }}">
-      <!-- 头部：作者 + 时间 -->
+    <div class="thought-post" id="thought-{{ thought.id }}">
+      {% comment %}--- 图片区（如果有图） ---{% endcomment %}
+      {% if thought.images %}
+      <div class="thought-image-wrap">
+        {% for img in thought.images %}
+        <img src="{{ img | relative_url }}" alt="想法配图" class="thought-image" loading="lazy">
+        {% endfor %}
+        {% comment %}--- 头像叠在图片左下角 ---{% endcomment %}
+        {% assign ad = site.data.authors[thought.author] %}
+        <div class="thought-image-overlay">
+          <span class="ins-avatar" style="background: {{ ad.color | default: '#3451b2' }}">{{ ad.emoji | default: '👤' }}</span>
+          <span class="ins-avatar-name">{{ ad.name | default: thought.author }}</span>
+        </div>
+      </div>
+      {% else %}
+      {% comment %}--- 无图：传统样式头部 ---{% endcomment %}
       <div class="thought-header">
         <div class="thought-author">
-          {% assign author_data = site.data.authors[thought.author] %}
-          {% if author_data %}
-          <span class="thought-avatar" style="background: {{ author_data.color }}">{{ author_data.emoji }}</span>
-          <span class="thought-author-name">{{ author_data.name }}</span>
+          {% assign ad = site.data.authors[thought.author] %}
+          {% if ad %}
+          <span class="thought-avatar" style="background: {{ ad.color }}">{{ ad.emoji }}</span>
+          <span class="thought-author-name">{{ ad.name }}</span>
           {% else %}
           <span class="thought-author-name">{{ thought.author }}</span>
           {% endif %}
         </div>
         <time class="thought-time" datetime="{{ thought.date | date_to_xmlschema }}">
-          {{ thought.date | date: "%Y年%m月%d日 %H:%M" }}
+          {{ thought.date | date: "%m月%d日 %H:%M" }}
         </time>
       </div>
+      {% endif %}
 
-      <!-- 正文 -->
+      {% comment %}--- 正文 ---{% endcomment %}
       <div class="thought-body">
         {{ thought.content | markdownify }}
       </div>
 
-      <!-- 标签 -->
+      {% comment %}--- 时间（有图时显示在正文后面）---{% endcomment %}
+      {% if thought.images %}
+      <time class="thought-time thought-time-under" datetime="{{ thought.date | date_to_xmlschema }}">
+        {{ thought.date | date: "%Y年%m月%d日 %H:%M" }}
+      </time>
+      {% endif %}
+
+      {% comment %}--- 标签 ---{% endcomment %}
       {% if thought.tags %}
       <div class="thought-tags">
         {% for tag in thought.tags %}
@@ -40,12 +62,14 @@ layout: default
       </div>
       {% endif %}
 
-      <!-- Disqus 评论区 -->
+      {% comment %}--- 操作栏 ---{% endcomment %}
       <div class="thought-actions">
         <button class="thought-comment-toggle" onclick="toggleComments('thought-{{ thought.id }}')">
-          💬 评论
+          💬 <span>评论</span>
         </button>
       </div>
+
+      {% comment %}--- 评论区 ---{% endcomment %}
       <div class="thought-comments" id="comments-thought-{{ thought.id }}" style="display: none;">
         <div id="disqus_thread_{{ thought.id }}"></div>
         <script>
@@ -55,7 +79,6 @@ layout: default
             s.setAttribute('data-timestamp', +new Date());
             (d.head || d.body).appendChild(s);
           })();
-          // Disqus 用 URL 区分不同想法
           window.DISQUS = window.DISQUS || [];
           DISQUS.reset ? DISQUS.reset({
             reload: true,
@@ -75,62 +98,117 @@ layout: default
 </div>
 
 <style>
+/* ====== 页面布局 ====== */
 .thoughts-page {
-  max-width: 680px;
+  max-width: 600px;
   margin: 0 auto;
-  padding: 3rem 2rem;
+  padding: 2.5rem 1.5rem;
 }
-
 .thoughts-title {
   font-size: 1.8rem;
   font-weight: 700;
   color: var(--primary, #3c3c43);
   margin: 0 0 0.3rem;
 }
-
 .thoughts-subtitle {
   font-size: 0.95rem;
   color: var(--text-light, #7f8c8d);
-  margin: 0 0 3rem;
-  line-height: 1.5;
+  margin: 0 0 2.5rem;
 }
-
-/* ====== 想法卡片 ====== */
 .thoughts-list {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.8rem;
 }
 
-.thought-card {
+/* ====== 卡片 (Ins 风格，无边框白底) ====== */
+.thought-post {
   background: #fff;
   border: 1px solid var(--border-color, #e8e8ea);
-  border-radius: 12px;
-  padding: 1.5rem;
-  transition: box-shadow 0.2s;
+  border-radius: 3px;
+  padding: 0;
+  overflow: hidden;
+}
+.thought-body {
+  padding: 0 1rem 0.6rem;
+  font-size: 0.92rem;
+  line-height: 1.7;
+  color: var(--text-main, #262626);
+}
+.thought-body p {
+  margin: 0;
+}
+.thought-body p + p {
+  margin-top: 0.5rem;
 }
 
-.thought-card:hover {
-  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+/* 正文里的图片（markdown 内嵌图） */
+.thought-body img {
+  max-width: 100%;
+  border-radius: 4px;
+  margin: 0.5rem 0;
 }
 
-/* 头部 */
+/* ====== 图片区 (Ins 风格顶部大图) ====== */
+.thought-image-wrap {
+  position: relative;
+  width: 100%;
+}
+.thought-image {
+  display: block;
+  width: 100%;
+  max-height: 600px;
+  object-fit: cover;
+}
+.thought-image + .thought-image {
+  border-top: 2px solid #fff;
+}
+
+/* 头像叠在图片上 */
+.thought-image-overlay {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(4px);
+  padding: 5px 12px 5px 6px;
+  border-radius: 20px;
+}
+.ins-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  border: 2px solid rgba(255,255,255,0.8);
+  flex-shrink: 0;
+}
+.ins-avatar-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* ====== 无图时头部 ====== */
 .thought-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.75rem;
+  padding: 0.8rem 1rem;
 }
-
 .thought-author {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
-
 .thought-avatar {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
@@ -138,96 +216,109 @@ layout: default
   font-size: 0.75rem;
   flex-shrink: 0;
 }
-
 .thought-author-name {
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--primary, #3c3c43);
+  color: var(--primary, #262626);
 }
-
 .thought-time {
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-family: var(--font-mono, monospace);
-  color: var(--text-light, #7f8c8d);
+  color: var(--text-light, #8e8e8e);
+}
+.thought-time-under {
+  display: block;
+  padding: 0 1rem 0.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
-/* 正文 */
-.thought-body {
-  font-size: 0.95rem;
-  line-height: 1.7;
-  color: var(--text-main, #3c3c43);
-  margin-bottom: 0.75rem;
-}
-
-.thought-body p {
-  margin: 0;
-}
-
-.thought-body p + p {
-  margin-top: 0.5rem;
-}
-
-/* 标签 */
+/* ====== 标签 ====== */
 .thought-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.35rem;
-  margin-bottom: 0.75rem;
+  gap: 0.3rem;
+  padding: 0 1rem 0.5rem;
 }
-
 .thought-tag {
   display: inline-block;
   background: var(--tag-bg, rgba(142,150,170,0.14));
-  color: var(--tag-text, #3c3c43);
+  color: var(--tag-text, #262626);
   padding: 1px 8px;
   border-radius: 4px;
   font-size: 0.72rem;
   font-weight: 500;
 }
 
-/* 评论按钮 */
+/* ====== 操作栏 (Ins 风格) ====== */
 .thought-actions {
-  border-top: 1px solid var(--border-color, #e8e8ea);
-  padding-top: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.5rem 1rem 0.7rem;
 }
-
 .thought-comment-toggle {
   background: none;
-  border: 1px solid var(--border-color, #e8e8ea);
-  border-radius: 8px;
-  padding: 0.35rem 1rem;
-  font-size: 0.82rem;
-  color: var(--text-light, #7f8c8d);
+  border: none;
+  padding: 4px 8px;
+  font-size: 0.92rem;
+  color: var(--text-main, #262626);
   cursor: pointer;
   font-family: var(--font-sans);
-  transition: all 0.2s;
+  transition: opacity 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
-
 .thought-comment-toggle:hover {
-  background: var(--bg-light, #f5f6f7);
-  color: var(--primary, #3c3c43);
-  border-color: var(--accent, #3451b2);
+  opacity: 0.6;
+}
+.thought-comment-toggle span {
+  font-size: 0.82rem;
+  font-weight: 600;
 }
 
-/* 评论区容器 */
+/* 评论区 */
 .thought-comments {
-  margin-top: 1rem;
+  padding: 0 1rem 1rem;
+  border-top: 1px solid var(--border-color, #efefef);
+  margin-top: 0;
 }
 
-@media (max-width: 768px) {
+/* ====== 移动端 ====== */
+@media (max-width: 600px) {
   .thoughts-page {
-    padding: 1.5rem 1rem;
+    padding: 1.5rem 0.5rem;
   }
   .thoughts-title {
     font-size: 1.4rem;
+    padding: 0 0.5rem;
   }
-  .thought-card {
-    padding: 1rem;
+  .thoughts-subtitle {
+    padding: 0 0.5rem;
+  }
+  .thought-post {
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
   }
   .thought-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.3rem;
+    padding: 0.7rem 0.8rem;
+  }
+  .thought-body {
+    padding: 0 0.8rem 0.5rem;
+  }
+  .thought-tags {
+    padding: 0 0.8rem 0.4rem;
+  }
+  .thought-actions {
+    padding: 0.4rem 0.8rem 0.6rem;
+  }
+  .thought-time-under {
+    padding: 0 0.8rem 0.2rem;
+  }
+  .thought-comments {
+    padding: 0 0.8rem 0.8rem;
   }
 }
 </style>
@@ -238,5 +329,18 @@ function toggleComments(thoughtId) {
   if (!comments) return;
   var isHidden = comments.style.display === 'none';
   comments.style.display = isHidden ? 'block' : 'none';
+  // 触发 Disqus 重新加载
+  if (isHidden) {
+    var disqusId = 'disqus_thread_' + thoughtId.replace('thought-', '');
+    var disqusEl = document.getElementById(disqusId);
+    if (disqusEl && disqusEl.children.length === 0) {
+      (function() {
+        var d = document, s = d.createElement('script');
+        s.src = 'https://https-moon2dream-qzz-io.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+      })();
+    }
+  }
 }
 </script>

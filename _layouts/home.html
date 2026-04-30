@@ -70,6 +70,22 @@ layout: default
   </aside>
 
   <main class="resume-main">
+    <!-- 随机文章卡片 -->
+    <section class="random-section" id="randomSection">
+      <h2 class="section-title">🎲 随机一篇</h2>
+      <div class="random-card" id="randomCard">
+        <div class="random-card-inner">
+          <div class="random-loading" id="randomLoading">加载中…</div>
+          <a class="random-link" id="randomLink" href="#" style="display:none">
+            <h3 class="random-title" id="randomTitle"></h3>
+            <p class="random-excerpt" id="randomExcerpt"></p>
+            <span class="random-meta" id="randomMeta"></span>
+          </a>
+          <button class="random-shuffle" id="randomShuffle" title="换一篇">🎲</button>
+        </div>
+      </div>
+    </section>
+
     <section class="posts-section" id="posts">
       <h2 class="section-title" id="postsTitle">精选文章</h2>
       <div class="post-list-mini" id="postList">
@@ -119,6 +135,7 @@ fetch(SITE_BASEURL + '/api/posts.json')
   .then(data => {
     allPosts = data.posts || [];
     renderSkills();
+    pickRandom(allPosts);
     if (AUTHORS.length > 0) switchCharacter(AUTHORS[0].slug);
   });
 
@@ -163,6 +180,31 @@ function switchCharacter(slug) {
   // 过滤 + 渲染
   const filtered = allPosts.filter(p => p.author === slug);
   renderPosts(filtered);
+}
+
+// ---------- 随机文章 ----------
+function pickRandom(posts) {
+  const el = document.getElementById('randomLink');
+  const loading = document.getElementById('randomLoading');
+  const shuffle = document.getElementById('randomShuffle');
+  if (!posts.length) {
+    loading.textContent = '暂无文章';
+    return;
+  }
+  function showRandom() {
+    const p = posts[Math.floor(Math.random() * posts.length)];
+    document.getElementById('randomTitle').textContent = p.title;
+    document.getElementById('randomExcerpt').textContent = p.excerpt || '';
+    document.getElementById('randomMeta').textContent = (p.date || '') + (p.author ? ' · ' + p.author : '');
+    el.href = p.url;
+    loading.style.display = 'none';
+    el.style.display = 'block';
+  }
+  showRandom();
+  shuffle.addEventListener('click', function(e) {
+    e.stopPropagation();
+    showRandom();
+  });
 }
 
 function renderPosts(posts) {
@@ -552,6 +594,88 @@ function renderPosts(posts) {
   font-size: 0.95rem;
 }
 
+/* ========== 随机文章卡片 ========== */
+.random-section {
+  margin-bottom: 3rem;
+}
+
+.random-card {
+  background: linear-gradient(135deg, #667eea22, #764ba222);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+}
+.random-card:hover {
+  box-shadow: 0 4px 16px rgba(102,126,234,0.12);
+}
+
+.random-card-inner {
+  position: relative;
+  padding: 1.5rem;
+}
+
+.random-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.random-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--primary, #2c3e50);
+  margin: 0 0 0.4rem;
+  line-height: 1.4;
+  transition: color 0.2s;
+}
+.random-link:hover .random-title {
+  color: var(--accent, #667eea);
+}
+
+.random-excerpt {
+  font-size: 0.88rem;
+  color: var(--text-light, #7f8c8d);
+  line-height: 1.6;
+  margin: 0 0 0.6rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.random-meta {
+  font-size: 0.78rem;
+  font-family: var(--font-mono, monospace);
+  color: var(--text-light, #7f8c8d);
+}
+
+.random-loading {
+  font-size: 0.88rem;
+  color: var(--text-light, #7f8c8d);
+}
+
+.random-shuffle {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(102,126,234,0.1);
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, transform 0.2s;
+}
+.random-shuffle:hover {
+  background: rgba(102,126,234,0.2);
+  transform: rotate(180deg);
+}
+
 /* ========== 友情链接（页尾） ========== */
 .friends-links {
   background: var(--bg-light);
@@ -614,6 +738,9 @@ function renderPosts(posts) {
   .sidebar-title { font-size: 1rem; margin-bottom: 1rem; }
   .skill-tag { font-size: 0.75rem; padding: 0.2rem 0.6rem; }
   .section-title { font-size: 1.25rem; margin-bottom: 1.5rem; }
+  .random-section { margin-bottom: 2rem; }
+  .random-card-inner { padding: 1.2rem; }
+  .random-title { font-size: 1.05rem; }
   .post-list-mini { gap: 0; }
   .post-item-mini { padding: 0.6rem 0; }
   .post-title-mini { font-size: 0.95rem; }
@@ -632,5 +759,9 @@ function renderPosts(posts) {
   .avatar-emoji { font-size: 1.8rem; }
   .profile-name { font-size: 1.1rem; }
   .section-title { font-size: 1.1rem; }
+  .random-card-inner { padding: 1rem; }
+  .random-title { font-size: 0.95rem; }
+  .random-excerpt { font-size: 0.82rem; }
+  .random-shuffle { width: 28px; height: 28px; font-size: 0.9rem; top: 0.75rem; right: 0.75rem; }
 }
 </style>
