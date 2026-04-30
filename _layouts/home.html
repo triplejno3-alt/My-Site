@@ -1,392 +1,587 @@
 ---
-<!-- layout: default -->
+layout: default
 ---
-{% include header.html %}
+
+{% capture authors_json %}
+[
+  {% for a in site.data.authors %}
+    {
+      "slug": "{{ a[0] }}",
+      "name": "{{ a[1].name }}",
+      "short_name": "{{ a[1].short_name }}",
+      "role": "{{ a[1].role }}",
+      "description": "{{ a[1].description | default: '' | strip_newlines | escape }}",
+      "url": "{{ a[1].url | default: '#' | relative_url }}",
+      "avatar": "{{ a[1].avatar | default: '' | relative_url }}"
+    }{% unless forloop.last %},{% endunless %}
+  {% endfor %}
+]
+{% endcapture %}
+
+{% capture skills_json %}
+[
+  {% for category in site.resume.skills %}
+    {
+      "name": "{{ category.name }}",
+      "items": [{% for item in category.items %}"{{ item }}"{% unless forloop.last %},{% endunless %}{% endfor %}]
+    }{% unless forloop.last %},{% endunless %}
+  {% endfor %}
+]
+{% endcapture %}
 
 <div class="resume-wrapper wrapper">
   <aside class="resume-sidebar">
-    <div class="profile-card">
-      <div class="profile-avatar">
-        <img src="https://picsum.photos/200" alt="Avatar" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-        <div class="avatar-placeholder" style="display: none;">
-          {{ site.resume.name | slice: 0, 1 | upcase }}
+    <!-- 角色滑动卡片 -->
+    <div class="character-carousel" id="characterCarousel">
+      <div class="character-track" id="characterTrack">
+        {% for a in site.data.authors %}
+        <div class="character-card" data-slug="{{ a[0] }}">
+          <div class="profile-avatar" style="background: {{ a[1].color | default: '#3498db' }};">
+            <span class="avatar-emoji">{{ a[1].emoji | default: '👤' }}</span>
+          </div>
+          <h1 class="profile-name">{{ a[1].name }}</h1>
+          <p class="profile-role">{{ a[1].role }}</p>
+          <p class="profile-bio">{{ a[1].description | default: '' }}</p>
+          <div class="profile-contact">
+            {% if a[1].links %}
+              {% for link in a[1].links %}
+              <a href="{{ link.url }}" class="contact-item" target="_blank">
+                <span class="icon">{{ link.icon | default: '🔗' }}</span> {{ link.name }}
+              </a>
+              {% endfor %}
+            {% endif %}
+          </div>
         </div>
-      </div>
-      <h1 class="profile-name">{{ site.resume.name | default: site.title }}</h1>
-      <p class="profile-role">{{ site.resume.role }}</p>
-      <p class="profile-bio">{{ site.resume.bio }}</p>
-      
-      <div class="profile-contact">
-        <a href="mailto:{{ site.email }}" class="contact-item">
-          <span class="icon">✉️</span> Email
-        </a>
-        {% if site.github_username %}
-        <a href="https://github.com/{{ site.github_username }}" class="contact-item">
-          <span class="icon">🐙</span> GitHub
-        </a>
-        {% endif %}
-      </div>
-    </div>
-
-    <div class="skills-section">
-      <h2 class="sidebar-title">核心技能</h2>
-      {% for category in site.resume.skills %}
-      <div class="skill-group">
-        <h3 class="skill-category">{{ category.name }}</h3>
-        <div class="skill-tags">
-          {% for item in category.items %}
-          <span class="skill-tag">{{ item }}</span>
-          {% endfor %}
-        </div>
-      </div>
-      {% endfor %}
-    </div>
-
-    <div class="links-section">
-      <h2 class="sidebar-title">友情链接</h2>
-      <div class="skill-tags">
-        {% for link in site.resume.links %}
-        <a href="{{ link.url }}" class="skill-tag" target="_blank">{{ link.name }}</a>
         {% endfor %}
+      </div>
+      <div class="carousel-dots" id="carouselDots">
+        {% for a in site.data.authors %}
+        <span class="dot {% if forloop.first %}active{% endif %}" data-index="{{ forloop.index0 }}"></span>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- 技能标签（扁平化） -->
+    <div class="skills-section">
+      <h2 class="sidebar-title">技能标签</h2>
+      <div class="skill-tags" id="skillTags">
+        <!-- JS 动态渲染 -->
       </div>
     </div>
   </aside>
 
   <main class="resume-main">
-    <section class="experience-section">
-      <h2 class="section-title">项目与经历</h2>
-      <div class="timeline">
-        {% for exp in site.resume.experience %}
-        <div class="timeline-item">
-          <div class="timeline-dot"></div>
-          <div class="timeline-content">
-            <div class="timeline-header">
-              <h3 class="exp-role">{{ exp.role }}</h3>
-              <span class="exp-period">{{ exp.period }}</span>
-            </div>
-            <p class="exp-company">{{ exp.company }}</p>
-            <p class="exp-desc">{{ exp.desc }}</p>
-          </div>
-        </div>
-        {% endfor %}
-      </div>
-      <a href="{{ "/Project/T1/index.html" | relative_url }}" class="view-all">浏览全部项目 →</a>
-    </section>
-
     <section class="posts-section" id="posts">
-      <h2 class="section-title">精选文章</h2>
-      <div class="post-list-mini">
-        {%- for post in site.posts limit:5 -%}
-        <article class="post-item-mini">
-          <span class="post-date-mini">{{ post.date | date: "%Y-%m-%d" }}</span>
-          <h3 class="post-title-mini">
-            <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-          </h3>
-        </article>
-        {%- endfor -%}
+      <h2 class="section-title" id="postsTitle">精选文章</h2>
+      <div class="post-list-mini" id="postList">
+        <!-- JS 动态渲染 -->
       </div>
       <a href="{{ "/archive/" | relative_url }}" class="view-all">查看全部文章 →</a>
     </section>
   </main>
 </div>
 
-{% include footer.html %}
+<!-- 友情链接移到底部 -->
+<div class="friends-links">
+  <div class="wrapper">
+    <h3>友情链接</h3>
+    <div class="friends-list">
+      {% for link in site.resume.links %}
+      <a href="{{ link.url }}" target="_blank">{{ link.name }}</a>
+      {% endfor %}
+    </div>
+  </div>
+</div>
 
 {% if site.buymeacoffee_username %}
-<script data-name="BMC-Widget" 
-        data-cfasync="false" 
-        src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" 
-        data-id="{{ site.buymeacoffee_username }}" 
-        data-description="Support me on Buy me a coffee!" 
-        data-message="" 
-        data-color="#5F7FFF" 
-        data-position="Right" 
-        data-x_margin="18" 
+<script data-name="BMC-Widget"
+        data-cfasync="false"
+        src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js"
+        data-id="{{ site.buymeacoffee_username }}"
+        data-description="Support me on Buy me a coffee!"
+        data-message=""
+        data-color="#5F7FFF"
+        data-position="Right"
+        data-x_margin="18"
         data-y_margin="18">
 </script>
 {% endif %}
 
+<script>
+const AUTHORS = {{ authors_json | strip_newlines }};
+const SKILLS = {{ skills_json | strip_newlines }};
+const SITE_BASEURL = '{{ site.baseurl }}';
+let allPosts = [];
+let currentSlug = null;
+
+// ---------- 数据加载 ----------
+fetch(SITE_BASEURL + '/api/posts.json')
+  .then(r => r.json())
+  .then(data => {
+    allPosts = data.posts || [];
+    renderSkills();
+    if (AUTHORS.length > 0) switchCharacter(AUTHORS[0].slug);
+  });
+
+// ---------- 技能渲染 ----------
+function renderSkills() {
+  const container = document.getElementById('skillTags');
+  const seen = new Set();
+  const flat = [];
+  SKILLS.forEach(cat => (cat.items || []).forEach(item => {
+    if (!seen.has(item)) { seen.add(item); flat.push(item); }
+  }));
+  container.innerHTML = flat.map(s => `<span class="skill-tag">${s}</span>`).join('');
+}
+
+// ---------- 角色切换 ----------
+function switchCharacter(slug) {
+  if (!slug) return;
+  currentSlug = slug;
+
+  // 高亮卡片
+  document.querySelectorAll('.character-card').forEach(c => {
+    c.classList.toggle('active', c.dataset.slug === slug);
+  });
+
+  // 更新指示器
+  const idx = AUTHORS.findIndex(a => a.slug === slug);
+  document.querySelectorAll('.dot').forEach(d => {
+    d.classList.toggle('active', parseInt(d.dataset.index) === idx);
+  });
+
+  // 滚到对应卡片
+  const track = document.getElementById('characterTrack');
+  const card = track.querySelector(`[data-slug="${slug}"]`);
+  if (card) {
+    card.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  }
+
+  // 更新文章标题
+  const author = AUTHORS.find(a => a.slug === slug);
+  document.getElementById('postsTitle').textContent = `${author ? author.name : ''} 的文章`;
+
+  // 过滤 + 渲染
+  const filtered = allPosts.filter(p => p.author === slug);
+  renderPosts(filtered);
+}
+
+function renderPosts(posts) {
+  const container = document.getElementById('postList');
+  if (!posts.length) {
+    container.innerHTML = '<p class="empty-posts">暂无文章</p>';
+    return;
+  }
+  container.innerHTML = posts.map(p => `
+    <article class="post-item-mini">
+      <span class="post-date-mini">${p.date}</span>
+      <h3 class="post-title-mini">
+        <a href="${p.url}">${p.title}</a>
+      </h3>
+    </article>
+  `).join('');
+}
+
+// ---------- 滑动 + snap ----------
+(function() {
+  const track = document.getElementById('characterTrack');
+  let isDragging = false;
+  let startX = 0;
+  let scrollLeft = 0;
+
+  track.addEventListener('mousedown', e => {
+    isDragging = true;
+    startX = e.pageX - track.offsetLeft;
+    scrollLeft = track.scrollLeft;
+    track.style.cursor = 'grabbing';
+  });
+
+  track.addEventListener('mouseleave', () => {
+    isDragging = false;
+    track.style.cursor = 'grab';
+  });
+
+  track.addEventListener('mouseup', () => {
+    isDragging = false;
+    track.style.cursor = 'grab';
+    snapToNearest();
+  });
+
+  track.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const x = e.pageX - track.offsetLeft;
+    const walk = (x - startX) * 1.5;
+    track.scrollLeft = scrollLeft - walk;
+  });
+
+  let touchStartX = 0;
+  let touchScrollLeft = 0;
+
+  track.addEventListener('touchstart', e => {
+    touchStartX = e.touches[0].pageX - track.offsetLeft;
+    touchScrollLeft = track.scrollLeft;
+  }, { passive: true });
+
+  track.addEventListener('touchmove', e => {
+    const x = e.touches[0].pageX - track.offsetLeft;
+    const walk = (x - touchStartX) * 1.5;
+    track.scrollLeft = touchScrollLeft - walk;
+  }, { passive: true });
+
+  track.addEventListener('touchend', () => {
+    snapToNearest();
+  }, { passive: true });
+
+  let scrollTimer = null;
+  track.addEventListener('scroll', () => {
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(snapToNearest, 150);
+  });
+
+  function snapToNearest() {
+    const cards = track.querySelectorAll('.character-card');
+    let minDist = Infinity;
+    let nearest = null;
+    cards.forEach(c => {
+      const rect = c.getBoundingClientRect();
+      const trackRect = track.getBoundingClientRect();
+      const dist = Math.abs(rect.left + rect.width / 2 - trackRect.left - trackRect.width / 2);
+      if (dist < minDist) {
+        minDist = dist;
+        nearest = c;
+      }
+    });
+    if (nearest && nearest.dataset.slug !== currentSlug) {
+      nearest.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      switchCharacter(nearest.dataset.slug);
+    }
+  }
+
+  // 点击指示器
+  document.querySelectorAll('.dot').forEach(d => {
+    d.addEventListener('click', () => {
+      const idx = parseInt(d.dataset.index);
+      const slug = AUTHORS[idx]?.slug;
+      if (slug) switchCharacter(slug);
+    });
+  });
+
+  // 键盘左右键
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      const idx = AUTHORS.findIndex(a => a.slug === currentSlug);
+      if (idx === -1) return;
+      const next = e.key === 'ArrowRight'
+        ? Math.min(idx + 1, AUTHORS.length - 1)
+        : Math.max(idx - 1, 0);
+      if (next !== idx) switchCharacter(AUTHORS[next].slug);
+    }
+  });
+})();
+</script>
+
 <style>
-  :root {
-    --primary: #2c3e50;
-    --accent: #3498db;
-    --text-main: #34495e;
-    --text-light: #7f8c8d;
-    --bg-light: #f8f9fa;
-    --border-color: #ecf0f1;
-  }
+:root {
+  --primary: #2c3e50;
+  --accent: #3498db;
+  --text-main: #34495e;
+  --text-light: #7f8c8d;
+  --bg-light: #f8f9fa;
+  --border-color: #ecf0f1;
+}
 
+.resume-wrapper {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 3rem;
+  padding: 4rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  align-items: start;
+}
+
+/* ========== 角色滑动卡片 ========== */
+.character-carousel {
+  position: relative;
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+
+.character-track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  cursor: grab;
+  user-select: none;
+  padding: 0.5rem 0;
+}
+
+.character-track::-webkit-scrollbar { display: none; }
+
+.character-card {
+  flex: 0 0 100%;
+  scroll-snap-align: center;
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  text-align: center;
+  transition: opacity 0.3s, transform 0.3s;
+  opacity: 0.5;
+  transform: scale(0.95);
+}
+
+.character-card.active { opacity: 1; transform: scale(1); }
+
+.profile-avatar {
+  width: 100px; height: 100px;
+  margin: 0 auto 1.2rem;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 4px solid white;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.avatar-emoji { font-size: 3rem; line-height: 1; }
+
+.profile-name {
+  font-size: 1.6rem;
+  margin-bottom: 0.4rem;
+  color: var(--primary);
+}
+
+.profile-role {
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.profile-bio {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--text-light);
+  margin-bottom: 1.2rem;
+}
+
+.profile-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  border-top: 1px solid var(--border-color);
+  padding-top: 1rem;
+}
+
+.contact-item {
+  text-decoration: none;
+  color: var(--text-main);
+  font-size: 0.82rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  transition: color 0.2s;
+}
+
+.contact-item:hover { color: var(--accent); }
+
+/* 指示器 */
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 0.8rem;
+}
+
+.dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #ddd;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.dot.active { background: var(--accent); transform: scale(1.4); }
+
+/* ========== 技能标签 ========== */
+.skills-section { margin-top: 0; }
+
+.sidebar-title {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--accent);
+  display: inline-block;
+}
+
+.skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.skill-tag {
+  background: var(--bg-light);
+  color: var(--text-main);
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  border: 1px solid var(--border-color);
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.skill-tag:hover { background: #eef2f7; border-color: var(--accent); }
+
+/* ========== 主内容区 ========== */
+.section-title {
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+  color: var(--primary);
+  position: relative;
+  padding-left: 1rem;
+}
+
+.section-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.2rem;
+  bottom: 0.2rem;
+  width: 4px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+.post-list-mini {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.post-item-mini {
+  display: flex;
+  align-items: baseline;
+  gap: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.post-date-mini {
+  font-family: monospace;
+  color: var(--text-light);
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.post-title-mini { font-size: 1.05rem; margin: 0; }
+
+.post-title-mini a {
+  text-decoration: none;
+  color: var(--primary);
+  transition: color 0.2s;
+}
+
+.post-title-mini a:hover { color: var(--accent); }
+
+.view-all {
+  display: inline-block;
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.empty-posts {
+  color: var(--text-light);
+  font-size: 0.95rem;
+}
+
+/* ========== 友情链接（页尾） ========== */
+.friends-links {
+  background: var(--bg-light);
+  border-top: 1px solid var(--border-color);
+  padding: 2rem 0;
+  text-align: center;
+}
+
+.friends-links h3 {
+  font-size: 1rem;
+  color: var(--text-light);
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.friends-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.friends-list a {
+  color: var(--text-main);
+  text-decoration: none;
+  font-size: 0.85rem;
+  padding: 0.3rem 1rem;
+  border-radius: 20px;
+  background: white;
+  border: 1px solid var(--border-color);
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.friends-list a:hover { color: var(--accent); border-color: var(--accent); }
+
+/* ========== 响应式 ========== */
+@media (max-width: 1024px) {
+  .resume-wrapper { gap: 2rem; padding: 3rem 1.5rem; }
+}
+
+@media (max-width: 768px) {
   .resume-wrapper {
-    display: grid;
-    grid-template-columns: 320px 1fr;
-    gap: 3rem;
-    padding: 4rem 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-    align-items: start;
-  }
-
-  /* Sidebar Styles */
-  .resume-sidebar {
-    position: sticky;
-    top: 2rem;
-  }
-
-  .profile-card {
-    background: white;
-    padding: 2rem;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-
-  .profile-avatar {
-    width: 120px;
-    height: 120px;
-    margin: 0 auto 1.5rem;
-    border-radius: 50%;
-    overflow: hidden;
-    background: var(--bg-light);
-    border: 4px solid white;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .profile-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .avatar-placeholder {
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, var(--accent), var(--primary));
-    color: white;
-    font-size: 3rem;
-    font-weight: 800;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .profile-name {
-    font-size: 1.75rem;
-    margin-bottom: 0.5rem;
-    color: var(--primary);
-  }
-
-  .profile-role {
-    color: var(--accent);
-    font-weight: 600;
-    margin-bottom: 1rem;
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-
-  .profile-bio {
-    font-size: 0.9rem;
-    line-height: 1.6;
-    color: var(--text-light);
-    margin-bottom: 1.5rem;
-  }
-
-  .profile-contact {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    border-top: 1px solid var(--border-color);
-    padding-top: 1.5rem;
-  }
-
-  .contact-item {
-    text-decoration: none;
-    color: var(--text-main);
-    font-size: 0.85rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    transition: color 0.2s;
-  }
-
-  .contact-item:hover {
-    color: var(--accent);
-  }
-
-  .sidebar-title {
-    font-size: 1.1rem;
-    margin-bottom: 1.5rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 2px solid var(--accent);
-    display: inline-block;
-  }
-
-  .skill-group {
-    margin-bottom: 1.5rem;
-  }
-
-  .skill-category {
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    color: var(--text-light);
-    margin-bottom: 0.75rem;
-    font-weight: 700;
-  }
-
-  .skill-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .skill-tag {
-    background: var(--bg-light);
-    color: var(--text-main);
-    padding: 0.3rem 0.8rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    border: 1px solid var(--border-color);
-  }
-
-  /* Main Content Styles */
-  .section-title {
-    font-size: 1.5rem;
-    margin-bottom: 2rem;
-    color: var(--primary);
-    position: relative;
-    padding-left: 1rem;
-  }
-
-  .section-title::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0.2rem;
-    bottom: 0.2rem;
-    width: 4px;
-    background: var(--accent);
-    border-radius: 2px;
-  }
-
-  .timeline {
-    position: relative;
-    padding-left: 2rem;
-    border-left: 2px solid var(--border-color);
-    margin-bottom: 4rem;
-  }
-
-  .timeline-item {
-    position: relative;
-    margin-bottom: 2.5rem;
-  }
-
-  .timeline-dot {
-    position: absolute;
-    left: -2.45rem;
-    top: 0.25rem;
-    width: 14px;
-    height: 14px;
-    background: white;
-    border: 3px solid var(--accent);
-    border-radius: 50%;
-  }
-
-  .timeline-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
-  }
-
-  .exp-role {
-    font-size: 1.1rem;
-    margin: 0;
-    color: var(--primary);
-  }
-
-  .exp-period {
-    font-size: 0.85rem;
-    color: var(--text-light);
-    background: var(--bg-light);
-    padding: 0.2rem 0.6rem;
-    border-radius: 4px;
-  }
-
-  .exp-company {
-    font-weight: 600;
-    color: var(--accent);
-    margin-bottom: 0.5rem;
-  }
-
-  .exp-desc {
-    font-size: 0.95rem;
-    color: var(--text-light);
-    line-height: 1.6;
-  }
-
-  /* Mini Posts Style */
-  .post-list-mini {
-    display: flex;
-    flex-direction: column;
+    grid-template-columns: 1fr;
+    padding: 1.5rem 1rem;
     gap: 1.5rem;
-    margin-bottom: 2rem;
   }
 
-  .post-item-mini {
-    display: flex;
-    align-items: baseline;
-    gap: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--border-color);
-  }
+  .resume-sidebar { position: static; }
+  .character-carousel { margin-bottom: 1rem; }
+  .character-card { padding: 1.2rem 1rem; }
+  .profile-avatar { width: 72px; height: 72px; margin-bottom: 0.8rem; }
+  .avatar-emoji { font-size: 2.2rem; }
+  .profile-name { font-size: 1.3rem; }
+  .profile-role { font-size: 0.75rem; margin-bottom: 0.4rem; }
+  .profile-bio { font-size: 0.8rem; margin-bottom: 0.8rem; }
+  .profile-contact { padding-top: 0.6rem; }
+  .contact-item { font-size: 0.78rem; }
+  .carousel-dots { margin-top: 0.5rem; }
+  .dot { width: 6px; height: 6px; }
+  .sidebar-title { font-size: 1rem; margin-bottom: 1rem; }
+  .skill-tag { font-size: 0.75rem; padding: 0.2rem 0.6rem; }
+  .section-title { font-size: 1.25rem; margin-bottom: 1.5rem; }
+  .post-list-mini { gap: 1rem; }
+  .post-item-mini { flex-direction: column; gap: 0.3rem; padding-bottom: 0.8rem; }
+  .post-date-mini { font-size: 0.78rem; }
+  .post-title-mini { font-size: 0.95rem; }
+  .view-all { font-size: 0.85rem; }
+  .friends-links { padding: 1.5rem 0; }
+  .friends-links .wrapper { padding: 0 1rem; }
+}
 
-  .post-date-mini {
-    font-family: monospace;
-    color: var(--text-light);
-    font-size: 0.9rem;
-    flex-shrink: 0;
-  }
-
-  .post-title-mini {
-    font-size: 1.05rem;
-    margin: 0;
-  }
-
-  .post-title-mini a {
-    text-decoration: none;
-    color: var(--primary);
-    transition: color 0.2s;
-  }
-
-  .post-title-mini a:hover {
-    color: var(--accent);
-  }
-
-  .view-all {
-    display: inline-block;
-    color: var(--accent);
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.9rem;
-  }
-
-  @media (max-width: 900px) {
-    .resume-wrapper {
-      grid-template-columns: 1fr;
-      padding: 2rem 1rem;
-    }
-    .resume-sidebar {
-      position: static;
-    }
-    .timeline-header {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.5rem;
-    }
-  }
+@media (max-width: 480px) {
+  .resume-wrapper { padding: 1rem 0.75rem; }
+  .character-card { padding: 1rem 0.75rem; }
+  .profile-avatar { width: 60px; height: 60px; }
+  .avatar-emoji { font-size: 1.8rem; }
+  .profile-name { font-size: 1.1rem; }
+  .section-title { font-size: 1.1rem; }
+}
 </style>
