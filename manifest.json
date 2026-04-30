@@ -6,7 +6,7 @@
   "scope": "/My-Site/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#2c3e50",
+  "theme_color": "#3451b2",
   "orientation": "portrait-primary",
   "categories": ["blog", "technology", "personal"],
   "lang": "zh-CN",

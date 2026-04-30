@@ -11,7 +11,7 @@
 <link rel="apple-touch-icon" href="{{ "/assets/icons/icon-192.png" | relative_url }}">
 
 <!-- PWA: 主题色 -->
-<meta name="theme-color" content="#2c3e50">
+<meta name="theme-color" content="#3451b2">
 
 <!-- PWA: Service Worker 注册 -->
 <script>
@@ -90,7 +90,7 @@
 
   .header-logo {
     text-decoration: none;
-    color: #ffffff;
+    color: var(--primary);
     display: flex;
     align-items: center;
   }
@@ -100,7 +100,7 @@
     font-weight: 800;
     letter-spacing: 0.5px;
     text-transform: uppercase;
-    color: #2c3e50;
+    color: var(--primary);
     background: none;
     -webkit-text-fill-color: initial;
   }
@@ -115,7 +115,7 @@
 
   .nav-links a {
     text-decoration: none;
-    color: #7f8c8d;
+    color: var(--text-light);
     font-size: 0.9rem;
     font-weight: 600;
     transition: color 0.3s;
@@ -123,7 +123,7 @@
   }
 
   .nav-links a:hover {
-    color: #3498db;
+    color: var(--accent);
   }
 
   .visitor-info {
@@ -150,28 +150,31 @@
   }
 
   :root {
-    --primary: #2c3e50;
-    --accent: #3498db;
-    --text-main: #34495e;
+    --primary: #3c3c43;
+    --accent: #3451b2;
+    --text-main: #3c3c43;
     --text-light: #7f8c8d;
-    --bg-light: #f8f9fa;
-    --border-color: #ecf0f1;
+    --text-weaker: #a0aec0;
+    --bg-light: #f5f6f7;
     --bg-main: #ffffff;
+    --border-color: #e8e8ea;
+    --tag-bg: rgba(142,150,170,0.14);
+    --tag-text: #3c3c43;
     transition: all 0.3s ease;
   }
   html[data-theme='sunny'] {
     --primary: #d35400;
     --accent: #f39c12;
-    --text-main: #34495e;
+    --text-main: #3c3c43;
     --text-light: #7f8c8d;
     --bg-light: #fff8e1;
     --border-color: #fce5cd;
     --bg-main: #fffaf0;
   }
   html[data-theme='rainy'] {
-    --primary: #2c3e50;
-    --accent: #3498db;
-    --text-main: #34495e;
+    --primary: #3c3c43;
+    --accent: #3451b2;
+    --text-main: #3c3c43;
     --text-light: #95a5a6;
     --bg-light: #ecf0f1;
     --border-color: #bdc3c7;
@@ -179,8 +182,8 @@
   }
   html[data-theme='cloudy'] {
     --primary: #7f8c8d;
-    --accent: #95a5a6;
-    --text-main: #34495e;
+    --accent: #3451b2;
+    --text-main: #3c3c43;
     --text-light: #b0b9bd;
     --bg-light: #fafafa;
     --border-color: #e0e0e0;
@@ -202,12 +205,12 @@
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    background: #f7fafc;
-    border: 1px solid #e2e8f0;
+    background: var(--bg-light);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 0.35rem 0.75rem;
     cursor: pointer;
-    color: #7f8c8d;
+    color: var(--text-light);
     font-size: 0.9rem;
     font-weight: 500;
     transition: all 0.2s;
@@ -217,16 +220,16 @@
   .search-toggle-btn:hover {
     background: #edf2f7;
     border-color: #cbd5e0;
-    color: #2c3e50;
+    color: var(--primary);
   }
 
   .search-kbd {
     font-size: 0.7rem;
-    background: #e2e8f0;
+    background: var(--border-color);
     padding: 0.1rem 0.35rem;
     border-radius: 4px;
     font-family: monospace;
-    color: #a0aec0;
+    color: var(--text-weaker);
   }
 
   @media (max-width: 768px) {
