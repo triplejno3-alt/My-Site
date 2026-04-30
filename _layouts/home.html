@@ -4,7 +4,16 @@ layout: default
 
 {% capture authors_json %}
 [
-  {% for a in site.data.authors %}
+  {
+    "slug": "_all",
+    "name": "🌐 全部文章",
+    "short_name": "全部",
+    "emoji": "🌐",
+    "color": "#6366f1",
+    "role": "全站文章汇总",
+    "description": "浏览本站所有文章，按最新发布排序。",
+    "links": []
+  }{% for a in site.data.authors %},
     {
       "slug": "{{ a[0] }}",
       "name": "{{ a[1].name }}",
@@ -13,7 +22,7 @@ layout: default
       "description": "{{ a[1].description | default: '' | strip_newlines | escape }}",
       "url": "{{ a[1].url | default: '#' | relative_url }}",
       "avatar": "{{ a[1].avatar | default: '' | relative_url }}"
-    }{% unless forloop.last %},{% endunless %}
+    }{% if forloop.last == false %},{% endif %}
   {% endfor %}
 ]
 {% endcapture %}
@@ -34,6 +43,14 @@ layout: default
     <!-- 角色滑动卡片 -->
     <div class="character-carousel" id="characterCarousel">
       <div class="character-track" id="characterTrack">
+        <div class="character-card active" data-slug="_all">
+          <div class="profile-avatar" style="background: #6366f1;">
+            <span class="avatar-emoji">🌐</span>
+          </div>
+          <h1 class="profile-name">全部文章</h1>
+          <p class="profile-role">全站文章汇总</p>
+          <p class="profile-bio">浏览本站所有文章，按最新发布排序。</p>
+        </div>
         {% for a in site.data.authors %}
         <div class="character-card" data-slug="{{ a[0] }}">
           <div class="profile-avatar" style="background: {{ a[1].color | default: '#3498db' }};">
@@ -55,8 +72,10 @@ layout: default
         {% endfor %}
       </div>
       <div class="carousel-dots" id="carouselDots">
+        <!-- _all + all authors -->
+        <span class="dot active" data-index="0"></span>
         {% for a in site.data.authors %}
-        <span class="dot {% if forloop.first %}active{% endif %}" data-index="{{ forloop.index0 }}"></span>
+        <span class="dot" data-index="{{ forloop.index }}"></span>
         {% endfor %}
       </div>
     </div>
@@ -159,10 +178,12 @@ function switchCharacter(slug) {
 
   // 更新文章标题
   const author = AUTHORS.find(a => a.slug === slug);
-  document.getElementById('postsTitle').textContent = `${author ? author.name : ''} 的文章`;
+  document.getElementById('postsTitle').textContent = slug === '_all' ? '最新文章' : `${author ? author.name : ''} 的文章`;
 
   // 过滤 + 渲染
-  const filtered = allPosts.filter(p => p.author === slug);
+  const filtered = slug === '_all'
+    ? [...allPosts]
+    : allPosts.filter(p => p.author === slug);
   renderPosts(filtered);
 }
 
