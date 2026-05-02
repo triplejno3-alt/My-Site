@@ -2,13 +2,12 @@
   <div class="footer-container">
     <div class="footer-info">
       <h3 class="footer-title">{{ site.title | escape }}</h3>
-      {% include cobe.html %}
-      <p class="footer-desc" style="margin-top: 1rem;">{{ site.description | escape }}</p>
+      <p class="footer-desc" style="margin-top: 0.6rem;">{{ site.description | escape }}</p>
     </div>
     
-    <div class="footer-links-group">
-      <div class="footer-contact">
-        <h4>联系我</h4>
+    <div class="footer-contact-social">
+      <h4>联系 / 关注</h4>
+      <div class="contact-social-list">
         {%- if site.email -%}
         <div class="footer-link-item">
           <a href="mailto:{{ site.email }}">
@@ -16,42 +15,46 @@
           </a>
         </div>
         {%- endif -%}
+        {%- if site.github_username -%}
+        <a href="https://github.com/{{ site.github_username }}" target="_blank" rel="noopener" title="GitHub">
+          <span class="icon">🐙</span> GitHub
+        </a>
+        {%- endif -%}
+        {%- if site.twitter_username -%}
+        <a href="https://twitter.com/{{ site.twitter_username }}" target="_blank" rel="noopener" title="Twitter">
+          <span class="icon">🐦</span> Twitter
+        </a>
+        {%- endif -%}
       </div>
-      
-      <div class="footer-social">
-        <h4>关注我</h4>
-        <div class="social-icons">
-          {%- if site.github_username -%}
-          <a href="https://github.com/{{ site.github_username }}" target="_blank" rel="noopener" title="GitHub">
-            <span class="icon">🐙</span> GitHub
-          </a>
-          {%- endif -%}
-          {%- if site.twitter_username -%}
-          <a href="https://twitter.com/{{ site.twitter_username }}" target="_blank" rel="noopener" title="Twitter">
-            <span class="icon">🐦</span> Twitter
-          </a>
-          {%- endif -%}
-        </div>
+    </div>
+    
+    <div class="footer-friends">
+      <h4>友情链接</h4>
+      <div class="friends-list">
+        {% for link in site.resume.links %}
+        <a href="{{ link.url }}" target="_blank" rel="noopener">{{ link.name }}</a>
+        {% endfor %}
       </div>
-      
-      <div class="footer-music">
-        <h4>音乐</h4>
-        <div id="music-player-container" class="music-player-container">
-          <iframe id="music-player" style="border-radius:12px" src="https://open.spotify.com/embed/album/1dBWNF06b7lnCF1M2SLTTZ?utm_source=generator&theme=0" width="100%" height="80" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-        </div>
-      </div>
+    </div>
+    
+    <div class="footer-globe">
+      <h4>📍 位置</h4>
+      {% include cobe.html %}
     </div>
   </div>
   
   <div class="footer-bottom">
-    <p>&copy; {{ "now" | date: "%Y" }} {{ site.title | escape }}. Built with ❤️ using <a href="https://jekyllrb.com/" target="_blank" rel="noopener">Jekyll</a> with AI assistance.</p>
-    {% if site.goatcounter_code %}
-    <div class="footer-stats-row">
-      <div class="site-total-views">
-        <span class="icon">📊</span> 全站总访问量：<span id="stats-total-count">...</span> 次
+    <div class="footer-bottom-row">
+      <p class="footer-copyright">&copy; {{ "now" | date: "%Y" }} {{ site.title | escape }}. Built with ❤️ using <a href="https://jekyllrb.com/" target="_blank" rel="noopener">Jekyll</a> with AI assistance.</p>
+      {% if site.goatcounter_code %}
+      <div class="footer-stats-row">
+        <div class="site-total-views">
+          <span class="icon">📊</span> 全站总访问量：<span id="stats-total-count">...</span> 次
+        </div>
+        <div class="footer-time"><span class="icon">🕒</span> <span id="current-time">...</span></div>
+        <div class="footer-port"><span class="icon">🔌</span> 端口：<span id="current-port">...</span></div>
       </div>
-      <div class="footer-time"><span class="icon">🕒</span> <span id="current-time">...</span></div>
-      <div class="footer-port"><span class="icon">🔌</span> 端口：<span id="current-port">...</span></div>
+      {% endif %}
     </div>
     <script>
         // GoatCounter total views script
@@ -93,79 +96,73 @@
         }
         updatePort();
     </script>
-    {% endif %}
   </div>
 </footer>
 
 <style>
   .modern-footer {
-    background: #0f172a; /* 更深邃的蓝黑色，更有现代感 */
-    color: #94a3b8;
-    padding: 2.5rem 0 1.5rem 0; /* 减小上下内边距 */
-    margin-top: 3rem; /* 减小顶部外边距 */
-    border-top: 1px solid #1e293b;
+    background: var(--bg-light, #f5f6f7);
+    color: var(--text-main, #3c3c43);
+    padding: 2.5rem 0 1.5rem 0;
+    margin-top: 3rem;
+    border-top: 1px solid var(--border-color, #e8e8ea);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   }
 
   .footer-container {
-    max-width: 1100px; /* 缩小最大宽度使布局更紧凑 */
+    max-width: 1100px;
     margin: 0 auto;
     padding: 0 2rem;
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 4rem;
+    gap: 2rem;
   }
 
   .footer-info {
-    flex: 2; /* 增加信息栏的占比 */
-    min-width: 300px;
+    flex: 0 0 auto;
+    min-width: 200px;
+    max-width: 260px;
   }
 
   .footer-title {
-    font-size: 1.25rem; /* 略微减小标题字号 */
+    font-size: 1.25rem;
     font-weight: 800;
-    margin-bottom: 1rem; /* 减小标题下边距 */
-    color: #f8fafc;
+    margin-bottom: 1rem;
+    color: var(--primary, #3c3c43);
     letter-spacing: -0.025em;
   }
 
   .footer-desc {
-    color: #64748b;
+    color: var(--text-light, #7f8c8d);
     line-height: 1.7;
     max-width: 450px;
     font-size: 0.95rem;
   }
 
-  .footer-links-group {
-    flex: 1;
-    display: flex;
-    gap: 4rem;
-    min-width: fit-content;
-  }
-
   .modern-footer h4 {
     font-size: 0.875rem;
     font-weight: 700;
-    margin-bottom: 1rem; /* 减小标题下边距 */
-    color: #f8fafc;
+    margin-bottom: 1rem;
+    color: var(--primary, #3c3c43);
     text-transform: uppercase;
     letter-spacing: 0.1em;
   }
 
-  .footer-contact, .footer-social {
+  .footer-contact-social, .footer-friends {
     display: flex;
     flex-direction: column;
+    flex-shrink: 0;
   }
 
-  .social-icons {
+  .contact-social-list {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
   }
 
-  .footer-contact a, .social-icons a {
-    color: #94a3b8;
+  .contact-social-list a, .footer-friends a {
+    color: var(--text-main, #3c3c43);
     text-decoration: none;
     transition: all 0.2s ease;
     font-size: 0.95rem;
@@ -178,43 +175,35 @@
     margin-bottom: 0.75rem;
   }
 
-  .footer-contact a:hover, .social-icons a:hover {
-    color: #38bdf8; /* 亮的明蓝色 */
+  .contact-social-list a:hover, .footer-friends a:hover {
+    color: var(--accent, #3451b2);
     transform: translateX(4px);
   }
 
-  .footer-music {
+  .footer-globe {
     display: flex;
     flex-direction: column;
-  }
-
-  .music-player-container {
-    width: 280px;
-    height: 60px;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-  }
-
-  #music-player {
-    transform: scale(0.75);
-    transform-origin: left center;
-    width: 133.33%;
-    height: 133.33%;
+    flex-shrink: 0;
   }
 
   .footer-bottom {
     max-width: 1100px;
-    margin: 2.5rem auto 0 auto; /* 减小底部栏的顶部边距 */
-    padding: 1.5rem 2rem 0 2rem; /* 减小底部栏的内边距 */
-    border-top: 1px solid #1e293b;
-    text-align: center;
-    color: #64748b;
+    margin: 2rem auto 0 auto;
+    padding: 1.5rem 2rem 0 2rem;
+    border-top: 1px solid var(--border-color, #e8e8ea);
+    color: var(--text-light, #7f8c8d);
     font-size: 0.85rem;
   }
 
-  .footer-bottom p {
+  .footer-bottom-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-copyright {
     margin: 0;
   }
 
@@ -228,32 +217,32 @@
   }
   .site-total-views, .footer-time, .footer-port {
     font-size: 0.8rem;
-    color: #64748b;
+    color: var(--text-light, #7f8c8d);
     display: flex;
     align-items: center;
     gap: 0.4rem;
   }
 
   #stats-total-count {
-    color: #38bdf8;
+    color: var(--accent, #3451b2);
     font-weight: 600;
   }
 
   #current-port {
-    color: #f472b6;
+    color: var(--accent, #3451b2);
     font-weight: 600;
   }
 
 
   .footer-bottom a {
-    color: #38bdf8;
+    color: var(--accent, #3451b2);
     text-decoration: none;
     font-weight: 500;
     transition: color 0.2s ease;
   }
 
   .footer-bottom a:hover {
-    color: #7dd3fc;
+    color: var(--primary, #3c3c43);
     text-decoration: underline;
   }
 
@@ -264,21 +253,28 @@
   @media (max-width: 768px) {
     .footer-container {
       flex-direction: column;
-      text-align: left; /* 移动端靠左对齐通常比居中更好看 */
-      gap: 3rem;
+      text-align: left;
+      gap: 2rem;
     }
     .footer-info {
       order: 1;
     }
-    .footer-links-group {
+    .footer-contact-social {
       order: 2;
-      flex-direction: row;
-      justify-content: flex-start;
-      gap: 3rem;
+    }
+    .footer-friends {
+      order: 3;
+    }
+    .footer-globe {
+      order: 4;
     }
     .footer-bottom {
+      margin-top: 2rem;
+    }
+    .footer-bottom-row {
+      flex-direction: column;
       text-align: left;
-      margin-top: 3rem;
+      align-items: flex-start;
     }
   }
 </style>

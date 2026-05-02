@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 820" style="background: #f8f9fa; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/>
+    </marker>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <!-- Title -->
+  <text x="400" y="45" text-anchor="middle" font-size="22" font-weight="700" fill="#1e293b">🎤 麦克风选择三步走</text>
+  <text x="400" y="68" text-anchor="middle" font-size="13" fill="#64748b">问自己三个问题，跟着箭头走就行了</text>
+
+  <!-- Step 1: 环境 -->
+  <rect x="275" y="95" width="250" height="44" rx="10" fill="#3451b2" filter="url(#shadow)"/>
+  <text x="400" y="115" text-anchor="middle" font-size="14" font-weight="600" fill="white">第1步：你在什么环境下录？</text>
+  <text x="400" y="131" text-anchor="middle" font-size="11" fill="#c7d2fe">问自己：录的时候周围吵不吵？</text>
+
+  <!-- Decision: 吵 vs 安静 -->
+  <path d="M 400 139 L 400 155" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <rect x="130" y="160" width="180" height="36" rx="18" fill="#fee2e2" stroke="#f87171" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="220" y="183" text-anchor="middle" font-size="13" font-weight="600" fill="#b91c1c">🗣️ 环境嘈杂</text>
+
+  <rect x="490" y="160" width="180" height="36" rx="18" fill="#dbeafe" stroke="#60a5fa" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="580" y="183" text-anchor="middle" font-size="13" font-weight="600" fill="#1e40af">🤫 环境安静</text>
+
+  <!-- Conditional arrows -->
+  <path d="M 220 196 L 220 215" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+  <path d="M 580 196 L 580 215" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- 吵 → 动圈 -->
+  <rect x="95" y="220" width="250" height="46" rx="10" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="220" y="241" text-anchor="middle" font-size="14" font-weight="600" fill="#92400e">推荐：动圈麦克风 🎙️</text>
+  <text x="220" y="258" text-anchor="middle" font-size="11" fill="#a16207">抗噪强，录不到环境噪音</text>
+
+  <!-- 安静 → 可选 -->
+  <rect x="455" y="220" width="250" height="46" rx="10" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="580" y="241" text-anchor="middle" font-size="14" font-weight="600" fill="#92400e">动圈 or 电容都行 ✅</text>
+  <text x="580" y="258" text-anchor="middle" font-size="11" fill="#a16207">如果想音质更好 → 看第2步</text>
+
+  <!-- Step 2 connector -->
+  <path d="M 580 266 L 580 290" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Step 2 title -->
+  <rect x="275" y="295" width="250" height="44" rx="10" fill="#3451b2" filter="url(#shadow)"/>
+  <text x="400" y="315" text-anchor="middle" font-size="14" font-weight="600" fill="white">第2步：你要录什么？</text>
+  <text x="400" y="331" text-anchor="middle" font-size="11" fill="#c7d2fe">不同内容对音质要求不一样</text>
+
+  <path d="M 400 339 L 400 355" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Use cases grid -->
+  <rect x="50" y="360" width="200" height="36" rx="8" fill="#f0fdf4" stroke="#4ade80" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="150" y="383" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">🎙️ 录人声/语音</text>
+
+  <rect x="300" y="360" width="200" height="36" rx="8" fill="#f0fdf4" stroke="#4ade80" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="400" y="383" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">🎸 录乐器</text>
+
+  <rect x="550" y="360" width="200" height="36" rx="8" fill="#f0fdf4" stroke="#4ade80" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="650" y="383" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">🎬 直播/播客</text>
+
+  <path d="M 150 396 L 150 415" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+  <path d="M 400 396 L 400 415" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+  <path d="M 650 396 L 650 415" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Results -->
+  <rect x="50" y="420" width="200" height="40" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="150" y="438" text-anchor="middle" font-size="12" font-weight="600" fill="#92400e">动圈就够用 👍</text>
+  <text x="150" y="453" text-anchor="middle" font-size="10" fill="#a16207">优先考虑便携性</text>
+
+  <rect x="300" y="420" width="200" height="40" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="400" y="438" text-anchor="middle" font-size="12" font-weight="600" fill="#92400e">建议电容麦克风 ✅</text>
+  <text x="400" y="453" text-anchor="middle" font-size="10" fill="#a16207">细节丰富，泛音完整</text>
+
+  <rect x="550" y="420" width="200" height="40" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="650" y="438" text-anchor="middle" font-size="12" font-weight="600" fill="#92400e">首选电容麦克风 🎤</text>
+  <text x="650" y="453" text-anchor="middle" font-size="10" fill="#a16207">声音好听，细节丰富</text>
+
+  <!-- Step 3 connector -->
+  <path d="M 400 460 L 400 485" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Step 3 title -->
+  <rect x="275" y="490" width="250" height="44" rx="10" fill="#3451b2" filter="url(#shadow)"/>
+  <text x="400" y="510" text-anchor="middle" font-size="14" font-weight="600" fill="white">第3步：接口怎么选？</text>
+  <text x="400" y="526" text-anchor="middle" font-size="11" fill="#c7d2fe">新手 vs 进阶，区别就一个字</text>
+
+  <path d="M 400 534 L 400 555" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- USB vs XLR -->
+  <rect x="50" y="560" width="320" height="55" rx="10" fill="#e0f2fe" stroke="#38bdf8" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="210" y="582" text-anchor="middle" font-size="14" font-weight="600" fill="#0369a1">🔌 USB 麦克风</text>
+  <text x="210" y="600" text-anchor="middle" font-size="11" fill="#0284c7">即插即用，免声卡——新手首选 ✅</text>
+
+  <rect x="430" y="560" width="320" height="55" rx="10" fill="#f0fdf4" stroke="#4ade80" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="590" y="582" text-anchor="middle" font-size="14" font-weight="600" fill="#166534">🎛️ XLR 麦克风</text>
+  <text x="590" y="600" text-anchor="middle" font-size="11" fill="#15803d">音质天花板，需额外配声卡</text>
+
+  <path d="M 370 587 L 425 587" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Final recommendation -->
+  <rect x="175" y="650" width="450" height="55" rx="12" fill="#3451b2" filter="url(#shadow)"/>
+  <text x="400" y="673" text-anchor="middle" font-size="15" font-weight="700" fill="white">🎯 新手黄金组合</text>
+  <text x="400" y="693" text-anchor="middle" font-size="12" fill="#c7d2fe">安静环境 + 电容USB麦克风 + 防喷罩</text>
+
+  <!-- Add a "折腾版" option -->
+  <rect x="225" y="730" width="350" height="40" rx="10" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="400" y="750" text-anchor="middle" font-size="11" fill="#64748b">🔄 想折腾？动圈XLR + 声卡 = 抗噪专业方案</text>
+  <text x="400" y="763" text-anchor="middle" font-size="10" fill="#94a3b8">适合录音环境不可控、追求稳定音质的进阶玩家</text>
+
+  <path d="M 400 705 L 400 725" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+</svg>

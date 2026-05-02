@@ -78,18 +78,6 @@ layout: default
   </main>
 </div>
 
-<!-- 友情链接移到底部 -->
-<div class="friends-links">
-  <div class="wrapper">
-    <h3>友情链接</h3>
-    <div class="friends-list">
-      {% for link in site.resume.links %}
-      <a href="{{ link.url }}" target="_blank">{{ link.name }}</a>
-      {% endfor %}
-    </div>
-  </div>
-</div>
-
 {% if site.buymeacoffee_username %}
 <script data-name="BMC-Widget"
         data-cfasync="false"
@@ -326,7 +314,7 @@ function renderPosts(posts) {
 /* ========== 角色滑动卡片 ========== */
 .character-carousel {
   position: relative;
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
   overflow: hidden;
 }
 
@@ -421,6 +409,7 @@ function renderPosts(posts) {
   justify-content: center;
   gap: 8px;
   margin-top: 0.8rem;
+  padding-bottom: 0.3rem;
 }
 
 .dot {
@@ -616,41 +605,6 @@ function renderPosts(posts) {
   transform: rotate(180deg);
 }
 
-/* ========== 友情链接（页尾） ========== */
-.friends-links {
-  background: var(--bg-light);
-  border-top: 1px solid var(--border-color);
-  padding: 2rem 0;
-  text-align: center;
-}
-
-.friends-links h3 {
-  font-size: 1rem;
-  color: var(--text-light);
-  margin-bottom: 1rem;
-  font-weight: 600;
-}
-
-.friends-list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1rem;
-}
-
-.friends-list a {
-  color: var(--text-main);
-  text-decoration: none;
-  font-size: 0.85rem;
-  padding: 0.3rem 1rem;
-  border-radius: 20px;
-  background: white;
-  border: 1px solid var(--border-color);
-  transition: color 0.2s, border-color 0.2s;
-}
-
-.friends-list a:hover { color: var(--accent); border-color: var(--accent); }
-
 /* ========== 响应式 ========== */
 @media (max-width: 1024px) {
   .resume-wrapper { gap: 2rem; padding: 3rem 1.5rem; }
@@ -686,8 +640,6 @@ function renderPosts(posts) {
   .post-date-mini { font-size: 0.72rem; }
   .post-tag-mini { font-size: 0.68rem; padding: 1px 6px; }
   .view-all { font-size: 0.85rem; }
-  .friends-links { padding: 1.5rem 0; }
-  .friends-links .wrapper { padding: 0 1rem; }
 }
 
 @media (max-width: 480px) {
