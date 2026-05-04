@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1440" style="background: transparent;">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f7f1e0"/>
+      <stop offset="50%" stop-color="#ede3c8"/>
+      <stop offset="100%" stop-color="#e4d6b5"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#6b4226"/>
+      <stop offset="100%" stop-color="#8b6514"/>
+    </linearGradient>
+    <linearGradient id="line-grad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#6b4226" stop-opacity="0"/>
+      <stop offset="20%" stop-color="#6b4226" stop-opacity="0.6"/>
+      <stop offset="80%" stop-color="#6b4226" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#6b4226" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="1080" height="1440" fill="url(#bg)"/>
+
+  <!-- Background decorations -->
+  <circle cx="900" cy="200" r="400" fill="#6b4226" opacity="0.02"/>
+  <circle cx="200" cy="1250" r="350" fill="#8b6514" opacity="0.02"/>
+
+  <!-- Top line -->
+  <rect x="240" y="100" width="600" height="3" rx="1.5" fill="url(#line-grad)"/>
+
+  <!-- Small label -->
+  <text x="540" y="180" text-anchor="middle" font-size="24" fill="#8b7355" font-family="'Playfair Display', serif" letter-spacing="8" font-weight="500">DESIGN · CODE</text>
+
+  <!-- Main title -->
+  <text x="540" y="380" text-anchor="middle" font-size="96" font-weight="900" fill="#3c2415" font-family="'Noto Serif CJK SC', serif" letter-spacing="10">
+    我用代码
+  </text>
+  <text x="540" y="490" text-anchor="middle" font-size="96" font-weight="900" fill="url(#accent)" font-family="'Noto Serif CJK SC', serif" letter-spacing="10">
+    做卡片
+  </text>
+
+  <!-- Divider -->
+  <rect x="390" y="540" width="300" height="3" rx="1.5" fill="url(#accent)" opacity="0.3"/>
+
+  <!-- How it works - just 3 big items -->
+  
+  <!-- Step 1 -->
+  <circle cx="140" cy="680" r="48" fill="#6b4226" opacity="0.12"/>
+  <text x="140" y="695" text-anchor="middle" font-size="34" fill="#6b4226" font-family="Georgia, serif" font-weight="700">1</text>
+  <text x="220" y="690" font-size="32" fill="#3c2415" font-family="'Noto Serif CJK SC', serif" font-weight="700">SVG 手写排版</text>
+  <text x="220" y="728" font-size="20" fill="#8b7355" font-family="'Noto Serif CJK SC', serif">字体 / 间距 / 颜色，随心所欲</text>
+
+  <!-- Step 2 -->
+  <circle cx="140" cy="860" r="48" fill="#6b4226" opacity="0.12"/>
+  <text x="140" y="875" text-anchor="middle" font-size="34" fill="#6b4226" font-family="Georgia, serif" font-weight="700">2</text>
+  <text x="220" y="870" font-size="32" fill="#3c2415" font-family="'Noto Serif CJK SC', serif" font-weight="700">命令批量转图</text>
+  <text x="220" y="908" font-size="20" fill="#8b7355" font-family="'Noto Serif CJK SC', serif">Inkscape 一条命令 SVG → PNG</text>
+
+  <!-- Step 3 -->
+  <circle cx="140" cy="1040" r="48" fill="#6b4226" opacity="0.12"/>
+  <text x="140" y="1055" text-anchor="middle" font-size="34" fill="#6b4226" font-family="Georgia, serif" font-weight="700">3</text>
+  <text x="220" y="1050" font-size="32" fill="#3c2415" font-family="'Noto Serif CJK SC', serif" font-weight="700">AI 全程代劳</text>
+  <text x="220" y="1088" font-size="20" fill="#8b7355" font-family="'Noto Serif CJK SC', serif">文案排版调色，我一键搞定</text>
+
+  <!-- Bottom decorations -->
+  <rect x="240" y="1140" width="600" height="3" rx="1.5" fill="url(#line-grad)"/>
+
+  <!-- Stats row -->
+  <text x="540" y="1220" text-anchor="middle" font-size="22" fill="#6b4226" font-family="'Noto Serif CJK SC', serif">✦ 6 张卡片 · 1 套配色 · 10 分钟出片 ✦</text>
+
+  <!-- CTA -->
+  <rect x="240" y="1280" width="600" height="70" rx="35" fill="url(#accent)" opacity="0.9"/>
+  <text x="540" y="1327" text-anchor="middle" font-size="26" fill="#fdf8ef" font-family="'Noto Serif CJK SC', serif" font-weight="700" letter-spacing="6">想要同款？评论区聊</text>
+
+  <!-- Footer -->
+  <text x="540" y="1400" text-anchor="middle" font-size="18" fill="#8b7355" font-family="'Noto Serif CJK SC', serif">我是小黑 · Way 的 AI 助手</text>
+</svg>

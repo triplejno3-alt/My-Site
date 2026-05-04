@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 600" style="background: transparent;">
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f7f1e0"/>
+      <stop offset="50%" stop-color="#ede3c8"/>
+      <stop offset="100%" stop-color="#e8dcc5"/>
+    </linearGradient>
+    <linearGradient id="accent2" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#6b4226"/>
+      <stop offset="100%" stop-color="#8b6514"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="500" height="600" rx="20" fill="url(#bg2)"/>
+  
+  <circle cx="420" cy="500" r="160" fill="#6b4226" opacity="0.04"/>
+  <circle cx="80" cy="100" r="80" fill="#8b6514" opacity="0.04"/>
+
+  <!-- Small accent bar at top -->
+  <rect x="40" y="40" width="60" height="4" rx="2" fill="url(#accent2)"/>
+  
+  <text x="40" y="90" font-size="17" fill="#3c2415" font-family="'Noto Serif CJK SC', 'Playfair Display', serif" font-weight="400" letter-spacing="0.5">
+    <tspan x="40" dy="0">我不再装模作样地拥有很多朋友，</tspan>
+    <tspan x="40" dy="34">而是回到了孤单之中，以真正的</tspan>
+    <tspan x="40" dy="34">我开始了独自的生活。</tspan>
+    <tspan x="40" dy="40" fill="#8b7355" font-size="14">有时我也会因为寂寞而难以忍受</tspan>
+    <tspan x="40" dy="32" fill="#8b7355" font-size="14">空虚的折磨，但我宁愿以这样的</tspan>
+    <tspan x="40" dy="32" fill="#8b7355" font-size="14">方式来维护自己的自尊，也不愿</tspan>
+    <tspan x="40" dy="32" fill="#8b7355" font-size="14">以耻辱为代价去换取那种表面的</tspan>
+    <tspan x="40" dy="32" fill="#8b7355" font-size="14">朋友。</tspan>
+  </text>
+
+  <line x1="40" y1="480" x2="180" y2="480" stroke="url(#accent2)" stroke-width="2"/>
+  
+  <text x="40" y="510" font-size="16" fill="#6b4226" font-family="'Noto Serif CJK SC', 'Playfair Display', serif" font-weight="600">余华</text>
+  <text x="40" y="535" font-size="12" fill="#8b7355" font-family="'Noto Serif CJK SC', 'Playfair Display', serif">——《在细雨中呼喊》</text>
+
+  <rect x="340" y="545" width="120" height="28" rx="14" fill="#6b4226" opacity="0.15"/>
+  <text x="400" y="564" text-anchor="middle" font-size="11" fill="#6b4226" font-family="'Noto Serif CJK SC', 'Playfair Display', serif">✦ 文学摘录</text>
+</svg>

@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 600" style="background: transparent;">
+  <defs>
+    <linearGradient id="bg3" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f7f1e0"/>
+      <stop offset="100%" stop-color="#ede3c8"/>
+    </linearGradient>
+    <linearGradient id="accent3" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#6b4226"/>
+      <stop offset="100%" stop-color="#8b6514"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="500" height="600" rx="20" fill="url(#bg3)"/>
+  
+  <circle cx="80" cy="80" r="140" fill="#6b4226" opacity="0.04"/>
+  <circle cx="430" cy="520" r="120" fill="#8b6514" opacity="0.04"/>
+
+  <!-- Quote marks -->
+  <text x="30" y="110" font-size="80" fill="#6b4226" opacity="0.14" font-family="Georgia, serif">❝</text>
+
+  <text x="45" y="130" font-size="16" fill="#3c2415" font-family="'Noto Serif CJK SC', 'Playfair Display', serif" font-weight="400">
+    <tspan x="45" dy="0">如果你想制造牵挂，就要承担</tspan>
+    <tspan x="45" dy="34">流泪的风险。</tspan>
+  </text>
+
+  <!-- English original -->
+  <text x="45" y="220" font-size="13" fill="#8b7355" font-family="Georgia, serif" font-style="italic">
+    <tspan x="45" dy="0">"If you want to create a bond,</tspan>
+    <tspan x="45" dy="24">you have to take the risk of tears."</tspan>
+  </text>
+
+  <text x="45" y="310" font-size="16" fill="#3c2415" font-family="'Noto Serif CJK SC', 'Playfair Display', serif">
+    <tspan x="45" dy="0">正是你为玫瑰付出的时间，</tspan>
+    <tspan x="45" dy="34">使你的玫瑰是如此的重要。</tspan>
+  </text>
+
+  <line x1="45" y1="430" x2="185" y2="430" stroke="url(#accent3)" stroke-width="2"/>
+  
+  <text x="45" y="460" font-size="15" fill="#6b4226" font-family="Georgia, serif" font-weight="600">Antoine de Saint-Exupéry</text>
+  <text x="45" y="485" font-size="12" fill="#8b7355" font-family="'Noto Serif CJK SC', 'Playfair Display', serif">——《小王子》</text>
+
+  <rect x="330" y="545" width="130" height="28" rx="14" fill="#6b4226" opacity="0.15"/>
+  <text x="395" y="564" text-anchor="middle" font-size="11" fill="#6b4226" font-family="'Noto Serif CJK SC', 'Playfair Display', serif">✦ 经典文学</text>
+</svg>
