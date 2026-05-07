@@ -1,7 +1,7 @@
 ---
 title: 我的数字工具箱：从效率神器到黑苹果，一个 Obsidian 用户的自动化实践
 author: Way
-date: 2026-05-03
+date: 2026-05-03 00:00:00 +0800
 tags:
   - inbox
   - 数字工具

@@ -48,9 +48,23 @@ permalink: /archive/
         <span class="filter-dim-label">📅 时间</span>
         <div class="filter-options" id="filter-time">
           <a href="#" class="filter-btn active" data-dim="time" data-val="">全部</a>
-          {% assign years = site.posts | group_by_exp: "post", "post.date | date: '%Y'" %}
-          {% for year in years %}
-          <a href="#" class="filter-btn" data-dim="time" data-val="{{ year.name }}">{{ year.name }}年</a>
+          {% comment %}Build year list manually to avoid Date/String sort issues{% endcomment %}
+          {% assign year_names = "x" | split: "x" %}
+          {% for p in site.posts %}
+            {% capture y %}{{ p.date | date: "%Y" }}{% endcapture %}
+            {% assign year_names = year_names | push: y %}
+          {% endfor %}
+          {% comment %} Get first 4 chars as year string {% endcomment %}
+          {% assign year_list = "x" | split: "x" %}
+          {% for y in year_names %}
+            {% if y.size >= 4 %}
+              {% assign y4 = y | slice: 0, 4 %}
+              {% assign year_list = year_list | push: y4 %}
+            {% endif %}
+          {% endfor %}
+          {% assign year_list = year_list | uniq | sort | reverse %}
+          {% for year_name in year_list %}
+          <a href="#" class="filter-btn" data-dim="time" data-val="{{ year_name }}">{{ year_name }}年</a>
           {% endfor %}
         </div>
       </div>
@@ -72,12 +86,21 @@ permalink: /archive/
   </div>
 
   <div class="archive-list" id="archive-list">
-    {% assign postsByYear = site.posts | group_by_exp: "post", "post.date | date: '%Y'" %}
-    {% for year in postsByYear %}
-      <div class="archive-year-group" data-year="{{ year.name }}">
-        <h2 class="archive-year">{{ year.name }}</h2>
+    {% comment %}Manually group posts by year to avoid Liquid sort issues{% endcomment %}
+    {% assign year_keys = "x" | split: "x" %}
+    {% for p in site.posts %}
+      {% capture y %}{{ p.date | date: "%Y" }}{% endcapture %}
+      {% assign year_keys = year_keys | push: y %}
+    {% endfor %}
+    {% assign year_keys = year_keys | uniq | sort | reverse %}
+    {% for year_name in year_keys %}
+      <div class="archive-year-group" data-year="{{ year_name }}">
+        <h2 class="archive-year">{{ year_name }}</h2>
         <ul class="post-list">
-          {% for post in year.items %}
+          {% comment %}Filter posts by matching year{% endcomment %}
+          {% for post in site.posts %}
+            {% capture post_year %}{{ post.date | date: "%Y" }}{% endcapture %}
+            {% if post_year == year_name %}
             {%- assign post_author = post.author | default: "" -%}
             {%- if post_author == "" and post.authors -%}
               {%- assign post_author = post.authors | join: "," -%}
@@ -100,6 +123,7 @@ permalink: /archive/
               </span>
               {% endif %}
             </li>
+            {% endif %}
           {% endfor %}
         </ul>
       </div>
