@@ -57,8 +57,8 @@ permalink: /archive/
           {% comment %} Get first 4 chars as year string {% endcomment %}
           {% assign year_list = "x" | split: "x" %}
           {% for y in year_names %}
-            {% if y.size >= 4 %}
-              {% assign y4 = y | slice: 0, 4 %}
+            {% capture y4 %}{{ y | slice: 0, 4 }}{% endcapture %}
+            {% if y4.size >= 4 %}
               {% assign year_list = year_list | push: y4 %}
             {% endif %}
           {% endfor %}
@@ -74,7 +74,7 @@ permalink: /archive/
         <span class="filter-dim-label">🏷️ 关键词</span>
         <div class="filter-options" id="filter-tag">
           <a href="#" class="filter-btn active" data-dim="tag" data-val="">全部</a>
-          {% assign all_tags = site.posts | map: "tags" | flatten | uniq | sort %}
+          {% assign all_tags = site.posts | map: "tags" | flatten | uniq | sort_natural %}
           {% for tag in all_tags %}
           <a href="#" class="filter-btn" data-dim="tag" data-val="{{ tag }}">{{ tag }}</a>
           {% endfor %}
